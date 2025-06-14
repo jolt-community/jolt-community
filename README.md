@@ -1,7 +1,10 @@
-Jolt
+JOLT (Community Edition)
 ========
 
 JSON to JSON transformation library written in Java where the "specification" for the transform is itself a JSON document.
+
+### Community Edition
+This repository is a community-maintained fork of JOLT. For the original version, please visit the [bazaarvoice/jolt](https://github.com/bazaarvoice/jolt) repository.
 
 ### Useful For
 
