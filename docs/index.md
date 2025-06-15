@@ -81,7 +81,10 @@ Some platforms may ask for the spec and operation separately. Here, we include b
 {
   "operation": "operation-name",
   "comments":"in production settings, a comment should indicate not how, but WHY the operation is being done",
-  "description":"in the case of advanced syntax or inexperienced audiences, a description may contain a description of what the spec does. Syntax such as {'a':[...], ...} -> [...] will also do, in a pinch.",
+  "description":[
+    "In the case of advanced syntax or inexperienced audiences, a description may contain a description of what the spec does.",
+    "Pseudo-syntax such as {'a':[...], ...} -> [...] will also do, in a pinch."
+  ],
   "spec": {
     ...
   },
