@@ -154,7 +154,7 @@ In a spec which uses `"*":"&"` at the root level, such as:
 {
   "*":"&",
   "root_shift":"SHIFTED_root_shift",
-  "subobject_shift":{"a":"SHIFTED_a"}
+  "subobject_shift":{"a":"subobject_shift.SHIFTED_a"}
 }
 ```
 
@@ -171,17 +171,25 @@ You will see that:
 }
 ```
 
-To keep `"b":{"c":true}` within `"subobject_shift"`, we must use a second `"*":"&"` idiom, within `"subobject_shift"`.
+To keep `"b":{"c":true}` within `"subobject_shift"`, we must use a second `"*":"&"` idiom, within `"subobject_shift"`:
 
 ```json
 {
   "*":"&",
   "root_shift":"SHIFTED_root_shift",
-  "subobject_shift":{"*":"&", "a":"SHIFTED_a"}
+  "subobject_shift":{"*":"subobject_shift.&", "a":"subobject_shift.SHIFTED_a"}
 }
 ```
 
+It is worth noting, however, that the `&` wildcard allows us to write this spec more concisely:
 
+```json
+{
+  "*":"&",
+  "root_shift":"SHIFTED_&",
+  "subobject_shift":{"*":"&1.&", "a":"&1.SHIFTED_&"}
+}
+```  
 
 ##### Wildcard Parameters
 
