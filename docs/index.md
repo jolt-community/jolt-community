@@ -39,7 +39,7 @@ In addition to these "traditional" terms, we also define several "applied" terms
 
 | Extended JSON Term | Definition |
 |-----------|------------|
-| Index    | A number, starting with 0, representing the position (left-to-right) of an element within an array. |
+| Index    | A number, starting with 0, representing the position (left-to-right) of an element within an array. When an array is cast to an object, the index is used as the key for the given value of the element (after being cast to string). |
 | Path    | An ordered sequence of keys and/or indices which can be traversed in order to arrive at a desired value. |
 | Root    | The outermost value, i.e. the entire JSON object itself. Typically an array or object. Often denoted as `$`, especially in paths.  |
 | Dot Notation | A representation format for a path where keys are delimited by the character `.` in-between names. E.g. `$.settings.users.display_name`. Use is discouraged if any of the names contains the character `.`. |
