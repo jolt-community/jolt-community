@@ -18,13 +18,50 @@ An interactive JOLT (v0.1.1) demo site is available at https://jolt-demo.appspot
 
 Large Language Models struggle to reliably generate non-trivial (and sometimes even trivial) JOLT specs. LLMs such as OpenAI's ChatGPT-4o and Anthropic's Claude frequently generate invalid JOLT syntax, hallucinate nonexistent functions, and even imagine entire capabilities that do not exist in JOLT. They also tend to "forget" in conversation that certain suggestions are invalid, especially while using search capabilities. Like many niche domain-specific languages (DSLs), JOLT does not have a wide dataset of examples to train on. Furthermore, Official JOLT documentation has been fairly sparse. If LLM support is a must, you may have better luck with a traditional scripting language or a more popular JSON transformation DSL.
 
+### Terminology
+
+This documentation follows the terminology set out by RFC 8259, with one notable exception. To reduce confusion, the term "key" will be used in place of the more traditional terms "name" or "member name". When used, the term "name" exclusively refers to the actual value of the string which is being used as a key.
+
+| JSON Term | Definition | Example |
+|-----------|------------|------------|
+| String    | A sequence of zero or more Unicode characters in double quotes, supporting backslash escapes (`\"`, `\\`, `\uXXXX`).| `"hello world"` |
+| Number    | A base-10 signed decimal literal: optional minus; integer part (no leading zeros unless zero); optional fraction; optional exponent (`E`/`e` plus digits); `NaN` and `Infinity` are disallowed. (RFC 8259 §6) | `0.0001`, `1234` |
+| Boolean   | Exactly one of the literals: `true` or `false`. | `true`,`false` |
+| Null      | The literal `null`, representing an explicit empty value. | `null` |
+| Value     | Any valid JSON type: string, number, boolean, null, array, or object. | |
+| Array     | An ordered, comma-separated sequence of zero or more values, enclosed in square brackets `[...]`. | `[0, "abc", {}]` |
+| Element   | A single value within an array. | `"abc"` in `[0, "abc", {}]` |
+| Key       | A string serving as the identifier for a value.  | `"id"`, `"Label"`, `"settings"` |
+| Attribute | A key, followed by `:`, followed by a value Sometimes called a key/value pair. | `"key":"value"` |
+| Object    | An unordered set of zero or more attributes, enclosed in `{...}`. Keys should be unique. | `{"a":"b"}` |
+
+In addition to these "traditional" terms, we also define several "applied" terms, which may appear infrequently.
+
+| Extended JSON Term | Definition |
+|-----------|------------|
+| Index    | A number, starting with 0, representing the position (left-to-right) of an element within an array. |
+| Path    | An ordered sequence of keys and/or indices which can be traversed in order to arrive at a desired value. |
+| Root    | The outermost value, i.e. the entire JSON object itself. Typically an array or object. Often denoted as `$`, especially in paths.  |
+| Dot Notation | A representation format for a path where keys are delimited by the character `.` in-between names. E.g. `$.settings.users.display_name`. Use is discouraged if any of the names contains the character `.`. |
+| Bracket Notation | A representation format for a path where keys and indices are wrapped in square brackets. E.g. `$[0]["settings"]["users"]["display_name"]` |
+
+
 ## Operations
+
+In JOLT, an operation is a certain type of data transformation. Each operation has it's own domain-specific language. By default, JOLT comes with several core operations:
+
+1. shift: move data from one path to another
+2. default: provide attributes if they do not already exist
+3. remove: remove attributes from an object, or elements from an array
+4. cardinality: ensure that values are either arrays or not arrays
+5. sort: order the keys of a JSON object deterministically.
+
+### Specification
+
 
 ### The `shift` Operation
 
-`shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the output JSON, aka how the input JSON/data should be shifted around to make the output JSON/data.
-
-At a base level, a single `shift` "command" is a mapping from an input path to an output path.
+`shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the output JSON. At a base level, a single `shift` operation maps data from an input path to an output path.
 
 The spec syntax tends to follow this format:
 
