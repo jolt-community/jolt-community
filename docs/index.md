@@ -48,7 +48,7 @@ In addition to these "traditional" terms, we also define several "applied" terms
 
 ## Operations
 
-In JOLT, an operation is a certain type of data transformation. Each operation has it's own domain-specific language. By default, JOLT comes with several core operations:
+In JOLT, an operation is a certain (narrow) type of data transformation. By default, JOLT comes with several core operations:
 
 1. shift: move data from one path to another
 2. default: provide attributes if they do not already exist
@@ -56,22 +56,60 @@ In JOLT, an operation is a certain type of data transformation. Each operation h
 4. cardinality: ensure that values are either arrays or not arrays
 5. sort: order the keys of a JSON object deterministically.
 
+Operations are extensible and other types of transforms may be provided in certain platforms, such as `chain`, which allows for executing other operations in sequence.  
+
 ### Specification
 
+A specification (or "spec") is a JSON-based representation of where and how each operation should be performed. Each operation's spec follows it's own domain-specific language. 
+
+### JOLT Standard Syntax
+
+Unless noted otherwise, all specs will be written in this format, for clarity:
+
+```json
+{
+  "operation": "operation-name",
+  "spec": {
+    ...
+  }
+}
+```
+
+Some platforms may ask for the spec and operation separately. Here, we include both in the same object for convenience. The JOLT standard syntax may include other arbitrary attributes as well, which are usually ignored by most platforms providing JOLT. We can use these attributes to provide comments and representative data to make our spec easier to read. Below is an example of some common types of arbitrary attributes in practice.
+
+```json
+{
+  "operation": "operation-name",
+  "comments":"why the operation is being done",
+  "spec": {
+    ...
+  },
+  "input": {
+    ...
+  },
+  "output": {
+    ...
+  }
+}
+```
 
 ### The `shift` Operation
 
 `shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the output JSON. At a base level, a single `shift` operation maps data from an input path to an output path.
 
-The spec syntax tends to follow this format:
+The spec syntax tends to follow this format, where keys describe existing paths, and values describe new paths.
 
 ```json
 {
-  "original_key": "new_key"
+  "operation": "shift",
+  "spec": {
+    "original_key": "new_key",
+    ...
+  }
 }
 ```
 
-On the left-hand side (LHS), we list where the data currently is, and on the right-hand side (RHS), we list the key that the data should be moved to.
+Aside: The `shift` operation supports shifting in nested JSON objects. Sub-objects can have keys and are values too. To avoid confusion about which value we are referencing, when we want to refer to an key as an existing data path, we use the term left-hand side (LHS), and when we want to refer to the value as the destination of the data, we use the term right-hand side (RHS).
 
 There are several important facts to know about the `shift` operation:
 
@@ -79,6 +117,57 @@ There are several important facts to know about the `shift` operation:
 + The `shift` operation provides a wide number of wildcard symbols which make it flexible and powerful.
 + Any data not shifted in the `shift` spec will disappear. To keep unshifted data as-is, we must shift all "unmentioned" data to it's current location. This can be done easily with the use of wildcards.
 + If a key on the LHS does not exist within a JSON input, that key is ignored, and no error is raised.
+
+#### Wildcard-free `shift` Examples
+```json
+{
+  "operation": "shift",
+  "spec": {
+    "a":"c"
+  },
+  "input": {
+    "a":1,
+    "b":2
+  },
+  "output": {
+    "c":1
+  }
+}
+```
+
+```json
+{
+  "operation": "shift",
+  "spec": {
+    "a": {
+      "b":"c"
+    }
+  },
+  "input": {
+    "a": {
+      "b":1
+    }
+  },
+  "output": {
+    "c":1
+  }
+}
+```
+
+```json
+{
+  "operation": "shift",
+  "spec": {
+    "a": "a[]"
+  },
+  "input": {
+    "a": 1
+  },
+  "output": {
+    "a":[1]
+  },
+}
+```
 
 #### Shifting Nested JSON: LHS vs RHS
 
