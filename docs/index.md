@@ -105,6 +105,8 @@ Some platforms may ask for the spec and operation separately. Here, we include b
 }
 ```
 
+
+
 ### The `shift` Operation
 
 `shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the output JSON. At a base level, a single `shift` operation maps data from an input path to an output path.
@@ -260,6 +262,22 @@ Aside: Forgetting to include the dot notation on the RHS is a common mistake, an
   ],
   "output": {
     "a": 1
+  }
+}
+```
+
+```json
+{
+  "operation": "shift",
+  "description": "Escape wildcard symbols with a \\",
+  "spec": {
+    "\\@": "\\&"
+  },
+  "input": {
+    "@": 1
+  },
+  "output": {
+    "&": 1
   }
 }
 ```
