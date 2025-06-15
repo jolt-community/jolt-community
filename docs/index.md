@@ -12,7 +12,7 @@ JOLT Community Edition is a community-maintained edition of JOLT, a JSON to JSON
 
 ### JOLT Demo
 
-An interactive JOLT (v0.1.1) demo site is available at https://jolt-demo.appspot.com/#inception. Version 0.1.1 is a very early version of JOLT, so not all features may be supported.
+An interactive JOLT (v0.1.1) demo site is available at [jolt-demo.appspot.com](https://jolt-demo.appspot.com/#inception). Version 0.1.1 is a very early version of JOLT, so not all features may be supported.
 
 ### LLM Support
 
@@ -80,15 +80,24 @@ Some platforms may ask for the spec and operation separately. Here, we include b
 ```json
 {
   "operation": "operation-name",
-  "comments":"why the operation is being done",
+  "comments":"in production settings, a comment should indicate not how, but WHY the operation is being done",
+  "description":"in the case of advanced syntax or inexperienced audiences, a description may contain a description of what the spec does. Syntax such as {"a":[...], ...} -> [...] will also do, in a pinch.",
   "spec": {
     ...
   },
   "input": {
     ...
+    "what_goes_in_here": "Sample inputs, usually trimmed versions of production data.",
+    "guidelines": [
+      "1. Keep it short. Long inputs make the spec hard hard to find, especially when multiple specs are in the same file.",
+      "2. Keep it focused. Only include relevant keys and values, so others can understand your intentions.",
+      "3. This data can and should be used for informally testing your transform as you develop it.",
+      "4. Keep more formal and extensive tests in a separate directory." 
+    ]
   },
   "output": {
     ...
+    "what_goes_in_here": "The output of the transformation on the sample input."
   }
 }
 ```
@@ -166,6 +175,9 @@ While counter-intuitive, the nested key syntax on the LHS disambiguates nested a
   }
 }
 ```
+
+
+
 
 Aside: Forgetting to include the dot notation on the RHS is a common mistake, and results in shifting data to a key in the root object.
 ```json
