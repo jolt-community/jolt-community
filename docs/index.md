@@ -118,23 +118,56 @@ There are several important facts to know about the `shift` operation:
 + Any data not shifted in the `shift` spec will disappear. To keep unshifted data as-is, we must shift all "unmentioned" data to it's current location. This can be done easily with the use of wildcards.
 + If a key on the LHS does not exist within a JSON input, that key is ignored, and no error is raised.
 
-#### Wildcard-free `shift` Examples
+#### Shifting Nested JSON: LHS vs RHS
+
+In `shift`, a nested input path is specified via a JSON tree structure, and the output path is specified via a flattened "dot notation" path.
+
 ```json
 {
   "operation": "shift",
+  "description":"CORRECT SYNTAX for shifting from nested objects: LHS nested, RHS dot notation"
   "spec": {
-    "a":"c"
+    "keep": {
+      "old":"keep.new"
+    }
   },
   "input": {
-    "a":1,
-    "b":2
+    "keep": {
+      "old":"shift me to keep.new"
+    }
   },
   "output": {
-    "c":1
+    "keep": {
+      "new":"shift me to keep.new"
+    }
   }
 }
 ```
 
+While counter-intuitive, the nested key syntax on the LHS disambiguates nested and dot-flattened input keys. For example, in the below spec, if we used dot notation for the LHS, the key `"keep.old"` would match on multiple locations, causing confusion and ambiguity. Instead, now we know which key it will go to.
+
+```json
+{
+  "operation": "shift",
+  "description":"INCORRECT SYNTAX for shifting from a nested object"
+  "spec": {
+    "keep.old": "keep.new"
+  },
+  "input": {
+    "keep": {
+      "old":"shift me to keep.new"
+    },
+    "keep.old": "do not shift this value to keep.new"
+  },
+  "output": {
+    "keep": {
+      "new": "do not shift this value to keep.new"
+    }
+  }
+}
+```
+
+Aside: Forgetting to include the dot notation on the RHS is a common mistake, and results in shifting data to a key in the root object.
 ```json
 {
   "operation": "shift",
@@ -145,11 +178,30 @@ There are several important facts to know about the `shift` operation:
   },
   "input": {
     "a": {
-      "b":1
+      "b":"keep me nested in a"
     }
   },
   "output": {
-    "c":1
+    "c":"keep me nested in a"
+  }
+}
+```
+
+#### Wildcard-free `shift` Examples
+
+```json
+{
+  "operation": "shift",
+  "description": "shift a value from one key to a new key in the object root",
+  "spec": {
+    "original":"new"
+  },
+  "input": {
+    "original":1,
+    "deleteme":2
+  },
+  "output": {
+    "new":1
   }
 }
 ```
@@ -157,6 +209,7 @@ There are several important facts to know about the `shift` operation:
 ```json
 {
   "operation": "shift",
+  "description": "shift a value into an array",
   "spec": {
     "a": "a[]"
   },
@@ -165,68 +218,27 @@ There are several important facts to know about the `shift` operation:
   },
   "output": {
     "a":[1]
+  }
+}
+```
+
+```json
+{
+  "operation": "shift",
+  "description": "map first element of an array (index 0) into the object root.",
+  "spec": {
+    "0": ""
   },
-}
-```
-
-#### Shifting Nested JSON: LHS vs RHS
-
-In `shift`, a nested input path is specified via a JSON tree structure, and the output path is specified via a flattened "dot notation" path.
-
-For example, given the following JSON:
-
-```json
-{
-  "keep": {
-    "old":"shift me to keep.new"
-  }
-}
-```
-to make the following JSON
-
-```json
-{
-  "keep": {
-    "new":"shift me to keep.new"
-  }
-}
-```
-
-The CORRECT syntax for shifting `keep.old` to `keep.new` would be:
-
-```json title="Spec A"
-{
-  "keep": {
-    "old":"keep.new"
-  }
-}
-```
-
-This would be INCORRECT syntax for shifting `keep.old` to `keep.new`:
-
-```json title="Spec B"
-{
-  "keep.old": "keep.new"
-}
-```
-
-While counter-intuitive, the nested key syntax on the LHS disambiguates nested and dot-flattened input keys. For example, in the below input, the LHS key `"keep.old"` might match on multiple locations, causing confusion and ambiguity.
-
-```json
-{
-  "keep": {
-    "old":"shift me to keep.new"
-  },
-  "keep.old": "do not shift this value to keep.new"
-}
-```
-
-Currently, the "INCORRECT" spec would actually output the following:
-
-```json
-{
-  "keep": {
-    "new":"do not shift this value to keep.new"
+  "input": [
+    {
+      "a": 1
+    },
+     {
+      "b": 2
+    }
+  ],
+  "output": {
+    "a": 1
   }
 }
 ```
@@ -238,9 +250,10 @@ As shown above, `shift` specs can be entirely made up of literal string values, 
 | Symbol | Wildcard Name | LHS | RHS |
 | - | - | - | - |
 | `*` | Name | Non-greedy wildcard matching of key names | Not Valid on RHS |
-| `\|` | ANY/OR | Used as delimiter in the LHS string to indicate matches on one of several arbitrary keys | Not Valid on RHS |
+| `|` | ANY/OR | Used as delimiter in the LHS string to indicate matches on one of several arbitrary keys | Not Valid on RHS |
 | `&` | Path as Key | Use a key in a nearby location | Copies elements of the current path in the output path |
 | `$` | Key as Value | Use a key as the value in the output | Not Valid on RHS |
+| `@` | Value as Key | Use a key as the value in the output | Not Valid on RHS |
 | `#` | Synthetic (Value/Index) | Synthetic value: use whatever follows afterwards as a literal value | Synthetic Index: Reference the index value of a match on a different array |
 
 ##### Essential Wildcard Expressions
@@ -256,67 +269,102 @@ This spec matches all key names in the root level of the json, and maps them to 
 
 ```json
 {
-  "*":"&"
+  "operation": "shift",
+  "description": "Map each current key onto the current key.",
+  "spec": {
+    "*": "&"
+  },
+  "input": {
+    "a": 1,
+    "b": 2
+  },
+  "output": {
+    "a": 1,
+    "b": 2
+  }
 }
 ```
 
-This is effectively a no-op, but shifting the key back to itself prevents it from being removed.
+This is effectively a no-op, but shifting the key back to itself prevents the key from being removed.
 
-####### The `"*":"&"` Idiom Is Often Used Multiple Times In A Spec
+There are a few sharp edges to watch out for, however. For starters, the `"*":"&"` idiom is often used multiple times in a spec. The `*` wildcard is non-greedy, which means explicitly shifting a key within a spec excludes it from being matched the `*` wildcard.  Furthermore, if one of a sub-object's attributes is explicitly shifted within the spec, any unshifted attributes within that sub-object will not be kept. Therefore, you may see the `"*":"&"` idiom more than once within a spec, particularly when sub-objects are being manipulated and unmentioned sub-attributes need to remain as-is. However, otherwise untouched nested objects kept with a `"*":"&"` will remain intact.
 
-Explicitly shifting a key excludes it from the `*` wildcard.  Furthermore, if one of a sub-object's attributes is explicitly shifted within the spec, any unshifted attributes within that sub-object will not be kept. Therefore, you may see the `"*":"&"` idiom more than once within a spec, particularly when sub-objects are being manipulated and unmentioned sub-attributes need to remain as-is. However, otherwise untouched nested objects kept with a `"*":"&"` will remain intact.
-
-For example, take the following input JSON, with three sub-objects.
+For example, take the following spec, where the input has three sub-objects.
 
 ```json
 {
-  "untouched":{"a":true, "b":{"c":true}},
-  "root_shift":{"a":true, "b":{"c":true}},
-  "subobject_shift":{"a":true, "b":{"c":true}}
+  "operation": "shift",
+  "description": "",
+  "spec": {
+    "*":"&",
+    "root_shift":"SHIFTED_root_shift",
+    "subobject_shift":{"a":"subobject_shift.SHIFTED_a"}
+  },
+  "input": {
+    "untouched":{"a":true, "b":{"c":true}},
+    "root_shift":{"a":true, "b":{"c":true}},
+    "subobject_shift":{"a":true, "b":{"c":true}}
+  },
+  "output":{
+    "untouched":{"a":true, "b":{"c":true}},
+    "SHIFTED_root_shift":{"a":true, "b":{"c":true}},
+    "subobject_shift":{"SHIFTED_a":true}
+  }
 }
 ```
-In a spec which uses `"*":"&"` at the root level, such as:
 
-```json
-{
-  "*":"&",
-  "root_shift":"SHIFTED_root_shift",
-  "subobject_shift":{"a":"subobject_shift.SHIFTED_a"}
-}
-```
-
-You will see that:
+Which demonstrates the following:
 1. The `"untouched"` sub-object kept via the `"*":"&"` idiom keeps all sub-attributes.
 2. The explicitly shifted sub-object `"root_shift"` mapped to a new key keeps it's sub-attributes.
 3. The sub-object `"subobject_shift"` is now missing the attribute `"b":{"c":true}`, however, because it did have a different sub-attribute shifted, and `"b":{"c":true}` was unshifted. `"b":{"c":true}` was not kept in place by the `"*":"&"` idiom because `"subobject_shift"` is explicitly shifted, and explicitly shifting a key excludes it from the `*` wildcard.
-
-```json
-{
-  "untouched":{"a":true, "b":{"c":true}},
-  "SHIFTED_root_shift":{"a":true, "b":{"c":true}},
-  "subobject_shift":{"SHIFTED_a":true}
-}
-```
 
 To keep `"b":{"c":true}` within `"subobject_shift"`, we must use a second `"*":"&"` idiom, within `"subobject_shift"`:
 
 ```json
 {
-  "*":"&",
-  "root_shift":"SHIFTED_root_shift",
-  "subobject_shift":{"*":"subobject_shift.&", "a":"subobject_shift.SHIFTED_a"}
+  "operation": "shift",
+  "description": "",
+  "spec": {
+    "*":"&",
+    "root_shift":"SHIFTED_root_shift",
+    "subobject_shift":{"*":"subobject_shift.&", "a":"subobject_shift.SHIFTED_a"}
+  },
+  "input": {
+    "untouched":{"a":true, "b":{"c":true}},
+    "root_shift":{"a":true, "b":{"c":true}},
+    "subobject_shift":{"a":true, "b":{"c":true}}
+  },
+  "output":{
+    "untouched":{"a":true, "b":{"c":true}},
+    "SHIFTED_root_shift":{"a":true, "b":{"c":true}},
+    "subobject_shift":{"SHIFTED_a":true, "b":{"c":true}}
+  }
 }
 ```
 
-It is worth noting, however, that the `&` wildcard allows us to write this spec more concisely:
+Aside: It is worth noting, however, that this has many "magic strings" that will cause issues if the input schema were to change. The `&` wildcard allows us to write this spec more concisely:
 
 ```json
 {
-  "*":"&",
-  "root_shift":"SHIFTED_&",
-  "subobject_shift":{"*":"&1.&", "a":"&1.SHIFTED_&"}
+  "operation": "shift",
+  "description": "",
+  "spec": {
+    "*":"&",
+    "root_shift":"SHIFTED_&",
+    "subobject_shift":{"*":"&1.&", "a":"&1.SHIFTED_&"}
+  },
+  "input": {
+    "untouched":{"a":true, "b":{"c":true}},
+    "root_shift":{"a":true, "b":{"c":true}},
+    "subobject_shift":{"a":true, "b":{"c":true}}
+  },
+  "output":{
+    "untouched":{"a":true, "b":{"c":true}},
+    "SHIFTED_root_shift":{"a":true, "b":{"c":true}},
+    "subobject_shift":{"SHIFTED_a":true, "b":{"c":true}}
+  }
 }
-```  
+```
 
 ##### Wildcard Parameters
 
