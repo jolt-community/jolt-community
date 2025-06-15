@@ -50,11 +50,11 @@ In addition to these "traditional" terms, we also define several "applied" terms
 
 In JOLT, an operation is a certain (narrow) type of data transformation. By default, JOLT comes with several core operations:
 
-1. shift: move data from one path to another
-2. default: provide attributes if they do not already exist
-3. remove: remove attributes from an object, or elements from an array
-4. cardinality: ensure that values are either arrays or not arrays
-5. sort: order the keys of a JSON object deterministically.
+1. [shift](#the-shift-operation): move data from one path to another
+2. [default](#the-default-operation): provide attributes if they do not already exist
+3. [remove](#the-remove-operation): remove attributes from an object, or elements from an array
+4. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
+5. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
 
 Operations are extensible and other types of transforms may be provided in certain platforms, such as `chain`, which allows for executing other operations in sequence.  
 
