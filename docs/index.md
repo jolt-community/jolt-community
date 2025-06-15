@@ -1,53 +1,202 @@
-## The `shift` Operation
-`shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the
-output JSON, aka how the input JSON/data should be shifted around to make the output JSON/data.
+# JOLT Community Edition
 
-At a base level, a single `shift` "command" is a mapping from an input path to an output path,
- similar to the "mv" command in Unix, "mv /var/data/mysql/data /media/backup/mysql".
+## Introduction
 
-In `shift`, the input path is a JSON tree structure, and the output path is flattened "dot notation" path notation.
+JOLT Community Edition is a community-maintained edition of JOLT, a JSON to JSON transformation library written in Java. For the original version, please visit the [bazaarvoice/jolt](https://github.com/bazaarvoice/jolt) repository.
 
-The idea is that you can start with a copy of your JSON input data and modify it into a `shift` spec by
- supplying a "dot notation" output path for each piece of data that you care about.
+## Getting Started
 
-For example, given this simple input JSON:
+**TODO**
+
+## Learning JOLT
+
+### JOLT Demo
+
+An interactive JOLT (v0.1.1) demo site is available at https://jolt-demo.appspot.com/#inception. Version 0.1.1 is a very early version of JOLT, so not all features may be supported.
+
+### LLM Support
+
+Large Language Models struggle to reliably generate non-trivial (and sometimes even trivial) JOLT specs. LLMs such as OpenAI's ChatGPT-4o and Anthropic's Claude frequently generate invalid JOLT syntax, hallucinate nonexistent functions, and even imagine entire capabilities that do not exist in JOLT. They also tend to "forget" in conversation that certain suggestions are invalid, especially while using search capabilities. Like many niche domain-specific languages (DSLs), JOLT does not have a wide dataset of examples to train on. Furthermore, Official JOLT documentation has been fairly sparse. If LLM support is a must, you may have better luck with a traditional scripting language or a more popular JSON transformation DSL.
+
+## Operations
+
+### The `shift` Operation
+
+`shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the output JSON, aka how the input JSON/data should be shifted around to make the output JSON/data.
+
+At a base level, a single `shift` "command" is a mapping from an input path to an output path.
+
+The spec syntax tends to follow this format:
+
 ```json
 {
-  "rating": {
-      "quality": {
-          "value": 3,
-          "max": 5
-      }
-   }
+  "original_key": "new_key"
 }
 ```
-A simple `shift` spec could be constructed by copying that input, and modifying it to supply an output path for each piece of data:
+
+On the left-hand side (LHS), we list where the data currently is, and on the right-hand side (RHS), we list the key that the data should be moved to.
+
+There are several important facts to know about the `shift` operation:
+
++ More advanced syntax for `shift` often differs between the LHS and RHS.
++ The `shift` operation provides a wide number of wildcard symbols which make it flexible and powerful.
++ Any data not shifted in the `shift` spec will disappear. To keep unshifted data as-is, we must shift all "unmentioned" data to it's current location. This can be done easily with the use of wildcards.
+
+#### Shifting Nested JSON: LHS vs RHS
+
+In `shift`, a nested input path is specified via a JSON tree structure, and the output path is specified via a flattened "dot notation" path.
+
+For example, given the following JSON:
+
 ```json
 {
-  "rating": {
-    "quality": {
-        "value": "SecondaryRatings.quality.Value",     // copy 3 to "SecondaryRatings.quality.Value"
-        "max": "SecondaryRatings.quality.RatingRange"  // copy 5 to "SecondaryRatings.quality.RatingRange"
-    }
+  "keep": {
+    "old":"shift me to keep.new"
+  }
 }
 ```
-would produce the following output JSON:
+to make the following JSON
+
 ```json
 {
-  "SecondaryRatings": {
-    "quality": {
-      "Value": 3,
-      "RatingRange": 5
-    }
+  "keep": {
+    "new":"shift me to keep.new"
   }
 }
 ```
 
-As shown above, `shift` specs can be entirely made up of literal string values, but its real power comes from its wildcards.
-Using wildcards, you can leverage the fact that you know, not just the data and its immediate key, but the whole input
- path to that data.
+The CORRECT syntax for shifting `keep.old` to `keep.new` would be:
+
+```json title="Spec A"
+{
+  "keep": {
+    "old":"keep.new"
+  }
+}
+```
+
+This would be INCORRECT syntax for shifting `keep.old` to `keep.new`:
+
+```json title="Spec B"
+{
+  "keep.old": "keep.new"
+}
+```
+
+While counter-intuitive, the nested key syntax on the LHS disambiguates nested and dot-flattened input keys. For example, in the below input, the LHS key `"keep.old"` might match on multiple locations, causing confusion and ambiguity.
+
+```json
+{
+  "keep": {
+    "old":"shift me to keep.new"
+  },
+  "keep.old": "do not shift this value to keep.new"
+}
+```
+
+Currently, the "INCORRECT" spec would actually output the following:
+
+```json
+{
+  "keep": {
+    "new":"do not shift this value to keep.new"
+  }
+}
+```
+
+#### `shift` Wildcards
+
+As shown above, `shift` specs can be entirely made up of literal string values, but its real power comes from symbolic wildcards which provide elegant access to nested keys, indexes, existing values, and more. Wildcard symbols are used _within the string_ on the LHS or RHS. Some wildcard symbols can be used on both the LHS and RHS, and some are only valid on one side only.
+
+| Symbol | Wildcard Name | LHS | RHS |
+| - | - | - | - |
+| `*` | Name | Non-greedy wildcard matching of key names | Not Valid on RHS |
+| `\|` | ANY/OR | Used as delimiter in the LHS string to indicate matches on one of several arbitrary keys | Not Valid on RHS |
+| `&` | Path as Key | Use a key in a nearby location | Copies elements of the current path in the output path |
+| `$` | Key as Value | Use a key as the value in the output | Not Valid on RHS |
+| `#` | Synthetic (Value/Index) | Synthetic value: use whatever follows afterwards as a literal value | Synthetic Index: Reference the index value of a match on a different array |
+
+##### Essential Wildcard Expressions
+Some wildcard expressions are so important, they are worth mentioning here, before we go into depth about each symbol.
+
+###### The `"*":"&"` Idiom: Keep All Data
+
+Recall one of the most important facts about `shift`:
+
+> Any data not shifted in the `shift` spec will disappear. To keep unshifted data as-is, we must shift all "unmentioned" data to it's current location.
+
+This spec matches all key names in the root level of the json, and maps them to their current key. 
+
+```json
+{
+  "*":"&"
+}
+```
+
+This is effectively a no-op, but shifting the key back to itself prevents it from being removed.
+
+####### The `"*":"&"` Idiom Is Often Used Multiple Times In A Spec
+
+Explicitly shifting a key excludes it from the `*` wildcard.  Furthermore, if one of a sub-object's attributes is explicitly shifted within the spec, any unshifted attributes within that sub-object will not be kept. Therefore, you may see the `"*":"&"` idiom more than once within a spec, particularly when sub-objects are being manipulated and unmentioned sub-attributes need to remain as-is. However, otherwise untouched nested objects kept with a `"*":"&"` will remain intact.
+
+For example, take the following input JSON, with three sub-objects.
+
+```json
+{
+  "untouched":{"a":true, "b":{"c":true}},
+  "root_shift":{"a":true, "b":{"c":true}},
+  "subobject_shift":{"a":true, "b":{"c":true}}
+}
+```
+In a spec which uses `"*":"&"` at the root level, such as:
+
+```json
+{
+  "*":"&",
+  "root_shift":"SHIFTED_root_shift",
+  "subobject_shift":{"a":"subobject_shift.SHIFTED_a"}
+}
+```
+
+You will see that:
+1. The `"untouched"` sub-object kept via the `"*":"&"` idiom keeps all sub-attributes.
+2. The explicitly shifted sub-object `"root_shift"` mapped to a new key keeps it's sub-attributes.
+3. The sub-object `"subobject_shift"` is now missing the attribute `"b":{"c":true}`, however, because it did have a different sub-attribute shifted, and `"b":{"c":true}` was unshifted. `"b":{"c":true}` was not kept in place by the `"*":"&"` idiom because `"subobject_shift"` is explicitly shifted, and explicitly shifting a key excludes it from the `*` wildcard.
+
+```json
+{
+  "untouched":{"a":true, "b":{"c":true}},
+  "SHIFTED_root_shift":{"a":true, "b":{"c":true}},
+  "subobject_shift":{"SHIFTED_a":true}
+}
+```
+
+To keep `"b":{"c":true}` within `"subobject_shift"`, we must use a second `"*":"&"` idiom, within `"subobject_shift"`:
+
+```json
+{
+  "*":"&",
+  "root_shift":"SHIFTED_root_shift",
+  "subobject_shift":{"*":"subobject_shift.&", "a":"subobject_shift.SHIFTED_a"}
+}
+```
+
+It is worth noting, however, that the `&` wildcard allows us to write this spec more concisely:
+
+```json
+{
+  "*":"&",
+  "root_shift":"SHIFTED_&",
+  "subobject_shift":{"*":"&1.&", "a":"&1.SHIFTED_&"}
+}
+```  
+
+##### Wildcard Parameters
+
+Using wildcards, you can leverage the fact that you know, not just the data and its immediate key, but the whole input path to that data.
 
 Expanding the example above, say we have the following expanded Input JSON:
+
 ```json
 {
   "rating": {
@@ -66,7 +215,9 @@ Expanding the example above, say we have the following expanded Input JSON:
   }
 }
 ```
+
 The Spec would be:
+
 ```json
 {
   "rating": {
@@ -92,7 +243,9 @@ The Spec would be:
   }
 }
 ```
+
 Yielding the following output:
+
 ```json
 {
   "Rating": 3,
@@ -112,93 +265,102 @@ Yielding the following output:
 }
 ```
 
+#### `shift` Wildcards
 
-`shift` Wildcards
 
-'*' Wildcard
-  Valid only on the LHS ( input JSON keys ) side of a `shift` Spec
-  The '*' wildcard can be used by itself or to match part of a key.
 
-  '*' wildcard by itself:
-   As illustrated in the example above, the '*' wildcard by itself is useful for "templating" JSON maps,
-     where each key / value has the same "format".
-   ```json
-   // example input
-   {
-     "rating" : {
-       "quality": {
-         "value": 3,
-         "max": 5
-       },
-       "sharpness" : {
-         "value" : 7,
-         "max" : 10
-       }
-   }
-   ```
-   In this example, "rating.quality" and "rating.sharpness" both have the same structure/format, and thus we can use the '*'
-    to allow us to write more compact rules and avoid having to explicitly write very similar rules for both "quality" and "sharpness".
+##### `*` Wildcard
+Valid only on the LHS ( input JSON keys ) side of a `shift` Spec
+The `*` wildcard can be used by itself or to match part of a key.
 
-  '*' wildcard as part of a key:
-   This is useful for working with input JSON with keys that are "prefixed".
-   Ex: if you had an input document like
-   ```json
-   {
-      "tag-Pro": "Awesome",
-      "tag-Con": "Bogus"
-   }
-   ```
-   A 'tag-*' would match both keys, and make the whole key and "matched" part of the key available.
-   Ex, input key of "tag-Pro" with LHS spec "tag-*", would "tag-Pro" and "Pro" available to reference.
-   Note the '*' wildcard is as non-greedy as possible, hence you can use more than one '*' in a key.
-   For example, "tag-*-*" would match "tag-Foo-Bar", making "tag-Foo-Bar", "Foo", and "Bar" all available to reference.
+`*` wildcard by itself:
+As illustrated in the example above, the `*` wildcard by itself is useful for "templating" JSON maps,
+where each key / value has the same "format".
 
-'&' Wildcard
-  Valid on the LHS (left hand side - input JSON keys) and RHS (output data path)
-  Means, dereference against a "path" to get a value and use that value as if were a literal key.
-  The canonical form of the wildcard is "&(0,0)".
-  The first parameter is where in the input path to look for a value, and the second parameter is which part of the key to use (used withkey).
-  There are syntactic sugar versions of the wildcard, all of the following mean the same thing.
-    Sugar : '&' = '&0' = '&(0)' = '&(0,0)
-  The syntactic sugar versions are nice, as there are a set of data transforms that do not need to use the canonical form,
-   eg if your input data does not have any "prefixed" keys.
+```json
+// example input
+{
+  "rating" : {
+    "quality": {
+      "value": 3,
+      "max": 5
+    },
+    "sharpness" : {
+      "value" : 7,
+      "max" : 10
+    }
+}
+```
 
-  '&' Path lookup
-   As `shift` processes data and walks down the spec, it maintains a data structure describing the path it has walked.
-   The '&' wildcard can access data from that path in a 0 major, upward oriented way.
-   Example:
-   ```json
-   {
-       "foo" : {
-           "bar": {
-               "baz":  // &0 = baz, &1 = bar, &2 = foo
-           }
-       }
-   }
-   ```
+In this example, "rating.quality" and "rating.sharpness" both have the same structure/format, and thus we can use the `*`
+to allow us to write more compact rules and avoid having to explicitly write very similar rules for both "quality" and "sharpness".
 
-  '&' Subkey lookup
-   '&' subkey lookup allows us to referece the values captured by the '*' wildcard.
-  Example, "tag-*-*" would match "tag-Foo-Bar", making
-    &(0,0) = "tag-Foo-Bar"
-    &(0,1) = "Foo"
-    &(0,2) = "Bar"
+`*` wildcard as part of a key:
+This is useful for working with input JSON with keys that are "prefixed".
+Ex: if you had an input document like
 
-'$' Wildcard
+```json
+{
+  "tag-Pro": "Awesome",
+  "tag-Con": "Bogus"
+}
+```
+
+A 'tag-*' would match both keys, and make the whole key and "matched" part of the key available.
+Ex, input key of "tag-Pro" with LHS spec "tag-*", would "tag-Pro" and "Pro" available to reference.
+Note the `*` wildcard is as non-greedy as possible, hence you can use more than one `*` in a key.
+For example, "tag-*-*" would match "tag-Foo-Bar", making "tag-Foo-Bar", "Foo", and "Bar" all available to reference.
+
+##### `&` Wildcard
+Valid on the LHS (left hand side - input JSON keys) and RHS (output data path)
+
+Means, dereference against a "path" to get a value and use that value as if were a literal key.
+The canonical form of the wildcard is "&(0,0)".
+The first parameter is where in the input path to look for a value, and the second parameter is which part of the key to use (used with key).
+There are syntactic sugar versions of the wildcard, all of the following mean the same thing.
+  Sugar : `&` = `&0` = `&(0)` = `&(0,0)`
+The syntactic sugar versions are nice, as there are a set of data transforms that do not need to use the canonical form, eg if your input data does not have any "prefixed" keys.
+
+##### `&` Path lookup
+As `shift` processes data and walks down the spec, it maintains a data structure describing the path it has walked.
+The `&` wildcard can access data from that path in a 0 major, upward oriented way.
+
+Example:
+
+```json
+{
+    "foo" : {
+        "bar": {
+            "baz":  // &0 = baz, &1 = bar, &2 = foo
+        }
+    }
+}
+```
+
+##### `&` Subkey lookup
+`&` subkey lookup allows us to reference the values captured by the `*` wildcard.
+
+Example, "tag-*-*" would match "tag-Foo-Bar", making
+  &(0,0) = "tag-Foo-Bar"
+  &(0,1) = "Foo"
+  &(0,2) = "Bar"
+
+`$` Wildcard
   Valid only on the LHS of the spec.
   The existence of this wildcard is a reflection of the fact that the "data" of the input JSON, can be both in the "values"
    and the "keys" of the input JSON
 
   The base case operation of `shift` is to copy input JSON "values", thus we need a way to specify that we want to copy the input JSON "key" instead.
 
-  Thus '$' specifies that we want to use an input key, or input key derived value, as the data to be placed in the output JSON.
-  '$' has the same syntax as the '&' wildcard, and can be read as, dereference to get a value, and then use that value as the data to be output.
+  Thus `$` specifies that we want to use an input key, or input key derived value, as the data to be placed in the output JSON.
+  `$` has the same syntax as the `&` wildcard, and can be read as, dereference to get a value, and then use that value as the data to be output.
 
   There are two cases where this is useful
-    1) when a "key" in the input JSON needs to be a "id" value in the output JSON, see the ' "$": "SecondaryRatings.&1.Id" ' example above.
+    1) when a "key" in the input JSON needs to be a "id" value in the output JSON, see the `"$": "SecondaryRatings.&1.Id"` example above.
     2) you want to make a list of all the input keys.
 
   Example of "a list of the input keys":
+
   ```json
   // input
   {
@@ -230,34 +392,33 @@ Yielding the following output:
   }
   ```
 
-'#' Wildcard
-  Valid both on the LHS and RHS, but has different behavior / format on either side.
-  The way to think of it, is that it allows you to specify a "synthentic" value, aka a value not found in the input data.
+##### `#` Wildcard
+Valid both on the LHS and RHS, but has different behavior / format on either side.
+The way to think of it, is that it allows you to specify a "synthentic" value, aka a value not found in the input data.
 
-  On the RHS of the spec, # is only valid in the the context of an array, like "[#2]".
-  What "[#2]" means is, go up the three levels and ask that node how many matches it has had, and then use that as an index
-   in the arrays.
-  This means that, while `shift` is doing its parallel tree walk of the input data and the spec, it tracks how many matches it
-   has processed at each level of the spec tree.
+On the RHS of the spec, # is only valid in the the context of an array, like "[#2]".
+What "[#2]" means is, go up the three levels and ask that node how many matches it has had, and then use that as an index
+  in the arrays.
+This means that, while `shift` is doing its parallel tree walk of the input data and the spec, it tracks how many matches it
+  has processed at each level of the spec tree.
 
-  This useful if you want to take a JSON map and turn it into a JSON array, and you do not care about the order of the array.
+This useful if you want to take a JSON map and turn it into a JSON array, and you do not care about the order of the array.
 
-  On the LHS of the spec, # allows you to specify a hard coded String to be place as a value in the output.
+On the LHS of the spec, # allows you to specify a hard coded String to be place as a value in the output.
 
-  The initial use-case for this feature was to be able to process a Boolean input value, and if the value is
-   boolean true write out the string "enabled".  Note, this was possible before, but it required two `shift` steps.
+The initial use-case for this feature was to be able to process a Boolean input value, and if the value is
+  boolean true write out the string "enabled".  Note, this was possible before, but it required two `shift` steps.
 
-  ```json
-     Example
-     "hidden" : {
-         "true" : {                             // if the value of "hidden" is true
-             "#disabled" : "clients.clientId"   // write the word "disabled" to the path "clients.clientId"
-         }
-     }
-  ```
+```json
+    "hidden" : {
+        "true" : {                             // if the value of "hidden" is true
+            "#disabled" : "clients.clientId"   // write the word "disabled" to the path "clients.clientId"
+        }
+    }
+```
 
 
-'|' Wildcard
+##### `|` Wildcard
   Valid only on the LHS of the spec.
   This 'or' wildcard allows you to match multiple input keys.   Useful if you don't always know exactly what your input data will be.
   Example Spec :
@@ -269,14 +430,15 @@ Yielding the following output:
   This is really just syntactic sugar, as the implementation really just treats the key "rating|Rating" as two keys when processing.
 
 
-'@' Wildcard
+##### `@` Wildcard
   Valid on both sides of the spec.
 
-  The basic '@' on the LHS.
+  The basic `@` on the LHS.
 
   This wildcard is necessary if you want to put both the input value and the input key somewhere in the output JSON.
 
- Example '@' wildcard usage :
+ Example `@` wildcard usage :
+
  ```json
  // Say we have a spec that just operates on the value of the input key "rating"
  {
@@ -287,13 +449,14 @@ Yielding the following output:
  {
     "foo" : {
       "$" : "place.to.put.key",
-      "@" : "place.to.put.value"    // '@' explicitly tell `shift` to operate on the input JSON value of the parent key "foo"
+      "@" : "place.to.put.value"    // `@` explicitly tell `shift` to operate on the input JSON value of the parent key "foo"
     }
  }
  ```
- Thus the '@' wildcard is the mean "copy the value of the data at this level in the tree, to the output".
 
- Advanced '@' sign wildcard.
+ Thus the `@` wildcard is the mean "copy the value of the data at this level in the tree, to the output".
+
+ Advanced `@` sign wildcard.
  The format is lools like "@(3,title)", where
    "3" means go up the tree 3 levels and then lookup the key
    "title" and use the value at that key.
@@ -301,109 +464,110 @@ Yielding the following output:
  See the filter*.json and transpose*.json Unit Test fixtures.
 
 
-JSON Arrays :
+#### JSON Arrays:
 
- Reading from (input) and writing to (output) JSON Arrays is fully supported.
+Reading from (input) and writing to (output) JSON Arrays is fully supported.
 
 1) Handling Arrays in the input JSON
- `shift` treats JSON arrays in the input data as Maps with numeric keys.
- Example :
- ```json
-   // input
-   {
-      "Photos": [ "AAA.jpg", "BBB.jpg" ]
-   }
-
-   // spec
-   {
-      "Photos" :
-      {
-        "1" : "photo-&-url"      // Specify that we only want to operate on the 1-th index of the "Photos" input array
-      }
-   }
-
-  // output
+`shift` treats JSON arrays in the input data as Maps with numeric keys.
+Example :
+```json
+  // input
   {
-      "photo-1-url": "BBB.jpg"
+    "Photos": [ "AAA.jpg", "BBB.jpg" ]
   }
- ```
+
+  // spec
+  {
+    "Photos" :
+    {
+      "1" : "photo-&-url"      // Specify that we only want to operate on the 1-th index of the "Photos" input array
+    }
+  }
+
+// output
+{
+    "photo-1-url": "BBB.jpg"
+}
+```
 
 
 2) Handling Arrays in the output JSON
- Traditional array brackets, [ ], are used to specify array index in the output JSON.
- []'s are only valid on the RHS of the `shift` spec.
+Traditional array brackets, [ ], are used to specify array index in the output JSON.
+[]'s are only valid on the RHS of the `shift` spec.
 
- Example :
- ```json
-   // input
-   {
-     "photo-1-id": "327704",
-     "photo-1-url": "http://bob.com/0001/327704/photo.jpg"
-   }
+Example :
+```json
+  // input
+  {
+    "photo-1-id": "327704",
+    "photo-1-url": "http://bob.com/0001/327704/photo.jpg"
+  }
 
-   // spec
-   {
-     "photo-1-id": "Photos[1].Id",   // Declare the "Photos" in the output to be an array,
-     "photo-1-url": "Photos[1].Url"  // that the 1-th array location should have data
+  // spec
+  {
+    "photo-1-id": "Photos[1].Id",   // Declare the "Photos" in the output to be an array,
+    "photo-1-url": "Photos[1].Url"  // that the 1-th array location should have data
 
-     // same as above but more powerful
-     // note '&' logic can be used inside the '[ ]' notation
-     "photo-*-url": "Photos[&(0,1)].Url"
-   }
+    // same as above but more powerful
+    // note `&` logic can be used inside the '[ ]' notation
+    "photo-*-url": "Photos[&(0,1)].Url"
+  }
 
-   // output
-   {
-     "Photos": [
-       null ,                // note Photos[0] is null, because no data was pushed to it
-       {
-         "Id":"327704",
-         "Url":"http://bob.com/0001/327704/photo.jpg"
-       }
-     ]
-   }
- ```
+  // output
+  {
+    "Photos": [
+      null ,                // note Photos[0] is null, because no data was pushed to it
+      {
+        "Id":"327704",
+        "Url":"http://bob.com/0001/327704/photo.jpg"
+      }
+    ]
+  }
+```
 
 
 3) JSON arrays in the spec file
 JSON Arrays in `shift` spec are used to to specify that piece of input data should be copied to two places in the output JSON.
 Example :
+
 ```json
-  // input
-  { "foo" : 3 }
+// input
+{ "foo" : 3 }
 
-  // spec
-  { "foo" : [ "bar", "baz" ] }    // push the 3, to both the of the output paths
+// spec
+{ "foo" : [ "bar", "baz" ] }    // push the 3, to both the of the output paths
 
-  // output
-  {
-    "bar" : 3,
-    "baz" : 3
-  }
+// output
+{
+  "bar" : 3,
+  "baz" : 3
+}
 ```
 
 
 4) Implicit Array creation in the output JSON
- If a spec file is configured to output multiple pieces of data to the same output location, the
- output location will be turned into a JSON array.
- Example :
- ```json
-   // input
-   {
-       "foo" : "bar",
-       "tuna" : "marlin"
-   }
+If a spec file is configured to output multiple pieces of data to the same output location, the
+output location will be turned into a JSON array.
+Example :
+```json
+  // input
+  {
+      "foo" : "bar",
+      "tuna" : "marlin"
+  }
 
-   // spec
-   {
-       "foo"  : "baz",
-       "tuna" : "baz"
-   }
+  // spec
+  {
+      "foo"  : "baz",
+      "tuna" : "baz"
+  }
 
-   // output
-   {
-       "baz" : [ "bar", "marlin" ]     // Note the order of this Array should not be relied upon
-   }
- ```
+  // output
+  {
+      "baz" : [ "bar", "marlin" ]     // Note the order of this Array should not be relied upon
+  }
+```
 
 
 Algorithm High Level
@@ -413,16 +577,16 @@ Algorithm High Level
 Algorithm Low Level
 - Simultaneously walk of the spec and input JSon, and maintain a walked "input" path data structure.
 - Determine a match between input JSON key and LHS spec, by matching LHS spec keys in the following order :
--- Note that '|' keys are are split into their subkeys, eg "literal", '*', or '&' LHS keys
+-- Note that `|` keys are are split into their subkeys, eg "literal", `*`, or `&` LHS keys
 
 1) Try to match the input key with "literal" spec key values
-2) If no literal match is found, try to match against LHS '&' computed values.
-2.1) For deterministic behavior, if there is more than one '&' LHS key, they are applied/matched in alphabetical order,
-  after the '&' syntactic sugar is replaced with its canonical form.
-3) If no match is found, try to match against LHS keys with '*' wildcard values.
-3.1) For deterministic behavior, '*' wildcard keys are sorted and applied/matched in alphabetical order.
+2) If no literal match is found, try to match against LHS `&` computed values.
+2.1) For deterministic behavior, if there is more than one `&` LHS key, they are applied/matched in alphabetical order,
+  after the `&` syntactic sugar is replaced with its canonical form.
+3) If no match is found, try to match against LHS keys with `*` wildcard values.
+3.1) For deterministic behavior, `*` wildcard keys are sorted and applied/matched in alphabetical order.
 
-Note, processing of the '@' and '$' LHS keys always occur if their parent's match, and do not block any other matching.
+Note, processing of the `@` and `$` LHS keys always occur if their parent's match, and do not block any other matching.
 
 
 Implementation
@@ -430,7 +594,7 @@ Implementation
 Instances of this class execute `shift` transformations given a transform spec of Jackson-style maps of maps
 and a Jackson-style map-of-maps input.
 
-## The `default` Operation
+### The `default` Operation
  `default` is a kind of JOLT transform that applies default values in a non-destructive way.
 
  For comparison :
@@ -623,11 +787,11 @@ and a Jackson-style map-of-maps input.
 
   * Removr Wildcards
 
- '*' Wildcard
+ `*` Wildcard
    Valid only on the LHS ( input JSON keys ) side of a Removr Spec
-   The '*' wildcard can be used by itself or to match part of a key.
+   The `*` wildcard can be used by itself or to match part of a key.
 
-   '*' wildcard by itself :
+   `*` wildcard by itself :
     To remove "all" keys under an input,  use the * by itself on the LHS.
     ```json
     // example input
@@ -664,11 +828,11 @@ and a Jackson-style map-of-maps input.
       },
     }
     ```
-    In this example, "Set1" and "Set2" under rating both have the same structure, and thus we can use the '*'
+    In this example, "Set1" and "Set2" under rating both have the same structure, and thus we can use the `*`
      to allow use to write more compact rules to remove "b" from all children under ratings. This is especially useful when we don't know
      how many children will  be under ratings, but we would like to nuke certain part of it across.
 
-   '*' wildcard as part of a key :
+   `*` wildcard as part of a key :
     This is useful for working with input JSON with keys that are "prefixed".
     Ex : if you had an input document like
     ```json
@@ -728,7 +892,7 @@ and a Jackson-style map-of-maps input.
    index "1" to become the new "0".  Because of this, Remover matches all the literal/explicit
    indices first, sorts them from Biggest to Smallest, then does the removing.
 
-## CARDINALITY
+### CARDINALITY
 
  The CardinalityTransform changes the cardinality of input JSON data elements.
  The impetus for the CardinalityTransform, was to deal with data sources that are inconsistent with
@@ -806,9 +970,9 @@ and a Jackson-style map-of-maps input.
  As shown above, Cardinality specs can be entirely made up of literal string values, but wildcards similar
  to some of those used by `shift` can be used.
 
- '*' Wildcard
+ `*` Wildcard
    Valid only on the LHS ( input JSON keys ) side of a Cardinality Spec
-   Unlike `shift`, the '*' wildcard can only be used by itself. It can be used
+   Unlike `shift`, the `*` wildcard can only be used by itself. It can be used
    achieve a for/each manner of processing input.
 
  Let's say we have the following input :
@@ -852,7 +1016,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
 
- '@' Wildcard
+ `@` Wildcard
    Valid only on the LHS of the spec.
    This wildcard should be used when content nested within modified content needs to be modified as well.
 
@@ -886,21 +1050,21 @@ and a Jackson-style map-of-maps input.
 
  Cardinality Logic Table
 
- ```json
- INPUT   CARDINALITY  OUTPUT   NOTE
- String  ONE          String   no-op
- Number  ONE          Number   no-op
- Boolean ONE          Map      no-op
- Map     ONE          Map      no-op
- List    ONE          [0]      use whatever the first item in the list was
- String  MANY         List     make the input String, be [0] in a new list
- Number  MANY         List     make the input Number, be [0] in a new list
- Boolean MANY         List     make the input Boolean, be [0] in a new list
- Map     MANY         List     make the input Map, be [0] in a new list
- List    MANY         List     no-op
- ```
+|INPUT    | CARDINALITY | OUTPUT | NOTE                                                |
+| ------- | ----------- | ------ | --------------------------------------------------- |
+| String  | ONE         | String |  no-op                                              |
+| Number  | ONE         | Number |  no-op                                              |
+| Boolean | ONE         | Map    |  no-op                                              |
+| Map     | ONE         | Map    |  no-op                                              |
+| List    | ONE         | [0]    |  use whatever the first item in the list was        |
+| String  | MANY        | List   |  make the input String, be [0] in a new list        |
+| Number  | MANY        | List   |  make the input Number, be [0] in a new list        |
+| Boolean | MANY        | List   |  make the input Boolean, be [0] in a new list       |
+| Map     | MANY        | List   |  make the input Map, be [0] in a new list           |
+| List    | MANY        | List   |  no-op                                              |
 
-## SORT
+
+### SORT
 
  Recursively sorts all maps within a JSON object into new sorted LinkedHashMaps so that serialized
  representations are deterministic.  Useful for debugging and making test fixtures.
