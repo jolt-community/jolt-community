@@ -125,7 +125,7 @@ In `shift`, a nested input path is specified via a JSON tree structure, and the 
 ```json
 {
   "operation": "shift",
-  "description":"CORRECT SYNTAX for shifting from nested objects: LHS nested, RHS dot notation"
+  "description":"CORRECT SYNTAX for shifting from nested objects: LHS nested, RHS dot notation",
   "spec": {
     "keep": {
       "old":"keep.new"
@@ -149,7 +149,7 @@ While counter-intuitive, the nested key syntax on the LHS disambiguates nested a
 ```json
 {
   "operation": "shift",
-  "description":"INCORRECT SYNTAX for shifting from a nested object"
+  "description":"INCORRECT SYNTAX for shifting from a nested object",
   "spec": {
     "keep.old": "keep.new"
   },
@@ -171,6 +171,7 @@ Aside: Forgetting to include the dot notation on the RHS is a common mistake, an
 ```json
 {
   "operation": "shift",
+  "description":"common mistake while shifting a key within a nested object is forgetting to provide the full path on the RHS.",
   "spec": {
     "a": {
       "b":"c"
@@ -181,7 +182,12 @@ Aside: Forgetting to include the dot notation on the RHS is a common mistake, an
       "b":"keep me nested in a"
     }
   },
-  "output": {
+  "intended_output": {
+    "a": {
+      "c":"keep me nested in a"
+    }
+  },
+  "actual_output": {
     "c":"keep me nested in a"
   }
 }
@@ -252,14 +258,14 @@ As shown above, `shift` specs can be entirely made up of literal string values, 
 | `*` | Name | Non-greedy wildcard matching of key names | Not Valid on RHS |
 | `|` | ANY/OR | Used as delimiter in the LHS string to indicate matches on one of several arbitrary keys | Not Valid on RHS |
 | `&` | Path as Key | Use a key in a nearby location | Copies elements of the current path in the output path |
-| `$` | Key as Value | Use a key as the value in the output | Not Valid on RHS |
+| `$` | Key as Value | Use a key as the value in the output | Not Valid on RHS. `"my_subobject":""` will make a sub-object the new root. |
 | `@` | Value as Key | Use a key as the value in the output | Not Valid on RHS |
 | `#` | Synthetic (Value/Index) | Synthetic value: use whatever follows afterwards as a literal value | Synthetic Index: Reference the index value of a match on a different array |
 
 ##### Essential Wildcard Expressions
 Some wildcard expressions are so important, they are worth mentioning here, before we go into depth about each symbol.
 
-###### The `"*":"&"` Idiom: Keep All Data
+###### Keep Unshifted Data With The `"*":"&"` Idiom 
 
 Recall one of the most important facts about `shift`:
 
@@ -366,85 +372,8 @@ Aside: It is worth noting, however, that this has many "magic strings" that will
 }
 ```
 
-##### Wildcard Parameters
-
-Using wildcards, you can leverage the fact that you know, not just the data and its immediate key, but the whole input path to that data.
-
-Expanding the example above, say we have the following expanded Input JSON:
-
-```json
-{
-  "rating": {
-      "primary": {
-          "value": 3,   // want this value to goto output path "Rating"
-          "max": 5      // want this value to goto output path "RatingRange"
-      },
-      "quality": {      // want output path "SecondaryRatings.quality.Id" = "quality", aka we want the value of the key to be used
-          "value": 3,   // want this value to goto output path "SecondaryRatings.quality.Value"
-          "max": 5      // want this value to goto output path "SecondaryRatings.quality.Range"
-      },
-      "sharpness": {   // want output path "SecondaryRatings.sharpness.Id" = "sharpness"
-          "value": 7,  // want this value to goto output path "SecondaryRatings.sharpness.Value"
-          "max": 10    // want this value to goto output path "SecondaryRatings.sharpness.Range"
-      }
-  }
-}
-```
-
-The Spec would be:
-
-```json
-{
-  "rating": {
-    "primary": {
-        "value": "Rating",                       // output -> "Rating" : 3
-        "max": "RatingRange"                     // output -> "RatingRange" : 5
-    },
-    "*": {                                       // match input data like "rating.[anything-other-than-primary]"
-        "value": "SecondaryRatings.&1.Value",    // the data at "rating.*.value" goes to "SecondaryRatings.*.Value"
-                                                 // the "&1" means use the value one level up the tree ( "quality" or "sharpness" )
-                                                 // output -> "SecondaryRatings.quality.Value" : 3 AND
-                                                 //           "SecondaryRatings.sharpness.Value" : 7
-
-        "max": "SecondaryRatings.&1.Range",      // the data at "rating.*.max" goes to "SecondaryRatings.*.Range"
-                                                 // the "&1" means use the value one level up the tree ( "quality" or "sharpness" )
-                                                 // output -> "SecondaryRatings.quality.Range" : 5 AND
-                                                 //           "SecondaryRatings.sharpness.Range" : 10
-
-        "$": "SecondaryRatings.&1.Id"            // Special operator $ means, use the value of the input key itself as the data
-                                                 // output -> "SecondaryRatings.quality.Id" : "quality"
-                                                 // output -> "SecondaryRatings.sharpness.Id" : "sharpness"
-    }
-  }
-}
-```
-
-Yielding the following output:
-
-```json
-{
-  "Rating": 3,
-  "RatingRange": 5,
-  "SecondaryRatings": {
-     "quality": {
-        "Range": 5,
-        "Value": 3,
-        "Id": "quality"     // the special $ operator allows us to use input key the text value of "quality", as the "Id" of the output
-     },
-     "sharpness": {
-        "Range": 10,
-        "Value": 7,
-        "Id": "sharpness"   // the special $ operator allows us to use input key the text value of "sharpness", as the "Id" of the output
-     }
-  }
-}
-```
-
-#### `shift` Wildcards
-
-
-
 ##### `*` Wildcard
+
 Valid only on the LHS ( input JSON keys ) side of a `shift` Spec
 The `*` wildcard can be used by itself or to match part of a key.
 
