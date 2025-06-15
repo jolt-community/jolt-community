@@ -78,6 +78,7 @@ There are several important facts to know about the `shift` operation:
 + More advanced syntax for `shift` often differs between the LHS and RHS.
 + The `shift` operation provides a wide number of wildcard symbols which make it flexible and powerful.
 + Any data not shifted in the `shift` spec will disappear. To keep unshifted data as-is, we must shift all "unmentioned" data to it's current location. This can be done easily with the use of wildcards.
++ If a key on the LHS does not exist within a JSON input, that key is ignored, and no error is raised.
 
 #### Shifting Nested JSON: LHS vs RHS
 
