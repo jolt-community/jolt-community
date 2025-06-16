@@ -31,12 +31,16 @@ jobs:
       - name: Build with Maven
         env:
           MAVEN_OPTS: "--add-opens java.base/java.lang=ALL-UNNAMED"
-        run: mvn -B package --file pom.xml
+        run: |
+          env
+          mvn -B package --file pom.xml
 
       - name: Run tests with Maven
         env:
           MAVEN_OPTS: "--add-opens java.base/java.lang=ALL-UNNAMED"      
-        run: mvn -B test --file pom.xml
+        run: |
+          env
+          mvn -B test --file pom.xml
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
