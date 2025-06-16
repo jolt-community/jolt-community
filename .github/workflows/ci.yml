@@ -19,6 +19,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      MAVEN_OPTS: "--add-opens java.base/java.lang=ALL-UNNAMED"
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -29,17 +32,13 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        env:
-          MAVEN_OPTS: "--add-opens java.base/java.lang=ALL-UNNAMED"
         run: |
-          env
+          echo "MAVEN_OPTS=$MAVEN_OPTS"
           mvn -B package --file pom.xml
 
       - name: Run tests with Maven
-        env:
-          MAVEN_OPTS: "--add-opens java.base/java.lang=ALL-UNNAMED"      
         run: |
-          env
+          echo "MAVEN_OPTS=$MAVEN_OPTS"
           mvn -B test --file pom.xml
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
