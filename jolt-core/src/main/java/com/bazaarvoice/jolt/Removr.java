@@ -18,7 +18,7 @@ package com.bazaarvoice.jolt;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.removr.spec.RemovrCompositeSpec;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 

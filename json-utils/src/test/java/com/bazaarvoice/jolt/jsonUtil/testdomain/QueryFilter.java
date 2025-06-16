@@ -19,11 +19,11 @@ import java.util.Map;
 
 public interface QueryFilter {
 
-    Map<QueryParam, QueryFilter> getFilters();
+    Map<QueryParam, QueryFilter> filters();
 
-    QueryParam getQueryParam();
+    QueryParam queryParam();
 
-    String getValue();
+    String value();
 
     boolean isLogical();
 

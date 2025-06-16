@@ -16,12 +16,7 @@
 package com.bazaarvoice.jolt.shiftr;
 
 import com.bazaarvoice.jolt.common.PathElementBuilder;
-import com.bazaarvoice.jolt.common.pathelement.AmpPathElement;
-import com.bazaarvoice.jolt.common.pathelement.ArrayPathElement;
-import com.bazaarvoice.jolt.common.pathelement.EvaluatablePathElement;
-import com.bazaarvoice.jolt.common.pathelement.LiteralPathElement;
-import com.bazaarvoice.jolt.common.pathelement.MatchablePathElement;
-import com.bazaarvoice.jolt.common.pathelement.PathElement;
+import com.bazaarvoice.jolt.common.pathelement.*;
 import com.bazaarvoice.jolt.common.reference.AmpReference;
 import com.bazaarvoice.jolt.common.tree.MatchedElement;
 import com.bazaarvoice.jolt.common.tree.WalkedPath;
@@ -77,8 +72,8 @@ public class ShiftrWritrTest {
             Assert.assertEquals( 3, refElement.getTokens().size() );
 
             {
-                Assert.assertTrue( refElement.getTokens().get(0) instanceof String );
-                Assert.assertEquals( "photos-", (String) refElement.getTokens().get(0) );
+                Assert.assertTrue( refElement.getTokens().getFirst() instanceof String );
+                Assert.assertEquals( "photos-", (String) refElement.getTokens().getFirst() );
             }
             {
                 Assert.assertTrue( refElement.getTokens().get(1) instanceof AmpReference );

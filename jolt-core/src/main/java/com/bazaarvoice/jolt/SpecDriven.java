@@ -23,10 +23,10 @@ package com.bazaarvoice.jolt;
  * Chainr leverages this to instantiate these objects correctly.
  *
  * Additionally, all {@link SpecDriven} implementations should mark their constructor
- * with the {@link javax.inject.Inject} annotation, so that they can be loaded via
+ * with the {@link jakarta.inject.Inject} annotation, so that they can be loaded via
  * Dependency Injection systems.
  *
- * All of the "stock" Jolt {@link SpecDriven} transforms are marked with {@link javax.inject.Inject}.
+ * All of the "stock" Jolt {@link SpecDriven} transforms are marked with {@link jakarta.inject.Inject}.
  *
  * Ideally, calls to the transform method are expected to be stateless and multi-thread safe.
  */

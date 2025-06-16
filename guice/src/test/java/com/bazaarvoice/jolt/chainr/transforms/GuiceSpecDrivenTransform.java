@@ -18,7 +18,7 @@ package com.bazaarvoice.jolt.chainr.transforms;
 import com.bazaarvoice.jolt.SpecDriven;
 import com.bazaarvoice.jolt.Transform;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 
 public class GuiceSpecDrivenTransform implements SpecDriven, Transform {
@@ -40,7 +40,7 @@ public class GuiceSpecDrivenTransform implements SpecDriven, Transform {
     public GuiceSpecDrivenTransform( GuiceConfig guiceConfig, Object spec ) {
         this.guiceConfig = guiceConfig;
 
-        specKeyValue = (String) ((Map) spec).get( SPEC_DRIVEN_KEY );
+        specKeyValue = (String) ((Map<?, ?>) spec).get( SPEC_DRIVEN_KEY );
     }
 
     @Override

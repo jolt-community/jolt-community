@@ -16,11 +16,7 @@
 
 package com.bazaarvoice.jolt.common.spec;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Factory class that provides a factory method create(...) that takes itself

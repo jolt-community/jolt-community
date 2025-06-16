@@ -32,7 +32,7 @@ public class Lists {
         @Override
         protected Optional applyList( final List argList ) {
             return argList.size() > 0 ?
-                    Optional.of( argList.get( 0 ) ) :
+                    Optional.of( argList.getFirst() ) :
                     Optional.empty();
         }
     }
@@ -45,7 +45,7 @@ public class Lists {
         @Override
         protected Optional applyList( final List argList ) {
             return argList.size() > 0 ?
-                    Optional.of( argList.get( argList.size() - 1 ) ) :
+                    Optional.of( argList.getLast() ) :
                     Optional.empty();
         }
     }

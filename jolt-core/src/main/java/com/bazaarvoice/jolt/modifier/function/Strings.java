@@ -27,11 +27,9 @@ public class Strings {
         @Override
         protected Optional<String> applySingle( final Object arg ) {
 
-            if ( ! (arg instanceof String) ) {
+            if ( ! (arg instanceof String argString) ) {
                 return Optional.empty();
             }
-
-            String argString = (String) arg;
 
             return Optional.of( argString.toLowerCase() );
         }
@@ -41,11 +39,9 @@ public class Strings {
         @Override
         protected Optional<String> applySingle( final Object arg ) {
 
-            if ( ! (arg instanceof String) ) {
+            if ( ! (arg instanceof String argString) ) {
                 return Optional.empty();
             }
-
-            String argString = (String) arg;
 
             return Optional.of( argString.toUpperCase() );
         }
@@ -55,11 +51,9 @@ public class Strings {
         @Override
         protected Optional<String> applySingle( final Object arg ) {
 
-            if ( ! (arg instanceof String) ) {
+            if ( ! (arg instanceof String argString) ) {
                 return Optional.empty();
             }
-
-            String argString = (String) arg;
 
             return Optional.of( argString.trim() );
         }
@@ -93,14 +87,13 @@ public class Strings {
                     break;
                 }
 
-                if ( ! ( argList.get(0) instanceof String &&
+                if ( ! ( argList.get(0) instanceof String tuna &&
                          argList.get(1) instanceof Integer &&
                          argList.get(2) instanceof Integer ) ) {
                     break;
                 }
 
                 // If we get here, then all these casts should work.
-                String tuna = (String) argList.get(0);
                 int start = (Integer) argList.get(1);
                 int end = (Integer) argList.get(2);
 
@@ -146,10 +139,9 @@ public class Strings {
         if (source == null || separator == null) {
           return Optional.empty();
         }
-        else if ( source instanceof String ) {
+        else if (source instanceof String inputString) {
           // only try to split input strings
-          String inputString = (String) source;
-          return Optional.of( Arrays.asList(inputString.split(separator)) );
+            return Optional.of( Arrays.asList(inputString.split(separator)) );
         }
         else {
           return Optional.empty();
@@ -185,19 +177,15 @@ public class Strings {
                 break;
             }
 
-            if ( ! ( args.get(0) instanceof Integer &&
-                     args.get(1) instanceof String ) ) {
+            if ( ! ( args.get(0) instanceof Integer width &&
+                    args.get(1) instanceof String filler) ) {
                 break;
             }
-
-            Integer width = (Integer) args.get(0);
 
             // if the width param is stupid; bail
             if ( width <= 0 || width > 500 ) {
                 break;
             }
-
-            String filler = (String) args.get(1);
 
             // filler can only be a single char
             //  otherwise the math becomes hard

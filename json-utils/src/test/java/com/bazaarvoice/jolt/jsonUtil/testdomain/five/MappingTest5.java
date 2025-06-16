@@ -91,7 +91,8 @@ public class MappingTest5 {
         String testFixture = "/jsonUtils/testdomain/five/queryFilter-realAndLogical5.json";
 
         // TEST JsonUtil and our deserialization logic
-        QueryFilter5 queryFilter = jsonUtil.classpathToType( testFixture, new TypeReference<QueryFilter5>() {} );
+        QueryFilter5 queryFilter = jsonUtil.classpathToType( testFixture, new TypeReference<>() {
+        } );
 
         // Make sure the hydrated QFilter looks right
         Assert.assertTrue( queryFilter instanceof LogicalFilter5);
@@ -106,7 +107,7 @@ public class MappingTest5 {
         StringRealFilter5 stringRealProductIdFilter = (StringRealFilter5) productIdFilter;
         Assert.assertEquals( Field.PRODUCTID, stringRealProductIdFilter.getField() );
         Assert.assertEquals( Operator.EQ, stringRealProductIdFilter.getOperator() );
-        Assert.assertEquals( "Acme-1234", stringRealProductIdFilter.getValues().get(0) );
+        Assert.assertEquals( "Acme-1234", stringRealProductIdFilter.getValues().getFirst() );
 
         // Make sure the nested OR looks right
         QueryFilter5 orFilter = andFilter.getValues().get(2);

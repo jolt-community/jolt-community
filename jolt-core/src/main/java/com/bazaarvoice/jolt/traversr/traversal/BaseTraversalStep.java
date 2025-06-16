@@ -47,16 +47,11 @@ public abstract class BaseTraversalStep<StepType,DataType> implements TraversalS
 
             if ( child == null ) {
                 // End of the Traversal so do the set or get
-                switch (op) {
-                    case GET :
-                        return this.get( tree, key );
-                    case SET :
-                        return (Optional<DataType>) traversr.handleFinalSet( this, tree, key, data );
-                    case REMOVE:
-                        return this.remove( tree, key );
-                    default :
-                        throw new IllegalStateException( "Invalid op:" + op.toString() );
-                }
+                return switch (op) {
+                    case GET -> this.get(tree, key);
+                    case SET -> (Optional<DataType>) traversr.handleFinalSet(this, tree, key, data);
+                    case REMOVE -> this.remove(tree, key);
+                };
             }
             else {
 

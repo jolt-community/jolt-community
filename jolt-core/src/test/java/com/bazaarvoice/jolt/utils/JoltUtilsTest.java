@@ -31,9 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.bazaarvoice.jolt.utils.JoltUtils.isBlankJson;
-import static com.bazaarvoice.jolt.utils.JoltUtils.isVacantJson;
-import static com.bazaarvoice.jolt.utils.JoltUtils.navigate;
+import static com.bazaarvoice.jolt.utils.JoltUtils.*;
 
 public class JoltUtilsTest {
 
@@ -136,7 +134,7 @@ public class JoltUtilsTest {
             testCases.add(new Object[] {
                     testCase.get("description"),
                     testCase.get("source"),
-                    ((List)testCase.get("path")).toArray(),
+                    ((List<?>)testCase.get("path")).toArray(),
                     testCase.get("value"),
                     testCase.get("output")
             });

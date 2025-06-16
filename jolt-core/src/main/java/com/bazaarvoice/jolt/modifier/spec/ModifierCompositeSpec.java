@@ -19,13 +19,7 @@ package com.bazaarvoice.jolt.modifier.spec;
 import com.bazaarvoice.jolt.common.ComputedKeysComparator;
 import com.bazaarvoice.jolt.common.ExecutionStrategy;
 import com.bazaarvoice.jolt.common.Optional;
-import com.bazaarvoice.jolt.common.pathelement.ArrayPathElement;
-import com.bazaarvoice.jolt.common.pathelement.LiteralPathElement;
-import com.bazaarvoice.jolt.common.pathelement.PathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarAllPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarDoublePathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarRegexPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarSinglePathElement;
+import com.bazaarvoice.jolt.common.pathelement.*;
 import com.bazaarvoice.jolt.common.spec.BaseSpec;
 import com.bazaarvoice.jolt.common.spec.OrderedCompositeSpec;
 import com.bazaarvoice.jolt.common.tree.ArrayMatchedElement;
@@ -36,12 +30,7 @@ import com.bazaarvoice.jolt.modifier.DataType;
 import com.bazaarvoice.jolt.modifier.OpMode;
 import com.bazaarvoice.jolt.modifier.TemplatrSpecBuilder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Composite spec is non-leaf level spec that contains one or many child specs and processes
@@ -92,10 +81,9 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
                 confirmedMapAtIndex = i;
                 literals.put(childPathElement.getRawKey(), childSpec );
             }
-            else if(childPathElement instanceof ArrayPathElement) {
+            else if(childPathElement instanceof ArrayPathElement childArrayPathElement) {
                 confirmedArrayAtIndex = i;
 
-                ArrayPathElement childArrayPathElement = (ArrayPathElement) childPathElement;
                 if(!childArrayPathElement.isExplicitArrayIndex()) {
                     throw new SpecException( opMode.name() + " RHS only supports explicit Array path element" );
                 }
@@ -126,7 +114,7 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
         specDataType = DataType.determineDataType( confirmedArrayAtIndex, confirmedMapAtIndex, maxExplicitIndexFromSpec );
 
         // Only the computed children need to be sorted
-        Collections.sort( computed, computedKeysComparator );
+        computed.sort(computedKeysComparator);
 
         computed.trimToSize();
 
@@ -166,7 +154,7 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
             }
             else {
                 // specDataType is RUNTIME, so spec had no array index explicitly specified, no need to expand
-                thisLevel = new ArrayMatchedElement( thisLevel.getRawKey(), ((List) input).size() );
+                thisLevel = new ArrayMatchedElement( thisLevel.getRawKey(), ((List<?>) input).size() );
             }
         }
 

@@ -18,7 +18,7 @@ package com.bazaarvoice.jolt.chainr.transforms;
 import com.bazaarvoice.jolt.SpecDriven;
 import com.bazaarvoice.jolt.Transform;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class GoodTestTransform implements SpecDriven, Transform {
 

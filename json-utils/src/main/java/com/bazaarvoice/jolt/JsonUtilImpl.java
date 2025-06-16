@@ -24,11 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +44,11 @@ public class JsonUtilImpl implements JsonUtil {
     public static final String DEFAULT_ENCODING_UTF_8 = "utf-8";
 
     private static final TypeReference<Map<String, Object>> mapTypeReference =
-            new TypeReference<Map<String, Object>>() {};
+            new TypeReference<>() {
+            };
     private static final TypeReference<List<Object>> listTypeReference =
-            new TypeReference<List<Object>>() {};
+            new TypeReference<>() {
+            };
 
     public static void configureStockJoltObjectMapper( ObjectMapper objectMapper ) {
 

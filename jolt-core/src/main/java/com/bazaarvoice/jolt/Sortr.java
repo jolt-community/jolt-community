@@ -15,12 +15,7 @@
  */
 package com.bazaarvoice.jolt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Recursively sorts all maps within a JSON object into new sorted LinkedHashMaps so that serialized
@@ -55,7 +50,7 @@ public class Sortr implements Transform {
 
     private static Map<String, Object> sortMap( Map<String, Object> map ) {
         List<String> keys = new ArrayList<>( map.keySet() );
-        Collections.sort( keys, jsonKeyComparator );
+        keys.sort(jsonKeyComparator);
 
         LinkedHashMap<String,Object> orderedMap = new LinkedHashMap<>( map.size() );
         for ( String key : keys ) {

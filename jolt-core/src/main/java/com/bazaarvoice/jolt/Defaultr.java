@@ -19,7 +19,7 @@ import com.bazaarvoice.jolt.defaultr.Key;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.exception.TransformException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -172,9 +172,9 @@ import java.util.Map;
 public class Defaultr implements SpecDriven, Transform {
 
     public interface WildCards {
-        public static final String STAR = "*";
-        public static final String OR = "|";
-        public static final String ARRAY = "[]";
+        String STAR = "*";
+        String OR = "|";
+        String ARRAY = "[]";
     }
 
     private final Key mapRoot;
@@ -228,7 +228,7 @@ public class Defaultr implements SpecDriven, Transform {
 
         if ( input == null ) {
             // if null, assume HashMap
-            input = new HashMap();
+            input = new HashMap<>();
         }
 
         // TODO : Make copy of the defaultee or like shiftr create a new output object

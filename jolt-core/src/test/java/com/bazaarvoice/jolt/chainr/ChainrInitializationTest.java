@@ -15,11 +15,7 @@
  */
 package com.bazaarvoice.jolt.chainr;
 
-import com.bazaarvoice.jolt.Chainr;
-import com.bazaarvoice.jolt.ContextualTransform;
-import com.bazaarvoice.jolt.JoltTransform;
-import com.bazaarvoice.jolt.JsonUtils;
-import com.bazaarvoice.jolt.Transform;
+import com.bazaarvoice.jolt.*;
 import com.bazaarvoice.jolt.chainr.transforms.TransformTestResult;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.exception.TransformException;
@@ -44,7 +40,7 @@ public class ChainrInitializationTest {
     @Test(dataProvider = "badTransforms", expectedExceptions = TransformException.class )
     public void testBadTransforms(Object chainrSpec) {
         Chainr unit = Chainr.fromSpec( chainrSpec );
-        unit.transform( new HashMap(), null );// should fail here
+        unit.transform( new HashMap<>(), null );// should fail here
         Assert.fail( "Should not have gotten here" );
     }
 

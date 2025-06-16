@@ -18,17 +18,7 @@ package com.bazaarvoice.jolt.shiftr.spec;
 import com.bazaarvoice.jolt.common.ComputedKeysComparator;
 import com.bazaarvoice.jolt.common.ExecutionStrategy;
 import com.bazaarvoice.jolt.common.Optional;
-import com.bazaarvoice.jolt.common.pathelement.AmpPathElement;
-import com.bazaarvoice.jolt.common.pathelement.AtPathElement;
-import com.bazaarvoice.jolt.common.pathelement.DollarPathElement;
-import com.bazaarvoice.jolt.common.pathelement.HashPathElement;
-import com.bazaarvoice.jolt.common.pathelement.LiteralPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarAllPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarDoublePathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarRegexPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarSinglePathElement;
-import com.bazaarvoice.jolt.common.pathelement.TransposePathElement;
+import com.bazaarvoice.jolt.common.pathelement.*;
 import com.bazaarvoice.jolt.common.spec.BaseSpec;
 import com.bazaarvoice.jolt.common.spec.OrderedCompositeSpec;
 import com.bazaarvoice.jolt.common.spec.SpecBuilder;
@@ -37,12 +27,7 @@ import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.shiftr.ShiftrSpecBuilder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Spec that has children, which it builds and then manages during Transforms.
@@ -128,7 +113,7 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
         }
 
         // Only the computed children need to be sorted
-        Collections.sort( computed, computedKeysComparator );
+        computed.sort(computedKeysComparator);
 
         special.trimToSize();
         computed.trimToSize();
@@ -161,11 +146,9 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
         }
 
         for ( BaseSpec computed : computedChildren ) {
-            if ( ! ( computed.getPathElement() instanceof StarPathElement ) ) {
+            if ( ! (computed.getPathElement() instanceof StarPathElement starPathElement) ) {
                 return ExecutionStrategy.CONFLICT;
             }
-
-            StarPathElement starPathElement = (StarPathElement) computed.getPathElement();
 
             for ( String literal : literalChildren.keySet() ) {
                 if ( starPathElement.stringMatch( literal ) ) {

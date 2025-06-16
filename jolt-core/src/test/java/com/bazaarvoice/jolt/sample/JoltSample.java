@@ -24,7 +24,7 @@ public class JoltSample {
 
     public static void main(String[] args) {
 
-        List chainrSpecJSON = JsonUtils.classpathToList( "/json/sample/spec.json" );
+        List<Object> chainrSpecJSON = JsonUtils.classpathToList( "/json/sample/spec.json" );
         Chainr chainr = Chainr.fromSpec( chainrSpecJSON );
 
         Object inputJSON = JsonUtils.classpathToObject( "/json/sample/input.json" );

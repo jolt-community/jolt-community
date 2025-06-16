@@ -20,11 +20,7 @@ import com.bazaarvoice.jolt.chainr.instantiator.ChainrInstantiator;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.exception.TransformException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Chainr is the JOLT mechanism for chaining {@link JoltTransform}s together. Any of the built-in JOLT
@@ -98,20 +94,14 @@ public class Chainr implements Transform, ContextualTransform {
 
     /**
      * Adapt "normal" Transforms to look like ContextualTransforms, so that
-     *  Chainr can just maintain a single list of "JoltTransforms" to run.
+     * Chainr can just maintain a single list of "JoltTransforms" to run.
      */
-    private static class ContextualTransformAdapter implements ContextualTransform {
-
-        private final Transform transform;
-
-        private ContextualTransformAdapter( Transform transform ) {
-            this.transform = transform;
-        }
+    private record ContextualTransformAdapter(Transform transform) implements ContextualTransform {
 
         @Override
-        public Object transform( Object input, Map<String, Object> context ) {
-            return transform.transform( input );
-        }
+        public Object transform(Object input, Map<String, Object> context) {
+                return transform.transform(input);
+            }
     }
 
     public Chainr( List<JoltTransform> joltTransforms ) {

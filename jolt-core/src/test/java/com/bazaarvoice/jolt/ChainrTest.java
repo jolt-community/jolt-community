@@ -160,7 +160,7 @@ public class ChainrTest {
     @Test
     public void process_itCallsCustomJavaTransform() {
         List<Map<String,Object>> spec = this.newChainrSpec();
-        Object delegateSpec = new HashMap();
+        Object delegateSpec = new HashMap<>();
         spec.add( this.newCustomJavaActivity( GoodTestTransform.class, delegateSpec ) );
         Object input = new Object();
 
@@ -197,7 +197,7 @@ public class ChainrTest {
     @Test(dataProvider = "failureTransformCases", expectedExceptions = TransformException.class)
     public void process_itBlowsUp_fromTransform(Object spec) {
         Chainr unit = Chainr.fromSpec( spec );
-        unit.transform( new HashMap(), null );
+        unit.transform( new HashMap<>(), null );
         Assert.fail("Should have failed during transform.");
     }
 

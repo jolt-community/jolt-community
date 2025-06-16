@@ -23,31 +23,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-public class LogicalFilter1 implements QueryFilter {
-
-    private final QueryParam queryParam;
-    private final Map<QueryParam, QueryFilter> filters;
+public record LogicalFilter1(QueryParam queryParam, Map<QueryParam, QueryFilter> filters) implements QueryFilter {
 
     @JsonCreator
-    public LogicalFilter1( @JsonProperty( "queryParam" ) QueryParam queryParam,
-                           @JsonProperty( "filters" ) Map<QueryParam, QueryFilter> filters ) {
+    public LogicalFilter1(@JsonProperty("queryParam") QueryParam queryParam,
+            @JsonProperty("filters") Map<QueryParam, QueryFilter> filters) {
         this.queryParam = queryParam;
         this.filters = filters;
     }
 
     @Override
-    public Map<QueryParam, QueryFilter> getFilters() {
-        return filters;
-    }
-
-    @Override
-    public QueryParam getQueryParam() {
-        return queryParam;
-    }
-
-    @Override
     @JsonIgnore
-    public String getValue() {
+    public String value() {
         return null;
     }
 
