@@ -159,7 +159,7 @@ public class CardinalityCompositeSpec extends CardinalitySpec {
         // Handle the rest of the children
         process( input, walkedPath );
 
-        walkedPath.removeLast();
+        walkedPath.removeLastElement();
         return true;
     }
 

@@ -81,7 +81,7 @@ public class ModifierLeafSpec extends ModifierSpec {
             setData( parent, thisLevel, valueOptional.get(), opMode );
         }
 
-        walkedPath.removeLast();
+        walkedPath.removeLastElement();
     }
 
     private static FunctionEvaluator buildFunctionEvaluator( final String rhs, final Map<String, Function> functionsMap ) {

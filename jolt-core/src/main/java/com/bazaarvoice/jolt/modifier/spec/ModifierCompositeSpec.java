@@ -175,7 +175,7 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
         // Handle the rest of the children
         executionStrategy.process( this, inputOptional, walkedPath, null, context );
         // We are done, so remove ourselves from the walkedPath
-        walkedPath.removeLast();
+        walkedPath.removeLastElement();
     }
 
     @Override

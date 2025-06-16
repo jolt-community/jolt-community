@@ -139,7 +139,7 @@ public class ShiftrLeafSpec extends ShiftrSpec {
             outputPath.write( data, output, walkedPath );
         }
 
-        walkedPath.removeLast();
+        walkedPath.removeLastElement();
 
         if ( realChild ) {
             // we were a "real" child, so increment the matchCount of our parent

@@ -54,6 +54,10 @@ public class WalkedPath extends ArrayList<PathStep> {
         return super.add( new PathStep( treeRef, matchedElement ) );
     }
 
+    public PathStep removeLastElement() {
+        return remove(size() - 1);
+    }
+
     /**
      * Method useful to "&", "&1", "&2", etc evaluation.
      */
