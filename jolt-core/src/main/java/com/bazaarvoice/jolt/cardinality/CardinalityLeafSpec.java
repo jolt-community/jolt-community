@@ -122,7 +122,7 @@ public class CardinalityLeafSpec extends CardinalitySpec {
             }
         }
 
-        walkedPath.removeLast();
+        walkedPath.removeLastElement();
 
         return returnValue;
     }
