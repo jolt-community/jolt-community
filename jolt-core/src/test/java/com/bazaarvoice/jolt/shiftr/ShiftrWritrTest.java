@@ -72,8 +72,8 @@ public class ShiftrWritrTest {
             Assert.assertEquals( 3, refElement.getTokens().size() );
 
             {
-                Assert.assertTrue( refElement.getTokens().getFirst() instanceof String );
-                Assert.assertEquals( "photos-", (String) refElement.getTokens().getFirst() );
+                Assert.assertTrue( refElement.getTokens().get(0) instanceof String );
+                Assert.assertEquals( "photos-", (String) refElement.getTokens().get(0) );
             }
             {
                 Assert.assertTrue( refElement.getTokens().get(1) instanceof AmpReference );

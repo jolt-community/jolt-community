@@ -58,7 +58,7 @@ public abstract class CardinalitySpec implements BaseSpec {
             throw new SpecException( "CardinalityTransform invalid LHS:" + rawJsonKey + " can not contain '.'" );
         }
 
-        PathElement pe =  pathElements.getFirst();
+        PathElement pe =  pathElements.get(0);
         if ( ! ( pe instanceof MatchablePathElement ) ) {
             throw new SpecException( "Spec LHS key=" + rawJsonKey + " is not a valid LHS key." );
         }

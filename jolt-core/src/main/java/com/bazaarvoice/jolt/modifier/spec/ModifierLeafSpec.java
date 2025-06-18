@@ -101,7 +101,7 @@ public class ModifierLeafSpec extends ModifierSpec {
             else {
                 String fnString = rhs.substring( TemplatrSpecBuilder.FUNCTION.length() );
                 List<String> fnArgs = SpecStringParser.parseFunctionArgs( fnString );
-                functionName = fnArgs.removeFirst();
+                functionName = fnArgs.remove(0);
                 functionEvaluator = FunctionEvaluator.forFunctionEvaluation( functionsMap.get( functionName ), constructArgs( fnArgs ) );
             }
         }

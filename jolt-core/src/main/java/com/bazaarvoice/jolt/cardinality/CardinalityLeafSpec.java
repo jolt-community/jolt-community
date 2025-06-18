@@ -109,7 +109,7 @@ public class CardinalityLeafSpec extends CardinalitySpec {
         else if ( cardinalityRelationship == CardinalityRelationship.ONE ) {
             if ( input instanceof List ) {
                 if (!( (List<?>) input ).isEmpty()) {
-                    returnValue = ( (List<?>) input ).getFirst();
+                    returnValue = ( (List<?>) input ).get(0);
                 }
                 parentContainer.put( inputKey, returnValue );
             } else if ( input instanceof Object[] ) {

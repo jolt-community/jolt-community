@@ -107,7 +107,7 @@ public class MappingTest5 {
         StringRealFilter5 stringRealProductIdFilter = (StringRealFilter5) productIdFilter;
         Assert.assertEquals( Field.PRODUCTID, stringRealProductIdFilter.getField() );
         Assert.assertEquals( Operator.EQ, stringRealProductIdFilter.getOperator() );
-        Assert.assertEquals( "Acme-1234", stringRealProductIdFilter.getValues().getFirst() );
+        Assert.assertEquals( "Acme-1234", stringRealProductIdFilter.getValues().get(0) );
 
         // Make sure the nested OR looks right
         QueryFilter5 orFilter = andFilter.getValues().get(2);
