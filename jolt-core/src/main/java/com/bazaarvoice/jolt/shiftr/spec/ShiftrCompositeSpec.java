@@ -222,7 +222,7 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
         executionStrategy.process( this, inputOptional, walkedPath, output, context );
 
         // We are done, so remove ourselves from the walkedPath
-        walkedPath.removeLast();
+        walkedPath.removeLastElement();
 
         // we matched so increment the matchCount of our parent
         walkedPath.lastElement().getMatchedElement().incrementHashCount();
