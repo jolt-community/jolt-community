@@ -17,11 +17,7 @@ package com.bazaarvoice.jolt.defaultr;
 
 import com.bazaarvoice.jolt.common.DeepCopy;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ArrayKey extends Key {
 
@@ -102,9 +98,8 @@ public class ArrayKey extends Key {
             case STAR:
                 // Identify all its keys
                 // this assumes the container list has already been expanded to the right size
-                List defaultList = (List) container;
-                List<Integer> allIndexes = new ArrayList<>( defaultList.size() );
-                for ( int index = 0; index < defaultList.size(); index++ ) {
+                List<Integer> allIndexes = new ArrayList<>( container.size() );
+                for (int index = 0; index < container.size(); index++ ) {
                     allIndexes.add( index );
                 }
 
@@ -114,7 +109,7 @@ public class ArrayKey extends Key {
                 List<Integer> indexesInRange = new ArrayList<>();
 
                 for ( Integer orValue : keyInts ) {
-                    if ( orValue < ((List) container ).size() ) {
+                    if ( orValue < ((List<?>) container ).size() ) {
                         indexesInRange.add( orValue );
                     }
                 }

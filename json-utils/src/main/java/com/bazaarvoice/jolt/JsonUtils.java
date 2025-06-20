@@ -249,8 +249,8 @@ public class JsonUtils {
         Object destination = source;
         for (Object path : paths) {
             if(destination == null) throw new NullPointerException("Navigation not possible on null object");
-            if(destination instanceof Map) destination = ((Map) destination).get(path);
-            else if(path instanceof Integer && destination instanceof List) destination = ((List) destination).get((Integer)path);
+            if(destination instanceof Map) destination = ((Map<?, ?>) destination).get(path);
+            else if(path instanceof Integer && destination instanceof List) destination = ((List<?>) destination).get((Integer)path);
             else throw new UnsupportedOperationException("Navigation supports only Map and List source types and non-null String and Integer path types");
         }
         return (T) destination;

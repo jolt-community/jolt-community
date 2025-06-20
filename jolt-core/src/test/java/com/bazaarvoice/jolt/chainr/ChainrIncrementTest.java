@@ -46,7 +46,7 @@ public class ChainrIncrementTest {
 
         Object expected = JsonUtils.classpathToObject( "/json/chainr/increments/" + start + "-" + end + ".json" );
 
-        Object actual = chainr.transform( start, end, new HashMap() );
+        Object actual = chainr.transform( start, end, new HashMap<>() );
 
         JoltTestUtil.runDiffy( "failed incremental From-To Chainr", expected, actual );
     }
@@ -70,7 +70,7 @@ public class ChainrIncrementTest {
 
         Object expected = JsonUtils.classpathToObject( "/json/chainr/increments/0-" + end + ".json" );
 
-        Object actual = chainr.transform( end, new HashMap() );
+        Object actual = chainr.transform( end, new HashMap<>() );
 
         JoltTestUtil.runDiffy( "failed incremental To Chainr", expected, actual );
     }
@@ -91,6 +91,6 @@ public class ChainrIncrementTest {
     @Test( dataProvider = "failTests", expectedExceptions = TransformException.class)
     public void testFails( Object chainrSpec, int start, int end  ) throws IOException {
         Chainr chainr = Chainr.fromSpec( chainrSpec );
-        chainr.transform( start, end, new HashMap());
+        chainr.transform( start, end, new HashMap<>());
     }
 }

@@ -24,13 +24,7 @@ import com.bazaarvoice.jolt.common.tree.MatchedElement;
 import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * CardinalitySpec that has children, which it builds and then manages during Transforms.
@@ -89,7 +83,7 @@ public class CardinalityCompositeSpec extends CardinalitySpec {
         }
 
         // Only the computed children need to be sorted
-        Collections.sort( computed, computedKeysComparator );
+        computed.sort(computedKeysComparator);
 
         computed.trimToSize();
         literalChildren = Collections.unmodifiableMap( literals );

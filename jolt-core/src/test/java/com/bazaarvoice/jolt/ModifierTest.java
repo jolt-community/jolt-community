@@ -26,11 +26,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings( "deprecated" )
 public class ModifierTest {
@@ -231,15 +227,15 @@ public class ModifierTest {
 
     @Test
     public void testModifierFirstElementArray() throws IOException {
-        Map<String, Object> input = new HashMap<String, Object>() {{
+        Map<String, Object> input = new HashMap<>() {{
             put("input", new Integer[]{5, 4});
         }};
 
-        Map<String, Object> spec = new HashMap<String, Object>() {{
+        Map<String, Object> spec = new HashMap<>() {{
             put("first", "=firstElement(@(1,input))");
         }};
 
-        Map<String, Object> expected = new HashMap<String, Object>() {{
+        Map<String, Object> expected = new HashMap<>() {{
             put("input", new Integer[]{5, 4});
             put("first", 5);
         }};

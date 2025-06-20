@@ -58,7 +58,7 @@ public class DiffyFixtureTest {
         Object testActual =   JsonUtils.classpathToObject("/jsonUtils/diffyWhenDifferent/" + testCase + "/testActual.json");
         Object testExpected = JsonUtils.classpathToObject("/jsonUtils/diffyWhenDifferent/" + testCase + "/testExpected.json");
 
-        Map expectedDiff = JsonUtils.classpathToMap("/jsonUtils/diffyWhenDifferent/" + testCase + "/" + expectedFile + ".json");
+        Map<String, Object> expectedDiff = JsonUtils.classpathToMap("/jsonUtils/diffyWhenDifferent/" + testCase + "/" + expectedFile + ".json");
 
         Diffy.Result testResult = diffy.diff( testExpected, testActual );
         Assert.assertFalse( testResult.isEmpty(), "Test diffs match when the shouldn't.");

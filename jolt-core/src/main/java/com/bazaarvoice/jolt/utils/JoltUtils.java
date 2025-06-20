@@ -15,12 +15,7 @@
  */
 package com.bazaarvoice.jolt.utils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Handy utilities that do NOT depend on JsonUtil / Jackson live here
@@ -101,15 +96,14 @@ public class JoltUtils {
             }
 
             if ( destination instanceof Map ) {
-                destination = ((Map) destination).get( path );
+                destination = ((Map<?, ?>) destination).get( path );
             }
-            else if ( destination instanceof List ) {
+            else if (destination instanceof List destList) {
 
                 if ( ! (path instanceof Integer) ) {
                     return null;
                 }
 
-                List destList = (List) destination;
                 int pathInt = (Integer) path;
 
                 if ( pathInt < 0 || pathInt >= destList.size() ) {
@@ -152,25 +146,23 @@ public class JoltUtils {
                 throw new UnsupportedOperationException("source is null");
             }
 
-            if ( destination instanceof Map ) {
-                Map temp = (Map) destination;
+            if (destination instanceof Map temp) {
                 if (temp.containsKey( path ) ) {
 
                     // if we don't check for containsKey first, then the Map.get call
                     //  would return null for keys that don't actually exist.
-                    destination = ((Map) destination).get(path);
+                    destination = temp.get(path);
                 }
                 else {
                     throw new UnsupportedOperationException("no entry for '" + path  + "' found while traversing the JSON");
                 }
             }
-            else if ( destination instanceof List ) {
+            else if (destination instanceof List destList) {
 
                 if ( ! (path instanceof Integer) ) {
                     throw new UnsupportedOperationException( "path '" + path + "' is trying to be used as an array index");
                 }
 
-                List destList = (List) destination;
                 int pathInt = (Integer) path;
 
                 if ( pathInt < 0 || pathInt > destList.size() ) {
@@ -202,8 +194,7 @@ public class JoltUtils {
             if(path == null || destination == null) {
                 return defaultValue;
             }
-            if(destination instanceof Map) {
-                Map destinationMap = (Map) destination;
+            if(destination instanceof Map destinationMap) {
                 if(!destinationMap.containsKey(path)) {
                     return defaultValue;
                 }
@@ -211,9 +202,8 @@ public class JoltUtils {
                     destination = destinationMap.get(path);
                 }
             }
-            else if(path instanceof Integer && destination instanceof List) {
+            else if(path instanceof Integer && destination instanceof List destList) {
 
-                List destList = (List) destination;
                 int pathInt = (Integer) path;
 
                 if ( pathInt < 0 || pathInt >= destList.size() ) {
@@ -252,13 +242,13 @@ public class JoltUtils {
     public static boolean isVacantJson(final Object obj) {
         Collection values = null;
         if(obj instanceof Collection) {
-            if(((Collection) obj).size() == 0) {
+            if(((Collection<?>) obj).size() == 0) {
                 return true;
             }
             values = (Collection) obj;
         }
         if(obj instanceof Map) {
-            if(((Map) obj).size() == 0) {
+            if(((Map<?, ?>) obj).size() == 0) {
                 return true;
             }
             values = ((Map) obj).values();
@@ -289,10 +279,10 @@ public class JoltUtils {
             return true;
         }
         if(obj instanceof Collection) {
-            return (((Collection) obj).size() == 0);
+            return (((Collection<?>) obj).size() == 0);
         }
         if(obj instanceof Map) {
-            return (((Map) obj).size() == 0);
+            return (((Map<?, ?>) obj).size() == 0);
         }
         throw new UnsupportedOperationException("map or list is supported, got ${obj?obj.getClass():null}");
     }
@@ -315,14 +305,12 @@ public class JoltUtils {
 
         List<Object[]> keyChainList = new LinkedList<>();
 
-        if(source instanceof Map) {
-            Map sourceMap = (Map) source;
+        if(source instanceof Map sourceMap) {
             for (Object key: sourceMap.keySet()) {
                 keyChainList.addAll(listKeyChains(key, sourceMap.get(key)));
             }
         }
-        else if(source instanceof List) {
-            List sourceList = (List) source;
+        else if(source instanceof List sourceList) {
             for(int i=0; i<sourceList.size(); i++) {
                 keyChainList.addAll(listKeyChains(i, sourceList.get(i)));
             }
@@ -430,20 +418,20 @@ public class JoltUtils {
                     compactJson(item);
                 }
             }
-            ((List) source).removeAll(Collections.singleton(null));
+            ((List<?>) source).removeAll(Collections.singleton(null));
         }
         else if (source instanceof Map) {
             List keysToRemove = new LinkedList();
             for (Object key : ((Map) source).keySet()) {
-                Object value = ((Map)source).get(key);
+                Object value = ((Map<?, ?>)source).get(key);
                 if (value instanceof List) {
-                    if (((List) value).size() == 0)
+                    if (((List<?>) value).size() == 0)
                         keysToRemove.add(key);
                     else {
                         compactJson(value);
                     }
                 } else if (value instanceof Map) {
-                    if (((Map) value).size() == 0) {
+                    if (((Map<?, ?>) value).size() == 0) {
                         keysToRemove.add(key);
                     } else {
                         compactJson(value);
@@ -453,7 +441,7 @@ public class JoltUtils {
                 }
             }
             for(Object key: keysToRemove) {
-                ((Map) source).remove(key);
+                ((Map<?, ?>) source).remove(key);
             }
         }
         else {
@@ -523,11 +511,11 @@ public class JoltUtils {
         }
         Object path = paths[destKeyIndex];
         if(source instanceof Map && path instanceof String) {
-            return cast( ( (Map) source ).remove( path ) );
+            return cast( ( (Map<?, ?>) source ).remove( path ) );
         }
         else if(source instanceof List && path instanceof Integer) {
             ensureListAvailability( (List) source, (int) path );
-            return cast( ( (List) source ).remove( (int) path) );
+            return cast( ( (List<?>) source ).remove( (int) path) );
         }
         else {
             throw new UnsupportedOperationException( "Only Map/String and List/Integer types are supported" );
@@ -545,13 +533,13 @@ public class JoltUtils {
     private static Object getOrCreateNextObject( Object source, Object key, Object nextKey ) {
         Object value;
         if ( source instanceof Map && key instanceof String ) {
-            if ( ( value = ( (Map) source ).get( key ) ) == null ) {
+            if ( ( value = ( (Map<?, ?>) source ).get( key ) ) == null ) {
                 Object newValue;
                 if ( nextKey instanceof String ) {
-                    newValue = new HashMap();
+                    newValue = new HashMap<>();
                 }
                 else if ( nextKey instanceof Integer ) {
-                    newValue = new LinkedList();
+                    newValue = new LinkedList<>();
                 }
                 else {
                     throw new UnsupportedOperationException( "Only String and Integer types are supported" );
@@ -562,13 +550,13 @@ public class JoltUtils {
         }
         else if ( source instanceof List && key instanceof Integer ) {
             ensureListAvailability( ( (List) source ), (int) key );
-            if ( ( value = ( (List) source ).get( (int) key ) ) == null ) {
+            if ( ( value = ( (List<?>) source ).get( (int) key ) ) == null ) {
                 Object newValue;
                 if ( nextKey instanceof String ) {
-                    newValue = new HashMap();
+                    newValue = new HashMap<>();
                 }
                 else if ( nextKey instanceof Integer ) {
-                    newValue = new LinkedList();
+                    newValue = new LinkedList<>();
                 }
                 else {
                     throw new UnsupportedOperationException( "Only String and Integer types are supported" );

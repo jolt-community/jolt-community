@@ -116,7 +116,7 @@ public class SpecStringParser {
         if (string == null)
             throw new NullPointerException();
 
-        return new Iterator<Character>() {
+        return new Iterator<>() {
             private int index = 0;
 
             public boolean hasNext() {

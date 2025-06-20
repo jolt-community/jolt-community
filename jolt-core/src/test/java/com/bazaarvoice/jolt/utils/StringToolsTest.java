@@ -39,23 +39,23 @@ public class StringToolsTest {
         testCases.add(new String[] {null, ""});
         testCases.add(new String[] {"", null});
 
-        testCases.add(new String[] {RandomStringUtils.randomAscii(1<<2), null});
-        testCases.add(new String[] {RandomStringUtils.randomAscii(1<<2), ""});
+        testCases.add(new String[] {RandomStringUtils.secure().nextAscii(1<<2), null});
+        testCases.add(new String[] {RandomStringUtils.secure().nextAscii(1<<2), ""});
 
-        testCases.add(new String[] {null, RandomStringUtils.randomAscii(1<<2)});
-        testCases.add(new String[] {"", RandomStringUtils.randomAscii(1<<2)});
+        testCases.add(new String[] {null, RandomStringUtils.secure().nextAscii(1<<2)});
+        testCases.add(new String[] {"", RandomStringUtils.secure().nextAscii(1<<2)});
 
 
         int i=1<<6;
         while(i-- > 0) {
-            testCases.add(new String[] { RandomStringUtils.randomAscii(1<<10), RandomStringUtils.randomAscii(1<<2) });
-            testCases.add(new String[] { RandomStringUtils.randomAscii(1<<2), RandomStringUtils.randomAscii(1<<10) });
+            testCases.add(new String[] { RandomStringUtils.secure().nextAscii(1<<10), RandomStringUtils.secure().nextAscii(1<<2) });
+            testCases.add(new String[] { RandomStringUtils.secure().nextAscii(1<<2), RandomStringUtils.secure().nextAscii(1<<10) });
 
-            testCases.add(new String[] { RandomStringUtils.randomAlphabetic(1<<10), RandomStringUtils.randomAlphabetic(1<<2) });
-            testCases.add(new String[] { RandomStringUtils.randomAlphabetic(1<<2), RandomStringUtils.randomAlphabetic(1<<10) });
+            testCases.add(new String[] { RandomStringUtils.secure().nextAlphabetic(1<<10), RandomStringUtils.secure().nextAlphabetic(1<<2) });
+            testCases.add(new String[] { RandomStringUtils.secure().nextAlphabetic(1<<2), RandomStringUtils.secure().nextAlphabetic(1<<10) });
 
-            testCases.add(new String[] { RandomStringUtils.randomAlphanumeric(1<<10), RandomStringUtils.randomAlphanumeric(1<<2) });
-            testCases.add(new String[] { RandomStringUtils.randomAlphanumeric(1<<2), RandomStringUtils.randomAlphanumeric(1<<10) });
+            testCases.add(new String[] { RandomStringUtils.secure().nextAlphanumeric(1<<10), RandomStringUtils.secure().nextAlphanumeric(1<<2) });
+            testCases.add(new String[] { RandomStringUtils.secure().nextAlphanumeric(1<<2), RandomStringUtils.secure().nextAlphanumeric(1<<10) });
         }
 
         return testCases.iterator();

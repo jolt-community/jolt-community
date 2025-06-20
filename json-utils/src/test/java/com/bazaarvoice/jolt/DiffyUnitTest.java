@@ -21,12 +21,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DiffyUnitTest {
 
@@ -51,7 +46,7 @@ public class DiffyUnitTest {
     }
 
     private static final Object[] SCALARS = new Object[] {
-            null, 1, 2, true, false, 3.14, 2.71, "foo", "bar", new ArrayList(), new HashMap()
+            null, 1, 2, true, false, 3.14, 2.71, "foo", "bar", new ArrayList<>(), new HashMap<>()
     };
 
     @Test
@@ -66,8 +61,8 @@ public class DiffyUnitTest {
     @Test
     public void diff_itSaysListsWithSameElementsAreSame() {
         Object[] stuff = new Object[] {"foo", 3, null};
-        List list1 = Arrays.asList( stuff );
-        List list2 = Arrays.asList( stuff );
+        List<Object> list1 = Arrays.asList( stuff );
+        List<Object> list2 = Arrays.asList( stuff );
         Diffy.Result result = this.unit.diff( list1, list2 );
         Assert.assertTrue( result.isEmpty() );
     }
@@ -114,7 +109,7 @@ public class DiffyUnitTest {
         Diffy.Result result = this.unit.diff(
                 JsonUtils.jsonToMap( "{\"foo\":1, \"bar\":\"baz\"}" ),
                 JsonUtils.jsonToMap( "{\"foo\":1, \"bar\":\"baz\", \"extra\":null}" ) );
-        Assert.assertEquals( new HashMap(), result.expected );
+        Assert.assertEquals( new HashMap<>(), result.expected );
         Assert.assertEquals( JsonUtils.jsonToMap( "{\"extra\":null}" ) , result.actual );
     }
 
@@ -125,7 +120,7 @@ public class DiffyUnitTest {
                 JsonUtils.jsonToMap( "{\"foo\":1, \"bar\":\"baz\", \"extra\":42}" ),
                 JsonUtils.jsonToMap( "{\"foo\":1, \"bar\":\"baz\"}" ) );
         Assert.assertEquals( JsonUtils.jsonToMap( "{\"extra\":42}" ), result.expected );
-        Assert.assertEquals( new HashMap(), result.actual );
+        Assert.assertEquals( new HashMap<>(), result.actual );
     }
 
     @Test

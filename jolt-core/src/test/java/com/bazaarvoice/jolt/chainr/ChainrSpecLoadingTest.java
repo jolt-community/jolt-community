@@ -37,7 +37,7 @@ public class ChainrSpecLoadingTest {
     @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class )
     public void testBadSpecs( Object chainrSpecObj ) {
         ChainrSpec chainrSpec = new ChainrSpec( chainrSpecObj );
-        ChainrEntry chainrEntry = chainrSpec.getChainrEntries().get( 0 );
+        ChainrEntry chainrEntry = chainrSpec.getChainrEntries().get(0);
         DefaultChainrInstantiator instantiator = new DefaultChainrInstantiator();
 
         // This should fail

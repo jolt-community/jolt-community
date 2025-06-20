@@ -19,11 +19,7 @@ import com.bazaarvoice.jolt.common.tree.MatchedElement;
 import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Leaf level CardinalitySpec object.
@@ -112,8 +108,8 @@ public class CardinalityLeafSpec extends CardinalitySpec {
         }
         else if ( cardinalityRelationship == CardinalityRelationship.ONE ) {
             if ( input instanceof List ) {
-                if (!( (List) input ).isEmpty()) {
-                    returnValue = ( (List) input ).get( 0 );
+                if (!( (List<?>) input ).isEmpty()) {
+                    returnValue = ( (List<?>) input ).get(0);
                 }
                 parentContainer.put( inputKey, returnValue );
             } else if ( input instanceof Object[] ) {

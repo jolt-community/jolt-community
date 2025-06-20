@@ -91,7 +91,8 @@ public class MappingTest5 {
         String testFixture = "/jsonUtils/testdomain/five/queryFilter-realAndLogical5.json";
 
         // TEST JsonUtil and our deserialization logic
-        QueryFilter5 queryFilter = jsonUtil.classpathToType( testFixture, new TypeReference<QueryFilter5>() {} );
+        QueryFilter5 queryFilter = jsonUtil.classpathToType( testFixture, new TypeReference<>() {
+        } );
 
         // Make sure the hydrated QFilter looks right
         Assert.assertTrue( queryFilter instanceof LogicalFilter5);

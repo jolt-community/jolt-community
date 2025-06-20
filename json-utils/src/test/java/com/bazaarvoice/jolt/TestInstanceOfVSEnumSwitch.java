@@ -79,21 +79,14 @@ public class TestInstanceOfVSEnumSwitch {
         for ( int index = 0; index < LOOP_COUNT; index++) {
             int typeToMake = index % 5;
 
-            EnumBaseInterface t;
-            switch( typeToMake ) {
-                case 0 :
-                    t = new StringEnum(); break;
-                case 1 :
-                    t = new IntegerEnum(); break;
-                case 2 :
-                    t = new BooleanEnum(); break;
-                case 3 :
-                    t = new DateEnum(); break;
-                case 4 :
-                    t = new LogicalEnum(); break;
-                default :
-                    throw new RuntimeException("pants");
-            }
+            EnumBaseInterface t = switch (typeToMake) {
+                case 0 -> new StringEnum();
+                case 1 -> new IntegerEnum();
+                case 2 -> new BooleanEnum();
+                case 3 -> new DateEnum();
+                case 4 -> new LogicalEnum();
+                default -> throw new RuntimeException("pants");
+            };
 
             switch( t.getType() ) {
                 case STRING:
@@ -159,44 +152,32 @@ public class TestInstanceOfVSEnumSwitch {
         for ( int index = 0; index < LOOP_COUNT; index++) {
             int typeToMake = index % 5;
 
-            InstanceOfInterface t;
-            switch( typeToMake ) {
-                case 0 :
-                    t = new StringInstanceOf(); break;
-                case 1 :
-                    t = new IntegerInstanceOf(); break;
-                case 2 :
-                    t = new BooleanInstanceOf(); break;
-                case 3 :
-                    t = new DateInstanceOf(); break;
-                case 4 :
-                    t = new LogicalInstanceOf(); break;
-                default :
-                    throw new RuntimeException("pants");
-            }
+            InstanceOfInterface t = switch (typeToMake) {
+                case 0 -> new StringInstanceOf();
+                case 1 -> new IntegerInstanceOf();
+                case 2 -> new BooleanInstanceOf();
+                case 3 -> new DateInstanceOf();
+                case 4 -> new LogicalInstanceOf();
+                default -> throw new RuntimeException("pants");
+            };
 
-            if ( t instanceof  StringInstanceOf ) {
-                StringInstanceOf s = (StringInstanceOf) t;
+            if (t instanceof StringInstanceOf s) {
                 List<String> sValues = s.getValues();
                 Assert.assertEquals( Arrays.asList("A", "B"), sValues );
             }
-            else if (t instanceof IntegerInstanceOf) {
-                IntegerInstanceOf i = (IntegerInstanceOf) t;
+            else if (t instanceof IntegerInstanceOf i) {
                 List<Integer> iValues = i.getValues();
                 Assert.assertEquals(Arrays.asList(1, 2), iValues);
             }
-            else if (t instanceof BooleanInstanceOf) {
-                BooleanInstanceOf b = (BooleanInstanceOf) t;
+            else if (t instanceof BooleanInstanceOf b) {
                 List<Boolean> bValues = b.getValues();
                 Assert.assertEquals(Arrays.asList(true, false), bValues);
             }
-            else if (t instanceof DateInstanceOf) {
-                DateInstanceOf d = (DateInstanceOf) t;
+            else if (t instanceof DateInstanceOf d) {
                 List<String> dValues = d.getValues();
                 Assert.assertEquals(Arrays.asList("10", "11"), dValues);
             }
-            else if (t instanceof LogicalInstanceOf) {
-                LogicalInstanceOf l = (LogicalInstanceOf) t;
+            else if (t instanceof LogicalInstanceOf l) {
                 List<InstanceOfInterface> lValues = l.getValues();
                 Assert.assertEquals(0, lValues.size());
             }

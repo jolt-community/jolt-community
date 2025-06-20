@@ -131,7 +131,7 @@ public class TransposePathElement extends BasePathElement implements MatchablePa
 
                     int upLevel;
                     try {
-                        upLevel = Integer.valueOf( sb.toString() );
+                        upLevel = Integer.parseInt( sb.toString() );
                     }
                     catch ( NumberFormatException nfe ) {
                         // I don't know how this exception would get thrown, as all the chars were checked by isDigit, but oh well
@@ -149,7 +149,7 @@ public class TransposePathElement extends BasePathElement implements MatchablePa
             }
 
             // if we got out of the for loop, then the whole thing was a number.
-            return new TransposePathElement( originalKey, Integer.valueOf( sb.toString() ), null );
+            return new TransposePathElement( originalKey, Integer.parseInt( sb.toString() ), null );
         }
         else {
             return new TransposePathElement( originalKey, 0, meat );
@@ -206,7 +206,7 @@ public class TransposePathElement extends BasePathElement implements MatchablePa
     @Override
     public String evaluate( WalkedPath walkedPath ) {
 
-        Optional dataFromTranspose = objectEvaluate( walkedPath );
+        Optional<Object> dataFromTranspose = objectEvaluate( walkedPath );
 
         if ( dataFromTranspose.isPresent() ) {
 

@@ -19,11 +19,7 @@ import com.bazaarvoice.jolt.common.pathelement.LiteralPathElement;
 import com.bazaarvoice.jolt.common.pathelement.StarAllPathElement;
 import com.bazaarvoice.jolt.common.pathelement.StarPathElement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Spec for handling the leaf level of the Removr Transform.
@@ -55,9 +51,7 @@ public class RemovrLeafSpec extends RemovrSpec {
                 keysToBeRemoved.add( pathElement.getRawKey() );
             }
         }
-        else if ( pathElement instanceof StarPathElement ) {
-
-            StarPathElement star = (StarPathElement) pathElement;
+        else if (pathElement instanceof StarPathElement star) {
 
             // if we are a wildcard, check each input key to see if it matches us
             for( String key : inputMap.keySet() ) {

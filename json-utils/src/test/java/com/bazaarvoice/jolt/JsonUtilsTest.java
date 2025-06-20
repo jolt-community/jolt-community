@@ -27,19 +27,15 @@ import org.testng.collections.Lists;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JsonUtilsTest {
 
     private Diffy diffy = new Diffy();
 
-    private Map ab = ImmutableMap.builder().put( "a", "b" ).build();
-    private Map cd = ImmutableMap.builder().put( "c", "d" ).build();
-    private Map top = ImmutableMap.builder().put( "A", ab ).put( "B", cd ).build();
+    private Map<Object, Object> ab = ImmutableMap.builder().put( "a", "b" ).build();
+    private Map<Object, Object> cd = ImmutableMap.builder().put( "c", "d" ).build();
+    private Map<Object, Object> top = ImmutableMap.builder().put( "A", ab ).put( "B", cd ).build();
 
     private String jsonSourceString = "{ " +
                                       "    \"a\": { " +
@@ -78,9 +74,9 @@ public class JsonUtilsTest {
     @DataProvider
     public Object[][] removeRecursiveCases() {
 
-        Map empty = ImmutableMap.builder().build();
-        Map barToFoo = ImmutableMap.builder().put( "bar", "foo" ).build();
-        Map fooToBar = ImmutableMap.builder().put( "foo", "bar" ).build();
+        Map<Object, Object> empty = ImmutableMap.builder().build();
+        Map<Object, Object> barToFoo = ImmutableMap.builder().put( "bar", "foo" ).build();
+        Map<Object, Object> fooToBar = ImmutableMap.builder().put( "foo", "bar" ).build();
         return new Object[][] {
                 { null, null, null },
                 { null, "foo", null },
@@ -185,20 +181,20 @@ public class JsonUtilsTest {
              testCases.add(new Object[] { 3.14159, new Object[] {"p", 2, "pi"}} );
              testCases.add(new Object[] { "y", new Object[] {"x"}} );
      
-             testCases.add(new Object[] { ((Map) jsonSource).get("a"), new Object[] {"a"}} );
-             testCases.add(new Object[] { ((Map)(((Map) jsonSource).get("a"))).get("b"), new Object[] {"a", "b"}} );
-             testCases.add(new Object[] { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(0), new Object[] {"a", "b", 0}} );
-             testCases.add(new Object[] { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(1), new Object[] {"a", "b", 1}} );
-             testCases.add(new Object[] { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(2), new Object[] {"a", "b", 2}} );
-             testCases.add(new Object[] { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(3), new Object[] {"a", "b", 3}} );
-             testCases.add(new Object[] { ((Map) jsonSource).get("p"), new Object[] {"p"}} );
-             testCases.add(new Object[] { ((List)(((Map) jsonSource).get("p"))).get(0), new Object[] {"p", 0}} );
-             testCases.add(new Object[] { ((List)(((Map) jsonSource).get("p"))).get(1), new Object[] {"p", 1}} );
-             testCases.add(new Object[] { ((List)(((Map) jsonSource).get("p"))).get(2), new Object[] {"p", 2}} );
-             testCases.add(new Object[] { ((Map)((List)(((Map) jsonSource).get("p"))).get(2)).get("1"), new Object[] {"p", 2, "1"}} );
-             testCases.add(new Object[] { ((Map)((List)(((Map) jsonSource).get("p"))).get(2)).get("2"), new Object[] {"p", 2, "2"}} );
-             testCases.add(new Object[] { ((Map)((List)(((Map) jsonSource).get("p"))).get(2)).get("pi"), new Object[] {"p", 2, "pi"}} );
-             testCases.add(new Object[] { ((Map) jsonSource).get("x"), new Object[] {"x"}} );
+             testCases.add(new Object[] { ((Map<?, ?>) jsonSource).get("a"), new Object[] {"a"}} );
+             testCases.add(new Object[] { ((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b"), new Object[] {"a", "b"}} );
+             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(0), new Object[] {"a", "b", 0}} );
+             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(1), new Object[] {"a", "b", 1}} );
+             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(2), new Object[] {"a", "b", 2}} );
+             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(3), new Object[] {"a", "b", 3}} );
+             testCases.add(new Object[] { ((Map<?, ?>) jsonSource).get("p"), new Object[] {"p"}} );
+             testCases.add(new Object[] { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(0), new Object[] {"p", 0}} );
+             testCases.add(new Object[] { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(1), new Object[] {"p", 1}} );
+             testCases.add(new Object[] { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2), new Object[] {"p", 2}} );
+             testCases.add(new Object[] { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("1"), new Object[] {"p", 2, "1"}} );
+             testCases.add(new Object[] { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("2"), new Object[] {"p", 2, "2"}} );
+             testCases.add(new Object[] { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("pi"), new Object[] {"p", 2, "pi"}} );
+             testCases.add(new Object[] { ((Map<?, ?>) jsonSource).get("x"), new Object[] {"x"}} );
      
              return testCases.iterator();
          }

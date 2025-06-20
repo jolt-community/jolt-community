@@ -21,22 +21,18 @@ import com.bazaarvoice.jolt.modifier.function.Objects;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 
 public class JoltUtilsSquashTest {
 
-    private Diffy diffy = new Diffy();
+    private final Diffy diffy = new Diffy();
 
     @Test
     public void squashNullsInAListTest() {
-        List actual = new ArrayList();
-        actual.addAll( Arrays.asList( "a", null, 1, null, "b", 2) );
+        List actual = new ArrayList(Arrays.asList("a", null, 1, null, "b", 2));
 
-        List expectedList = Arrays.asList( "a", 1, "b", 2);
+        List<Serializable> expectedList = Arrays.asList("a", 1, "b", 2);
 
         Objects.squashNulls( actual );
 

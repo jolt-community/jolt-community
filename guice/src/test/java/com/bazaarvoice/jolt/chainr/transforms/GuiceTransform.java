@@ -17,7 +17,7 @@ package com.bazaarvoice.jolt.chainr.transforms;
 
 import com.bazaarvoice.jolt.Transform;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 
 public class GuiceTransform implements Transform {

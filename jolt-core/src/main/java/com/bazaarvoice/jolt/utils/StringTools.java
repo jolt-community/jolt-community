@@ -99,6 +99,6 @@ public class StringTools {
      * @return true if source is empty
      */
     public static boolean isEmpty(CharSequence sourceSequence) {
-        return sourceSequence == null || sourceSequence.length() == 0;
+        return sourceSequence == null || sourceSequence.isEmpty();
     }
 }

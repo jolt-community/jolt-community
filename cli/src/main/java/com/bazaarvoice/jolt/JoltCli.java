@@ -21,8 +21,6 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparsers;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public class JoltCli {
@@ -30,12 +28,11 @@ public class JoltCli {
     private static final Map<String, JoltCliProcessor> JOLT_CLI_PROCESSOR_MAP;
 
     static {
-        Map<String, JoltCliProcessor> temp = new HashMap<>();
-        temp.put( JoltCliUtilities.DIFFY_COMMAND_IDENTIFIER, new DiffyCliProcessor() );
-        temp.put( JoltCliUtilities.SORT_COMMAND_IDENTIFIER, new SortCliProcessor() );
-        temp.put( JoltCliUtilities.TRANSFORM_COMMAND_IDENTIFIER, new TransformCliProcessor() );
-
-        JOLT_CLI_PROCESSOR_MAP = Collections.unmodifiableMap( temp );
+        JOLT_CLI_PROCESSOR_MAP = Map.of(
+                JoltCliUtilities.DIFFY_COMMAND_IDENTIFIER, new DiffyCliProcessor(),
+                JoltCliUtilities.SORT_COMMAND_IDENTIFIER, new SortCliProcessor(),
+                JoltCliUtilities.TRANSFORM_COMMAND_IDENTIFIER, new TransformCliProcessor()
+        );
     }
 
     public static void main( String[] args ) {
@@ -50,10 +47,14 @@ public class JoltCli {
      * @return true if two inputs were read with no differences, false if differences were found or an error was encountered
      */
     protected static boolean runJolt( String[] args ) {
-        ArgumentParser parser = ArgumentParsers.newArgumentParser( "jolt" );
-        Subparsers subparsers = parser.addSubparsers().help( "transform: given a Jolt transform spec, runs the specified transforms on the input data.\n" +
-                "diffy: diff two JSON documents.\n" +
-                "sort: sort a JSON document alphabetically for human readability." );
+        ArgumentParser parser = ArgumentParsers.newFor("jolt").build();
+        Subparsers subparsers = parser.addSubparsers().help(
+                """
+                transform: given a Jolt transform spec, runs the specified transforms on the input data.
+                diffy: diff two JSON documents.
+                sort: sort a JSON document alphabetically for human readability.
+                """
+        );
 
         for ( Map.Entry<String, JoltCliProcessor> entry : JOLT_CLI_PROCESSOR_MAP.entrySet() ) {
             entry.getValue().intializeSubCommand( subparsers );

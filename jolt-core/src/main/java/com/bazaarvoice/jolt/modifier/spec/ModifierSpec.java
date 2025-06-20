@@ -126,15 +126,13 @@ public abstract class ModifierSpec implements BaseSpec {
      */
     @SuppressWarnings( "unchecked" )
     protected static void setData(Object parent, MatchedElement matchedElement, Object value, OpMode opMode) {
-        if(parent instanceof Map) {
-            Map source = (Map) parent;
+        if(parent instanceof Map source) {
             String key = matchedElement.getRawKey();
             if(opMode.isApplicable( source, key )) {
                 source.put( key, value );
             }
         }
-        else if (parent instanceof List && matchedElement instanceof ArrayMatchedElement ) {
-            List source = (List) parent;
+        else if (parent instanceof List source && matchedElement instanceof ArrayMatchedElement ) {
             int origSize = ( (ArrayMatchedElement) matchedElement ).getOrigSize();
             int reqIndex = ( (ArrayMatchedElement) matchedElement ).getRawIndex();
             if(opMode.isApplicable( source, reqIndex, origSize )) {

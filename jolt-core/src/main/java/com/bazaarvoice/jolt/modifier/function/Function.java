@@ -106,12 +106,7 @@ public interface Function {
      *
      * will cause the key to remain unchanged
      */
-    Function noop = new Function() {
-        @Override
-        public Optional<Object> apply( final Object... args ) {
-            return Optional.empty();
-        }
-    };
+    Function noop = args -> Optional.empty();
 
     /**
      * Returns the first argument, null or otherwise
@@ -128,14 +123,11 @@ public interface Function {
      * output - "key": "otherValue"
      *
      */
-    Function isPresent = new Function() {
-        @Override
-        public Optional<Object> apply( final Object... args ) {
-            if (args.length == 0) {
-                return Optional.empty();
-            }
-            return Optional.of( args[0] );
+    Function isPresent = args -> {
+        if (args.length == 0) {
+            return Optional.empty();
         }
+        return Optional.of( args[0] );
     };
 
     /**
@@ -150,14 +142,11 @@ public interface Function {
      * output - "key": "value"
      *
      */
-    Function notNull = new Function() {
-        @Override
-        public Optional<Object> apply( final Object... args ) {
-            if (args.length == 0 || args[0] == null) {
-                return Optional.empty();
-            }
-            return Optional.of( args[0] );
+    Function notNull = args -> {
+        if (args.length == 0 || args[0] == null) {
+            return Optional.empty();
         }
+        return Optional.of( args[0] );
     };
 
     /**
@@ -172,14 +161,11 @@ public interface Function {
      * output - "key": "otherValue"
      *
      */
-    Function isNull = new Function() {
-        @Override
-        public Optional<Object> apply( final Object... args ) {
-            if (args.length == 0 || args[0] != null) {
-                return Optional.empty();
-            }
-            return Optional.of( args[0] );
+    Function isNull = args -> {
+        if (args.length == 0 || args[0] != null) {
+            return Optional.empty();
         }
+        return Optional.of( args[0] );
     };
 
     /**
@@ -199,7 +185,7 @@ public interface Function {
             }
             else if(args.length == 1) {
                 if(args[0] instanceof List ) {
-                    if(((List) args[0]).isEmpty()) {
+                    if(((List<?>) args[0]).isEmpty()) {
                         return Optional.empty();
                     }
                     else {
@@ -314,7 +300,7 @@ public interface Function {
         public final Optional<Object> apply( Object... args ) {
 
             if(args.length == 1 && args[0] instanceof List) {
-                args = ((List) args[0]).toArray();
+                args = ((List<?>) args[0]).toArray();
             }
 
             Optional<SOURCE> specialArgOptional = getSpecialArg( args );
@@ -322,7 +308,7 @@ public interface Function {
                 SOURCE specialArg = specialArgOptional.get();
                 if ( args.length == 2) {
                     if(args[1] instanceof List) {
-                        return (Optional) applyList( specialArg, (List) args[1] );
+                        return applyList( specialArg, (List) args[1] );
                     }
                     else {
                         return (Optional) applySingle( specialArg, args[1] );
@@ -398,7 +384,7 @@ public interface Function {
             }
             else if(args.length == 1) {
                 if(args[0] instanceof List ) {
-                    if(((List) args[0]).isEmpty()) {
+                    if(((List<?>) args[0]).isEmpty()) {
                         return Optional.empty();
                     }
                     else {
