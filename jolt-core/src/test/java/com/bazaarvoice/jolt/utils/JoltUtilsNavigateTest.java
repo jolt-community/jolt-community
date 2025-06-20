@@ -24,9 +24,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.Map;
 
-import static com.bazaarvoice.jolt.utils.JoltUtils.navigate;
-import static com.bazaarvoice.jolt.utils.JoltUtils.navigateOrDefault;
-import static com.bazaarvoice.jolt.utils.JoltUtils.navigateStrict;
+import static com.bazaarvoice.jolt.utils.JoltUtils.*;
 
 public class JoltUtilsNavigateTest {
 
@@ -78,21 +76,21 @@ public class JoltUtilsNavigateTest {
             { 3.14159, new Object[] {"p", 2, "pi"}},
             { "y", new Object[] {"x"}},
 
-            { ((Map) jsonSource).get("a"), new Object[] {"a"}},
-            { ((Map)(((Map) jsonSource).get("a"))).get("b"), new Object[] {"a", "b"}},
-            { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(0), new Object[] {"a", "b", 0}},
-            { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(1), new Object[] {"a", "b", 1}},
-            { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(2), new Object[] {"a", "b", 2}},
-            { ((List)((Map)(((Map) jsonSource).get("a"))).get("b")).get(3), new Object[] {"a", "b", 3}},
-            { ((Map) jsonSource).get("p"), new Object[] {"p"}},
-            { ((List)(((Map) jsonSource).get("p"))).get(0), new Object[] {"p", 0}},
-            { ((List)(((Map) jsonSource).get("p"))).get(1), new Object[] {"p", 1}},
-            { ((List)(((Map) jsonSource).get("p"))).get(2), new Object[] {"p", 2}},
-            { ((Map)((List)(((Map) jsonSource).get("p"))).get(2)).get("1"), new Object[] {"p", 2, "1"}},
-            { ((Map)((List)(((Map) jsonSource).get("p"))).get(2)).get("2"), new Object[] {"p", 2, "2"}},
-            { ((Map)((List)(((Map) jsonSource).get("p"))).get(2)).get("pi"), new Object[] {"p", 2, "pi"}},
+            { ((Map<?, ?>) jsonSource).get("a"), new Object[] {"a"}},
+            { ((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b"), new Object[] {"a", "b"}},
+            { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(0), new Object[] {"a", "b", 0}},
+            { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(1), new Object[] {"a", "b", 1}},
+            { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(2), new Object[] {"a", "b", 2}},
+            { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(3), new Object[] {"a", "b", 3}},
+            { ((Map<?, ?>) jsonSource).get("p"), new Object[] {"p"}},
+            { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(0), new Object[] {"p", 0}},
+            { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(1), new Object[] {"p", 1}},
+            { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2), new Object[] {"p", 2}},
+            { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("1"), new Object[] {"p", 2, "1"}},
+            { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("2"), new Object[] {"p", 2, "2"}},
+            { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("pi"), new Object[] {"p", 2, "pi"}},
 
-            { ((Map) jsonSource).get("x"), new Object[] {"x"} },
+            { ((Map<?, ?>) jsonSource).get("x"), new Object[] {"x"} },
         };
     }
 

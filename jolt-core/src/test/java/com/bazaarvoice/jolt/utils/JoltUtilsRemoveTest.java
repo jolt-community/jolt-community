@@ -32,16 +32,16 @@ public class JoltUtilsRemoveTest {
 
     private Diffy diffy = new Diffy();
 
-    private Map ab = ImmutableMap.builder().put( "a", "b" ).build();
-    private Map cd = ImmutableMap.builder().put( "c", "d" ).build();
-    private Map top = ImmutableMap.builder().put( "A", ab ).put( "B", cd ).build();
+    private Map<Object, Object> ab = ImmutableMap.builder().put( "a", "b" ).build();
+    private Map<Object, Object> cd = ImmutableMap.builder().put( "c", "d" ).build();
+    private Map<Object, Object> top = ImmutableMap.builder().put( "A", ab ).put( "B", cd ).build();
 
     @DataProvider
     public Object[][] removeRecursiveCases() {
 
-        Map empty = ImmutableMap.builder().build();
-        Map barToFoo = ImmutableMap.builder().put( "bar", "foo" ).build();
-        Map fooToBar = ImmutableMap.builder().put( "foo", "bar" ).build();
+        Map<Object, Object> empty = ImmutableMap.builder().build();
+        Map<Object, Object> barToFoo = ImmutableMap.builder().put( "bar", "foo" ).build();
+        Map<Object, Object> fooToBar = ImmutableMap.builder().put( "foo", "bar" ).build();
         return new Object[][] {
                 { null, null, null },
                 { null, "foo", null },
@@ -108,7 +108,7 @@ public class JoltUtilsRemoveTest {
     @Test( description = "No exception if we don't try to remove from an ImmutableMap.")
     public void doNotUnnecessarilyDieOnImmutableMaps()
     {
-        Map expected = JsonUtils.jsonToMap( JsonUtils.toJsonString( top ) );
+        Map<String, Object> expected = JsonUtils.jsonToMap( JsonUtils.toJsonString( top ) );
 
         JoltUtils.removeRecursive( top, "tuna" );
 

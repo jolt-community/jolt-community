@@ -15,20 +15,10 @@
  */
 package com.bazaarvoice.jolt.chainr.spec;
 
-import com.bazaarvoice.jolt.CardinalityTransform;
-import com.bazaarvoice.jolt.Chainr;
-import com.bazaarvoice.jolt.Defaultr;
-import com.bazaarvoice.jolt.JoltTransform;
-import com.bazaarvoice.jolt.Modifier;
-import com.bazaarvoice.jolt.Removr;
-import com.bazaarvoice.jolt.Shiftr;
-import com.bazaarvoice.jolt.Sortr;
-import com.bazaarvoice.jolt.SpecDriven;
+import com.bazaarvoice.jolt.*;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.utils.StringTools;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -47,16 +37,16 @@ public class ChainrEntry {
      * to make internal classes available/loadable at runtime it is imperative that we use fqdn
      */
     static {
-        HashMap<String, String> temp = new HashMap<>();
-        temp.put( "shift", Shiftr.class.getName() );
-        temp.put( "default", Defaultr.class.getName() );
-        temp.put( "modify-overwrite-beta", Modifier.Overwritr.class.getName() );
-        temp.put( "modify-default-beta", Modifier.Defaultr.class.getName() );
-        temp.put( "modify-define-beta", Modifier.Definr.class.getName() );
-        temp.put( "remove", Removr.class.getName() );
-        temp.put( "sort", Sortr.class.getName() );
-        temp.put( "cardinality", CardinalityTransform.class.getName() );
-        STOCK_TRANSFORMS = Collections.unmodifiableMap( temp );
+        STOCK_TRANSFORMS = Map.of(
+                "shift", Shiftr.class.getName(),
+                "default", Defaultr.class.getName(),
+                "modify-overwrite-beta", Modifier.Overwritr.class.getName(),
+                "modify-default-beta", Modifier.Defaultr.class.getName(),
+                "modify-define-beta", Modifier.Definr.class.getName(),
+                "remove", Removr.class.getName(),
+                "sort", Sortr.class.getName(),
+                "cardinality", CardinalityTransform.class.getName()
+        );
     }
 
     public static final String OPERATION_KEY = "operation";
@@ -94,12 +84,7 @@ public class ChainrEntry {
             throw new SpecException( "JOLT Chainr 'operation' must implement Transform or ContextualTransform" + getErrorMessageIndexSuffix() );
         }
 
-        if ( STOCK_TRANSFORMS.containsKey( opString ) ) {
-            operationClassName = STOCK_TRANSFORMS.get( opString );
-        }
-        else {
-            operationClassName = opString;
-        }
+        operationClassName = STOCK_TRANSFORMS.getOrDefault(opString, opString);
 
         joltTransformClass = loadJoltTransformClass( classLoader );
 
@@ -131,7 +116,7 @@ public class ChainrEntry {
     private Class<? extends JoltTransform> loadJoltTransformClass(ClassLoader classLoader) {
 
         try {
-            Class opClass = classLoader.loadClass( operationClassName );
+            Class<?> opClass = classLoader.loadClass( operationClassName );
 
             if ( Chainr.class.isAssignableFrom( opClass ) ) {
                 throw new SpecException( "Attempt to nest Chainr inside itself" + getErrorMessageIndexSuffix() );

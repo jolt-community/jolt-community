@@ -42,7 +42,7 @@ public class TemplatrSpecBuilder extends SpecBuilder<ModifierSpec> {
     @Override
     @SuppressWarnings( "unchecked" )
     public ModifierSpec createSpec( final String lhs, final Object rhs ) {
-        if( rhs instanceof Map  && (!( (Map) rhs ).isEmpty())) {
+        if( rhs instanceof Map  && (!( (Map<?, ?>) rhs ).isEmpty())) {
             return new ModifierCompositeSpec(lhs, (Map)rhs, opMode, this );
         }
         else {

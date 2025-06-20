@@ -21,11 +21,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,7 +41,7 @@ public class LogicalFilter3 implements QueryFilter {
         @Override
         public void serialize(LogicalFilter3 filter, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeStartObject();
-            jgen.writeObjectField( filter.getQueryParam().toString(), filter.getFilters().values() );
+            jgen.writeObjectField( filter.queryParam().toString(), filter.filters().values() );
             jgen.writeEndObject();
         }
     }
@@ -83,22 +79,22 @@ public class LogicalFilter3 implements QueryFilter {
 
         this.filters = new LinkedHashMap<>();
         for ( QueryFilter queryFilter : filters ) {
-            this.filters.put( queryFilter.getQueryParam(), queryFilter );
+            this.filters.put( queryFilter.queryParam(), queryFilter );
         }
     }
 
     @Override
-    public Map<QueryParam, QueryFilter> getFilters() {
+    public Map<QueryParam, QueryFilter> filters() {
         return filters;
     }
 
     @Override
-    public QueryParam getQueryParam() {
+    public QueryParam queryParam() {
         return queryParam;
     }
 
     @Override
-    public String getValue() {
+    public String value() {
         return null;
     }
 

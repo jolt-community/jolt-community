@@ -22,11 +22,7 @@ import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.traversr.Traversr;
 import com.bazaarvoice.jolt.utils.StringTools;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.bazaarvoice.jolt.common.PathElementBuilder.parseDotNotationRHS;
 

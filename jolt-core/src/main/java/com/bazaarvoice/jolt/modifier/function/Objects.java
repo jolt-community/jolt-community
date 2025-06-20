@@ -175,8 +175,7 @@ public class Objects {
      * Modifies the data.
      */
     public static void squashNulls( Object input ) {
-        if ( input instanceof List ) {
-            List inputList = (List) input;
+        if (input instanceof List inputList) {
             inputList.removeIf( java.util.Objects::isNull );
         }
         else if ( input instanceof Map ) {
@@ -203,9 +202,8 @@ public class Objects {
         // Makes two passes thru the data.
         Objects.squashNulls( input );
 
-        if ( input instanceof List ) {
-            List inputList = (List) input;
-            inputList.forEach( i -> recursivelySquashNulls( i ) );
+        if (input instanceof List inputList) {
+            inputList.forEach(Objects::recursivelySquashNulls);
         }
         else if ( input instanceof Map ) {
             Map<String,Object> inputMap = (Map<String,Object>) input;
@@ -222,8 +220,7 @@ public class Objects {
      * Modifies the data.
      */
     public static Optional<Object> squashDuplicates( Object input ) {
-        if ( input instanceof List ) {
-            List inputList = (List) input;
+        if (input instanceof List inputList) {
             return Optional.of(inputList.stream().distinct().collect(Collectors.toList()));
         }
         return Optional.of(input);
@@ -302,13 +299,13 @@ public class Objects {
                     return Optional.empty();
                 }
                 else if(args[0] instanceof List ) {
-                    return Optional.of(((List) args[0]).size());
+                    return Optional.of(((List<?>) args[0]).size());
                 }
                 else if(args[0] instanceof String) {
                     return Optional.of( ((String) args[0]).length() );
                 }
                 else if(args[0] instanceof Map) {
-                    return Optional.of( ((Map) args[0]).size() );
+                    return Optional.of( ((Map<?, ?>) args[0]).size() );
                 }
                 else {
                     return Optional.empty();

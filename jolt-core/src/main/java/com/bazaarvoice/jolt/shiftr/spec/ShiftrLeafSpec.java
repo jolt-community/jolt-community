@@ -27,11 +27,7 @@ import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.shiftr.ShiftrWriter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Leaf level Spec object.
@@ -110,9 +106,8 @@ public class ShiftrLeafSpec extends ShiftrSpec {
             // The data is our parent's data
             data = input;
         }
-        else if ( this.pathElement instanceof TransposePathElement ) {
+        else if (this.pathElement instanceof TransposePathElement tpe) {
             // We try to walk down the tree to find the value / data we want
-            TransposePathElement tpe = (TransposePathElement) this.pathElement;
 
             // Note the data found may not be a String, thus we have to call the special objectEvaluate
             Optional<Object> evaledData = tpe.objectEvaluate( walkedPath );

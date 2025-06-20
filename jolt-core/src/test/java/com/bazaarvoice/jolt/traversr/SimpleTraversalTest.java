@@ -93,10 +93,10 @@ public class SimpleTraversalTest {
 
         Object expected = JsonUtils.jsonToMap( "{ \"a\" : [ { \"b\" : \"one\" }, { \"b\" : \"two\" } ] }" );
 
-        Object actual = new HashMap();
+        Object actual = new HashMap<>();
 
         Assert.assertFalse( traversal.get( actual ).isPresent() );
-        Assert.assertEquals( 0, ((HashMap) actual).size() ); // get didn't add anything
+        Assert.assertEquals( 0, ((HashMap<?, ?>) actual).size() ); // get didn't add anything
 
         // Add two things and validate the Auto Expand array
         Assert.assertEquals( "one", traversal.set( actual, "one" ).get() );

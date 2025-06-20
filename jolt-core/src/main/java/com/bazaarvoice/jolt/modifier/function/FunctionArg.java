@@ -69,9 +69,8 @@ public abstract class FunctionArg {
 
     public static FunctionArg forLiteral( Object obj, boolean parseArg ) {
         if(parseArg) {
-            if ( obj instanceof String ) {
-                String arg = (String) obj;
-                if ( arg.length() == 0 ) {
+            if (obj instanceof String arg) {
+                if (arg.isEmpty()) {
                     return new LiteralArg( null );
                 }
                 else if ( arg.startsWith( "'" ) && arg.endsWith( "'" ) ) {

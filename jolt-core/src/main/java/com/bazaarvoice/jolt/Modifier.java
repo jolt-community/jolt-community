@@ -22,11 +22,8 @@ import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.modifier.OpMode;
 import com.bazaarvoice.jolt.modifier.TemplatrSpecBuilder;
-import com.bazaarvoice.jolt.modifier.function.Function;
-import com.bazaarvoice.jolt.modifier.function.Lists;
+import com.bazaarvoice.jolt.modifier.function.*;
 import com.bazaarvoice.jolt.modifier.function.Math;
-import com.bazaarvoice.jolt.modifier.function.Objects;
-import com.bazaarvoice.jolt.modifier.function.Strings;
 import com.bazaarvoice.jolt.modifier.spec.ModifierCompositeSpec;
 
 import java.util.Collections;

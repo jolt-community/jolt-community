@@ -48,8 +48,7 @@ public class ModifierLeafSpec extends ModifierSpec {
             functionEvaluatorList.add( functionEvaluator );
         }
         // "key": ["expression1", "expression2", "expression3"]
-        else if(rhsObj instanceof List && ((List)rhsObj).size() > 0) {
-            List rhsList = (List) rhsObj;
+        else if(rhsObj instanceof List rhsList && !rhsList.isEmpty()) {
             for(Object rhs: rhsList) {
                 if(rhs instanceof String) {
                     functionEvaluator = buildFunctionEvaluator( rhs.toString(), functionsMap );
@@ -102,7 +101,7 @@ public class ModifierLeafSpec extends ModifierSpec {
             else {
                 String fnString = rhs.substring( TemplatrSpecBuilder.FUNCTION.length() );
                 List<String> fnArgs = SpecStringParser.parseFunctionArgs( fnString );
-                functionName = fnArgs.remove( 0 );
+                functionName = fnArgs.remove(0);
                 functionEvaluator = FunctionEvaluator.forFunctionEvaluation( functionsMap.get( functionName ), constructArgs( fnArgs ) );
             }
         }

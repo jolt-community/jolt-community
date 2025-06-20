@@ -34,7 +34,7 @@ public abstract class AbstractTester {
     public void testFunctions(String name, Function function, Object args, Optional<Object> expected) {
         Optional<Object> actual;
         if(args instanceof List) {
-            actual = function.apply( (List) args );
+            actual = function.apply(args);
         }
         else if (args instanceof Object[]){
             actual = function.apply( (Object[]) args );

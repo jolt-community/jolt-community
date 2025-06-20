@@ -16,19 +16,7 @@
 
 package com.bazaarvoice.jolt.common;
 
-import com.bazaarvoice.jolt.common.pathelement.AmpPathElement;
-import com.bazaarvoice.jolt.common.pathelement.ArrayPathElement;
-import com.bazaarvoice.jolt.common.pathelement.AtPathElement;
-import com.bazaarvoice.jolt.common.pathelement.DollarPathElement;
-import com.bazaarvoice.jolt.common.pathelement.HashPathElement;
-import com.bazaarvoice.jolt.common.pathelement.LiteralPathElement;
-import com.bazaarvoice.jolt.common.pathelement.MatchablePathElement;
-import com.bazaarvoice.jolt.common.pathelement.PathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarAllPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarDoublePathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarRegexPathElement;
-import com.bazaarvoice.jolt.common.pathelement.StarSinglePathElement;
-import com.bazaarvoice.jolt.common.pathelement.TransposePathElement;
+import com.bazaarvoice.jolt.common.pathelement.*;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.utils.StringTools;
 
@@ -36,11 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.bazaarvoice.jolt.common.SpecStringParser.fixLeadingBracketSugar;
-import static com.bazaarvoice.jolt.common.SpecStringParser.parseDotNotation;
-import static com.bazaarvoice.jolt.common.SpecStringParser.removeEscapeChars;
-import static com.bazaarvoice.jolt.common.SpecStringParser.removeEscapedValues;
-import static com.bazaarvoice.jolt.common.SpecStringParser.stringIterator;
+import static com.bazaarvoice.jolt.common.SpecStringParser.*;
 
 /**
  * Static utility class that creates PathElement(s) given a string key from a json spec document
@@ -155,7 +139,7 @@ public class PathElementBuilder {
      */
     public static List<PathElement> parseDotNotationRHS( String dotNotation ) {
         String fixedNotation = fixLeadingBracketSugar( dotNotation );
-        List<String> pathStrs = parseDotNotation( new LinkedList<String>(), stringIterator( fixedNotation ), dotNotation );
+        List<String> pathStrs = parseDotNotation(new LinkedList<>(), stringIterator( fixedNotation ), dotNotation );
 
         return parseList( pathStrs, dotNotation );
     }

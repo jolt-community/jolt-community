@@ -65,15 +65,15 @@ public class CardinalityTransformTest {
     @Test
     public void testArrayCardinalityOne() throws IOException {
         // The above tests cover cardinality on elements that are Lists, this test covers elements that are arrays
-        Map<String, Object> input = new HashMap<String, Object>() {{
+        Map<String, Object> input = new HashMap<>() {{
             put("input", new Integer[]{5, 4});
         }};
 
-        Map<String, Object> spec = new HashMap<String, Object>() {{
+        Map<String, Object> spec = new HashMap<>() {{
             put("input", "ONE");
         }};
 
-        Map<String, Object> expected = new HashMap<String, Object>() {{
+        Map<String, Object> expected = new HashMap<>() {{
             put("input", 5);
         }};
 
@@ -85,15 +85,15 @@ public class CardinalityTransformTest {
     @Test
     public void testArrayCardinalityMany() throws IOException {
         // The above tests cover cardinality on elements that are Lists, this test covers elements that are arrays
-        Map<String, Object> input = new HashMap<String, Object>() {{
+        Map<String, Object> input = new HashMap<>() {{
             put("input", new Integer[]{5, 4});
         }};
 
-        Map<String, Object> spec = new HashMap<String, Object>() {{
+        Map<String, Object> spec = new HashMap<>() {{
             put("input", "MANY");
         }};
 
-        Map<String, Object> expected = new HashMap<String, Object>() {{
+        Map<String, Object> expected = new HashMap<>() {{
             put("input", new Integer[]{5, 4});
         }};
 

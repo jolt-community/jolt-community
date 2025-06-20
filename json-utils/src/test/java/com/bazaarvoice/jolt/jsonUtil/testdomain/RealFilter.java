@@ -24,31 +24,18 @@ import java.util.Map;
 /**
  * Simple / Standard Pojo Jackson Annotations
  */
-public class RealFilter implements QueryFilter {
-
-    private final QueryParam queryParam;
-    private final String value;
+public record RealFilter(QueryParam queryParam, String value) implements QueryFilter {
 
     @JsonCreator
-    public RealFilter( @JsonProperty( "queryParam" ) QueryParam queryParam,
-                       @JsonProperty( "value" ) String value ) {
+    public RealFilter(@JsonProperty("queryParam") QueryParam queryParam,
+            @JsonProperty("value") String value) {
         this.queryParam = queryParam;
         this.value = value;
     }
 
     @Override
-    public QueryParam getQueryParam() {
-        return queryParam;
-    }
-
-    @Override
-    public String getValue() {
-        return value;
-    }
-
-    @Override
     @JsonIgnore
-    public Map<QueryParam, QueryFilter> getFilters() {
+    public Map<QueryParam, QueryFilter> filters() {
         return null;
     }
 

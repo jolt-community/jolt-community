@@ -57,10 +57,9 @@ public class Optional<T> {
 
     @Override
     public boolean equals( final Object obj ) {
-        if(!(obj instanceof Optional)) {
+        if(!(obj instanceof Optional that)) {
             return false;
         }
-        Optional that = (Optional) obj;
         return that == EMPTY || (
                 this.abs == that.abs && (
                         (this.obj == null && that.obj == null) || (

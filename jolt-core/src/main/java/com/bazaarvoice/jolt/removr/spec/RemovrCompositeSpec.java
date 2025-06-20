@@ -14,19 +14,13 @@
 * limitations under the License.
 */
 package com.bazaarvoice.jolt.removr.spec;
+
 import com.bazaarvoice.jolt.common.pathelement.LiteralPathElement;
 import com.bazaarvoice.jolt.common.pathelement.StarAllPathElement;
 import com.bazaarvoice.jolt.common.pathelement.StarPathElement;
 import com.bazaarvoice.jolt.exception.SpecException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /*
     Sample Spec
@@ -86,9 +80,7 @@ public class RemovrCompositeSpec extends RemovrSpec {
             Object subInput = inputMap.get( pathElement.getRawKey() );
             processChildren( allChildNodes, subInput );
         }
-        else if ( pathElement instanceof StarPathElement ) {
-
-            StarPathElement star = (StarPathElement) pathElement;
+        else if (pathElement instanceof StarPathElement star) {
 
             // Compare my pathElement with each key from the input.
             // If it matches, recursively call process the child nodes.
@@ -150,12 +142,7 @@ public class RemovrCompositeSpec extends RemovrSpec {
                 //  list we don't muck up the order.
                 // Aka removing 0 _then_ 3 would be bad, because we would have actually removed
                 //  0 and 4 from the "original" list.
-                Collections.sort( uniqueIndiciesToRemove, new Comparator<Integer>() {
-                    @Override
-                    public int compare( Integer o1, Integer o2 ) {
-                        return o2.compareTo( o1 );
-                    }
-                } );
+                uniqueIndiciesToRemove.sort(Comparator.reverseOrder());
 
                 for ( int index : uniqueIndiciesToRemove ) {
                     subList.remove( index );

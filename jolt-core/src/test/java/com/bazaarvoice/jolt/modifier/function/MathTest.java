@@ -20,11 +20,7 @@ import com.bazaarvoice.jolt.common.Optional;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.bazaarvoice.jolt.modifier.function.Math.abs;
 import static com.bazaarvoice.jolt.modifier.function.Objects.toNumber;
@@ -55,7 +51,7 @@ public class MathTest extends AbstractTester {
         Function DIV_AND_ROUND_OF = new Math.divideAndRound();
 
         testCases.add( new Object[] { "max-empty-array", MAX_OF, new Object[] {}, Optional.empty() } );
-        testCases.add( new Object[] { "max-empty-list", MAX_OF, new ArrayList( ), Optional.empty() } );
+        testCases.add( new Object[] { "max-empty-list", MAX_OF, new ArrayList<>( ), Optional.empty() } );
         testCases.add( new Object[] { "max-null", MAX_OF, null, Optional.empty() } );
         testCases.add( new Object[] { "max-object", MAX_OF, new Object(), Optional.empty() } );
 
@@ -98,7 +94,7 @@ public class MathTest extends AbstractTester {
 
 
         testCases.add( new Object[] { "min-empty-array", MIN_OF, new Object[] {}, Optional.empty() } );
-        testCases.add( new Object[] { "min-empty-list", MIN_OF, new ArrayList( ), Optional.empty() } );
+        testCases.add( new Object[] { "min-empty-list", MIN_OF, new ArrayList<>( ), Optional.empty() } );
         testCases.add( new Object[] { "min-null", MIN_OF, null, Optional.empty() } );
         testCases.add( new Object[] { "min-object", MIN_OF, new Object(), Optional.empty() } );
 

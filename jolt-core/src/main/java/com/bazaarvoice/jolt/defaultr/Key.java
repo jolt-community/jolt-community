@@ -18,15 +18,7 @@ package com.bazaarvoice.jolt.defaultr;
 import com.bazaarvoice.jolt.Defaultr;
 import com.bazaarvoice.jolt.exception.TransformException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.bazaarvoice.jolt.defaultr.OPS.OR;
 
@@ -156,7 +148,7 @@ public abstract class Key {
         // Find and sort the children DefaultrKeys by precedence: literals, |, then *
         ArrayList<Key> sortedChildren = new ArrayList<>();
         sortedChildren.addAll( children );
-        Collections.sort( sortedChildren, keyComparator );
+        sortedChildren.sort(keyComparator);
 
         for ( Key childKey : sortedChildren ) {
             childKey.applyChild( defaultee );
