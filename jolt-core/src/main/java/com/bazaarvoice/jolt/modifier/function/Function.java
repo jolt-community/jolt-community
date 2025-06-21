@@ -16,6 +16,7 @@
 
 package com.bazaarvoice.jolt.modifier.function;
 
+import com.bazaarvoice.jolt.annotation.Experimental;
 import com.bazaarvoice.jolt.common.Optional;
 
 import java.lang.reflect.ParameterizedType;
@@ -93,7 +94,7 @@ import java.util.List;
  * other transforms as well. In short this interface is not yet ready to be implemented outside jolt!
  */
 
-@Deprecated
+@Experimental
 public interface Function {
 
     /**
