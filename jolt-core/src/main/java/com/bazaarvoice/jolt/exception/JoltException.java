@@ -20,11 +20,11 @@ package com.bazaarvoice.jolt.exception;
  */
 public class JoltException extends RuntimeException {
 
-    public JoltException( String msg ) {
+    public JoltException(String msg) {
         super(msg);
     }
 
-    public JoltException( String msg, Throwable t ) {
+    public JoltException(String msg, Throwable t) {
         super(msg, t);
     }
 }

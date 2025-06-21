@@ -18,13 +18,12 @@ package com.bazaarvoice.jolt.common.reference;
 
 /**
  * Reference is used by Shiftr when lookup up values from a WalkedPath (list of LiteralPathElements).
- *
- *   #,  #0  are the same
- *
+ * <p>
+ * #,  #0  are the same
+ * <p>
  * The "canonical form" is "Cx", where :
- *  C : the character used to determine the type of Reference
- *  x : pathIndex : which is how far up the walkedPath the look
- *
+ * C : the character used to determine the type of Reference
+ * x : pathIndex : which is how far up the walkedPath the look
  */
 public interface PathReference {
 
@@ -32,9 +31,9 @@ public interface PathReference {
 
     /**
      * Get the canonical form of this Reference.
-     *
+     * <p>
      * One of the uses of this method is to ensure that spec, does not contain "duplicate" keys, aka
-     *  two keys that when you unroll the syntactic sugar, are the same thing.
+     * two keys that when you unroll the syntactic sugar, are the same thing.
      *
      * @return fully expanded String representation of this Reference
      */

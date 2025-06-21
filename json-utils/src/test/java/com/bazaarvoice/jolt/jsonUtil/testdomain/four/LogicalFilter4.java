@@ -35,41 +35,6 @@ import java.util.Map;
 @JsonDeserialize(using = LogicalFilter4.LogicalFilter4Deserializer.class)
 public class LogicalFilter4 implements QueryFilter4 {
 
-    public static class LogicalFilter4Serializer extends JsonSerializer<LogicalFilter4> {
-
-        @Override
-        public void serialize(LogicalFilter4 filter, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeStartObject();
-            jgen.writeObjectField( filter.getQueryParam().toString(), filter.getFilters().values() );
-            jgen.writeEndObject();
-        }
-    }
-
-    public static class LogicalFilter4Deserializer extends JsonDeserializer<LogicalFilter4> {
-
-        @Override
-        public LogicalFilter4 deserialize( JsonParser jp, DeserializationContext ctxt ) throws IOException {
-
-            ObjectCodec objectCodec = jp.getCodec();
-            ObjectNode root = jp.readValueAsTree();
-
-            // We assume it is a LogicalFilter
-            Iterator<String> iter = root.fieldNames();
-            String key = iter.next();
-
-            JsonNode arrayNode = root.iterator().next();
-            if ( arrayNode == null || arrayNode.isMissingNode() || ! arrayNode.isArray() ) {
-                throw new RuntimeException( "Invalid format of LogicalFilter encountered." );
-            }
-
-            // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
-            JsonParser subJsonParser = arrayNode.traverse( objectCodec );
-            List<QueryFilter4> childrenQueryFilters = subJsonParser.readValueAs( new TypeReference<List<QueryFilter4>>() {} );
-
-            return new LogicalFilter4( QueryParam.valueOf( key ), childrenQueryFilters );
-        }
-    }
-
     private final QueryParam queryParam;
     private final Map<QueryParam, QueryFilter4> filters;
 
@@ -77,8 +42,8 @@ public class LogicalFilter4 implements QueryFilter4 {
         this.queryParam = queryParam;
 
         this.filters = new LinkedHashMap<>();
-        for ( QueryFilter4 queryFilter : filters ) {
-            this.filters.put( queryFilter.getQueryParam(), queryFilter );
+        for (QueryFilter4 queryFilter : filters) {
+            this.filters.put(queryFilter.getQueryParam(), queryFilter);
         }
     }
 
@@ -100,5 +65,41 @@ public class LogicalFilter4 implements QueryFilter4 {
     @Override
     public boolean isReal() {
         return false;
+    }
+
+    public static class LogicalFilter4Serializer extends JsonSerializer<LogicalFilter4> {
+
+        @Override
+        public void serialize(LogicalFilter4 filter, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeStartObject();
+            jgen.writeObjectField(filter.getQueryParam().toString(), filter.getFilters().values());
+            jgen.writeEndObject();
+        }
+    }
+
+    public static class LogicalFilter4Deserializer extends JsonDeserializer<LogicalFilter4> {
+
+        @Override
+        public LogicalFilter4 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+
+            ObjectCodec objectCodec = jp.getCodec();
+            ObjectNode root = jp.readValueAsTree();
+
+            // We assume it is a LogicalFilter
+            Iterator<String> iter = root.fieldNames();
+            String key = iter.next();
+
+            JsonNode arrayNode = root.iterator().next();
+            if (arrayNode == null || arrayNode.isMissingNode() || !arrayNode.isArray()) {
+                throw new RuntimeException("Invalid format of LogicalFilter encountered.");
+            }
+
+            // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
+            JsonParser subJsonParser = arrayNode.traverse(objectCodec);
+            List<QueryFilter4> childrenQueryFilters = subJsonParser.readValueAs(new TypeReference<List<QueryFilter4>>() {
+            });
+
+            return new LogicalFilter4(QueryParam.valueOf(key), childrenQueryFilters);
+        }
     }
 }

@@ -30,28 +30,28 @@ public class JoltUtils {
      *                    (contents changed by this call)
      * @param keyToRemove the key to remove from the document
      */
-    public static void removeRecursive( Object json, String keyToRemove ) {
-        if ( ( json == null ) || ( keyToRemove == null ) ) {
+    public static void removeRecursive(Object json, String keyToRemove) {
+        if ((json == null) || (keyToRemove == null)) {
             return;
         }
-        if ( json instanceof Map ) {
+        if (json instanceof Map) {
             Map<String, Object> jsonMap = cast(json);
 
             // If this level of the tree has the key we are looking for, remove it
             // Do the lookup instead of just the remove to avoid un-necessarily
             //  dying on ImmutableMaps.
-            if ( jsonMap.containsKey( keyToRemove ) ) {
-                jsonMap.remove( keyToRemove );
+            if (jsonMap.containsKey(keyToRemove)) {
+                jsonMap.remove(keyToRemove);
             }
 
             // regardless, recurse down the tree
-            for ( Object value : jsonMap.values() ) {
-                removeRecursive( value, keyToRemove );
+            for (Object value : jsonMap.values()) {
+                removeRecursive(value, keyToRemove);
             }
         }
-        if ( json instanceof List ) {
-            for ( Object value : (List) json ) {
-                removeRecursive( value, keyToRemove );
+        if (json instanceof List) {
+            for (Object value : (List) json) {
+                removeRecursive(value, keyToRemove);
             }
         }
     }
@@ -59,60 +59,58 @@ public class JoltUtils {
 
     /**
      * Navigate a JSON tree (made up of Maps and Lists) to "lookup" the value
-     *  at a particular path.
-     *
+     * at a particular path.
+     * <p>
      * Example : given Json
-     *
+     * <p>
      * Object json =
      * {
-     *     "a" : {
-     *         "b" : [ "x", "y", "z" ]
-     *     }
+     * "a" : {
+     * "b" : [ "x", "y", "z" ]
      * }
-     *
+     * }
+     * <p>
      * navigate( json, "a", "b", 0 ) will return "x".
-     *
+     * <p>
      * It will traverse down the nested "a" and return the zeroth item of the "b" array.
-     *
+     * <p>
      * You will either get your data, or null.
-     *
+     * <p>
      * It should never throw an Exception; even if
-     *  - you ask to index an array with a negative number
-     *  - you ask to index an array wiht a number bigger than the array size
-     *  - you ask to index a map that does not exist
-     *  - your input data has objects in it other than Map, List, String, Number.
+     * - you ask to index an array with a negative number
+     * - you ask to index an array wiht a number bigger than the array size
+     * - you ask to index a map that does not exist
+     * - your input data has objects in it other than Map, List, String, Number.
      *
      * @param source the source JSON object (Map, List, String, Number)
-     * @param paths varargs path you want to travel
+     * @param paths  varargs path you want to travel
      * @return the object of Type <T> at final destination
      */
-    public static <T> T navigate( final Object source, final Object... paths ) {
+    public static <T> T navigate(final Object source, final Object... paths) {
 
         Object destination = source;
-        for ( Object path : paths ) {
+        for (Object path : paths) {
 
-            if ( path == null || destination == null ) {
+            if (path == null || destination == null) {
                 return null;
             }
 
-            if ( destination instanceof Map ) {
-                destination = ((Map<?, ?>) destination).get( path );
-            }
-            else if (destination instanceof List destList) {
+            if (destination instanceof Map) {
+                destination = ((Map<?, ?>) destination).get(path);
+            } else if (destination instanceof List destList) {
 
-                if ( ! (path instanceof Integer) ) {
+                if (!(path instanceof Integer)) {
                     return null;
                 }
 
                 int pathInt = (Integer) path;
 
-                if ( pathInt < 0 || pathInt >= destList.size() ) {
+                if (pathInt < 0 || pathInt >= destList.size()) {
                     return null;
                 }
 
-                destination = destList.get( pathInt );
-            }
-            else {
+                destination = destList.get(pathInt);
+            } else {
                 // the input at this level is not a Map or List
                 //  so return null
                 return null;
@@ -123,55 +121,52 @@ public class JoltUtils {
 
     /**
      * Navigate a JSON tree (made up of Maps and Lists) to "lookup" the value
-     *  at a particular path.
-     *
+     * at a particular path.
+     * <p>
      * You will either get your data, or an exception will be thrown.
-     *
+     * <p>
      * This method should generally only be used in situations where you "know"
-     *  that the navigate call will "always succeed".
+     * that the navigate call will "always succeed".
      *
      * @param source the source JSON object (Map, List, String, Number)
-     * @param paths varargs path you want to travel
+     * @param paths  varargs path you want to travel
      * @return the object of Type <T> at final destination
      * @throws UnsupportedOperationException if there was any problem walking the JSON tree structure
      */
-    public static <T> T navigateStrict( final Object source, final Object... paths ) throws UnsupportedOperationException {
+    public static <T> T navigateStrict(final Object source, final Object... paths) throws UnsupportedOperationException {
 
         Object destination = source;
-        for ( Object path : paths ) {
-            if ( path == null ) {
+        for (Object path : paths) {
+            if (path == null) {
                 throw new UnsupportedOperationException("path is null");
             }
-            if ( destination == null ) {
+            if (destination == null) {
                 throw new UnsupportedOperationException("source is null");
             }
 
             if (destination instanceof Map temp) {
-                if (temp.containsKey( path ) ) {
+                if (temp.containsKey(path)) {
 
                     // if we don't check for containsKey first, then the Map.get call
                     //  would return null for keys that don't actually exist.
                     destination = temp.get(path);
+                } else {
+                    throw new UnsupportedOperationException("no entry for '" + path + "' found while traversing the JSON");
                 }
-                else {
-                    throw new UnsupportedOperationException("no entry for '" + path  + "' found while traversing the JSON");
-                }
-            }
-            else if (destination instanceof List destList) {
+            } else if (destination instanceof List destList) {
 
-                if ( ! (path instanceof Integer) ) {
-                    throw new UnsupportedOperationException( "path '" + path + "' is trying to be used as an array index");
+                if (!(path instanceof Integer)) {
+                    throw new UnsupportedOperationException("path '" + path + "' is trying to be used as an array index");
                 }
 
                 int pathInt = (Integer) path;
 
-                if ( pathInt < 0 || pathInt > destList.size() ) {
-                    throw new UnsupportedOperationException( "path '" + path + "' is negative or outside the range of the list");
+                if (pathInt < 0 || pathInt > destList.size()) {
+                    throw new UnsupportedOperationException("path '" + path + "' is negative or outside the range of the list");
                 }
 
-                destination = destList.get( pathInt );
-            }
-            else {
+                destination = destList.get(pathInt);
+            } else {
                 throw new UnsupportedOperationException("Navigation supports only Map and List source types and non-null String and Integer path types");
             }
         }
@@ -180,40 +175,36 @@ public class JoltUtils {
 
     /**
      * Navigate a JSON tree (made up of Maps and Lists) to "lookup" the value
-     *  at a particular path, but will return the supplied default value if
-     *  there are any problems.
+     * at a particular path, but will return the supplied default value if
+     * there are any problems.
      *
      * @param source the source JSON object (Map, List, String, Number)
-     * @param paths varargs path you want to travel
+     * @param paths  varargs path you want to travel
      * @return the object of Type <T> at final destination or defaultValue if non existent
      */
-    public static <T> T navigateOrDefault( final T defaultValue, final Object source, final Object... paths ) {
+    public static <T> T navigateOrDefault(final T defaultValue, final Object source, final Object... paths) {
 
         Object destination = source;
-        for ( Object path : paths ) {
-            if(path == null || destination == null) {
+        for (Object path : paths) {
+            if (path == null || destination == null) {
                 return defaultValue;
             }
-            if(destination instanceof Map destinationMap) {
-                if(!destinationMap.containsKey(path)) {
+            if (destination instanceof Map destinationMap) {
+                if (!destinationMap.containsKey(path)) {
                     return defaultValue;
-                }
-                else {
+                } else {
                     destination = destinationMap.get(path);
                 }
-            }
-            else if(path instanceof Integer && destination instanceof List destList) {
+            } else if (path instanceof Integer && destination instanceof List destList) {
 
                 int pathInt = (Integer) path;
 
-                if ( pathInt < 0 || pathInt >= destList.size() ) {
+                if (pathInt < 0 || pathInt >= destList.size()) {
                     return defaultValue;
+                } else {
+                    destination = destList.get(pathInt);
                 }
-                else {
-                    destination = destList.get( pathInt );
-                }
-            }
-            else {
+            } else {
                 return defaultValue;
             }
         }
@@ -225,15 +216,14 @@ public class JoltUtils {
      */
     @Deprecated
     public static <T> T navigateSafe(final T defaultValue, final Object source, final Object... paths) {
-        return navigateOrDefault( defaultValue, source, paths );
+        return navigateOrDefault(defaultValue, source, paths);
     }
-
 
 
     /**
      * Vacant implies there are empty placeholders, i.e. a vacant hotel
      * Given a json document, checks if it has any "leaf" values, can handle deep nesting of lists and maps
-     *
+     * <p>
      * i.e. { "a": [ "x": {}, "y": [] ], "b": { "p": [], "q": {} }} ==> is empty
      *
      * @param obj source
@@ -241,27 +231,27 @@ public class JoltUtils {
      */
     public static boolean isVacantJson(final Object obj) {
         Collection values = null;
-        if(obj instanceof Collection) {
-            if(((Collection<?>) obj).size() == 0) {
+        if (obj instanceof Collection) {
+            if (((Collection<?>) obj).size() == 0) {
                 return true;
             }
             values = (Collection) obj;
         }
-        if(obj instanceof Map) {
-            if(((Map<?, ?>) obj).size() == 0) {
+        if (obj instanceof Map) {
+            if (((Map<?, ?>) obj).size() == 0) {
                 return true;
             }
             values = ((Map) obj).values();
         }
         int processedEmpty = 0;
-        if(values != null) {
-            for (Object value: values) {
-                if(!isVacantJson(value)) {
+        if (values != null) {
+            for (Object value : values) {
+                if (!isVacantJson(value)) {
                     return false;
                 }
                 processedEmpty++;
             }
-            if(processedEmpty == values.size()) {
+            if (processedEmpty == values.size()) {
                 return true;
             }
         }
@@ -278,10 +268,10 @@ public class JoltUtils {
         if (obj == null) {
             return true;
         }
-        if(obj instanceof Collection) {
+        if (obj instanceof Collection) {
             return (((Collection<?>) obj).size() == 0);
         }
-        if(obj instanceof Map) {
+        if (obj instanceof Map) {
             return (((Map<?, ?>) obj).size() == 0);
         }
         throw new UnsupportedOperationException("map or list is supported, got ${obj?obj.getClass():null}");
@@ -290,9 +280,9 @@ public class JoltUtils {
 
     /**
      * Given a json document, finds out absolute path to every leaf element
-     *
+     * <p>
      * i.e. { "a": [ "x": { "y": "alpha" }], "b": { "p": [ "beta", "gamma" ], "q": {} }} will yield
-     *
+     * <p>
      * 1) "a",0,"x","y" -> to "alpha"
      * 2) "b","p", 0 -> to "beta"
      * 3) "b", "p", 1 -> to "gamma"
@@ -305,17 +295,15 @@ public class JoltUtils {
 
         List<Object[]> keyChainList = new LinkedList<>();
 
-        if(source instanceof Map sourceMap) {
-            for (Object key: sourceMap.keySet()) {
+        if (source instanceof Map sourceMap) {
+            for (Object key : sourceMap.keySet()) {
                 keyChainList.addAll(listKeyChains(key, sourceMap.get(key)));
             }
-        }
-        else if(source instanceof List sourceList) {
-            for(int i=0; i<sourceList.size(); i++) {
+        } else if (source instanceof List sourceList) {
+            for (int i = 0; i < sourceList.size(); i++) {
                 keyChainList.addAll(listKeyChains(i, sourceList.get(i)));
             }
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
 
@@ -325,7 +313,7 @@ public class JoltUtils {
     /**
      * Helper/overridden method for listKeyChain(source), it accepts a key-value pair for convenience
      * note: "key": value (an item in map) and [value] (an item in list) is generalized here
-     *       as [value] is interpreted in json path as 1: value
+     * as [value] is interpreted in json path as 1: value
      *
      * @param key
      * @param value
@@ -334,16 +322,15 @@ public class JoltUtils {
     public static List<Object[]> listKeyChains(final Object key, final Object value) {
         List<Object[]> keyChainList = new LinkedList<>();
         List<Object[]> childKeyChainList = listKeyChains(value);
-        if(childKeyChainList.size() > 0) {
-            for(Object[] childKeyChain: childKeyChainList) {
+        if (childKeyChainList.size() > 0) {
+            for (Object[] childKeyChain : childKeyChainList) {
                 Object[] keyChain = new Object[childKeyChain.length + 1];
                 keyChain[0] = key;
                 System.arraycopy(childKeyChain, 0, keyChain, 1, childKeyChain.length);
                 keyChainList.add(keyChain);
             }
-        }
-        else {
-            keyChainList.add(new Object[] {key});
+        } else {
+            keyChainList.add(new Object[]{key});
         }
         return keyChainList;
     }
@@ -356,18 +343,16 @@ public class JoltUtils {
      */
     public static String toSimpleTraversrPath(Object[] paths) {
         StringBuilder pathBuilder = new StringBuilder();
-        for(int i=0; i<paths.length; i++) {
+        for (int i = 0; i < paths.length; i++) {
             Object path = paths[i];
-            if(path instanceof Integer) {
+            if (path instanceof Integer) {
                 pathBuilder.append("[").append(((Integer) path).intValue()).append("]");
-            }
-            else if(path instanceof String) {
+            } else if (path instanceof String) {
                 pathBuilder.append(path.toString());
-            }
-            else{
+            } else {
                 throw new UnsupportedOperationException("Only Strings and Integers are supported as path element");
             }
-            if(!(i+1 == paths.length)) {
+            if (!(i + 1 == paths.length)) {
                 pathBuilder.append(".");
             }
         }
@@ -393,13 +378,13 @@ public class JoltUtils {
      */
     @SuppressWarnings("unchecked")
     public static <E> E[] cast(Object[] object) {
-        return (E[])(object);
+        return (E[]) (object);
     }
 
     /**
      * Given a 'fluffy' json document, it recursively removes all null elements
      * to compact the json document
-     *
+     * <p>
      * Warning: mutates the doc, destroys array order
      *
      * @param source
@@ -413,17 +398,15 @@ public class JoltUtils {
             for (Object item : (List) source) {
                 if (item instanceof List) {
                     compactJson(item);
-                }
-                else if (item instanceof Map) {
+                } else if (item instanceof Map) {
                     compactJson(item);
                 }
             }
             ((List<?>) source).removeAll(Collections.singleton(null));
-        }
-        else if (source instanceof Map) {
+        } else if (source instanceof Map) {
             List keysToRemove = new LinkedList();
             for (Object key : ((Map) source).keySet()) {
-                Object value = ((Map<?, ?>)source).get(key);
+                Object value = ((Map<?, ?>) source).get(key);
                 if (value instanceof List) {
                     if (((List<?>) value).size() == 0)
                         keysToRemove.add(key);
@@ -440,12 +423,11 @@ public class JoltUtils {
                     keysToRemove.add(key);
                 }
             }
-            for(Object key: keysToRemove) {
+            for (Object key : keysToRemove) {
                 ((Map<?, ?>) source).remove(key);
             }
-        }
-        else {
-            throw new UnsupportedOperationException( "Only Map/String and List/Integer types are supported" );
+        } else {
+            throw new UnsupportedOperationException("Only Map/String and List/Integer types are supported");
         }
 
         return source;
@@ -455,128 +437,116 @@ public class JoltUtils {
      * For a given non-null (json) object, save the valve in the nested path provided
      *
      * @param source the source json object
-     * @param value the value to store
-     * @param paths var args Object path to navigate down and store the object in
+     * @param value  the value to store
+     * @param paths  var args Object path to navigate down and store the object in
      * @return previously stored value if available, null otherwise
      */
-    @SuppressWarnings( "unchecked" )
-    public static <T> T store( Object source, T value, Object... paths ) {
+    @SuppressWarnings("unchecked")
+    public static <T> T store(Object source, T value, Object... paths) {
         int destKeyIndex = paths.length - 1;
-        if(destKeyIndex < 0) {
-            throw new IllegalArgumentException( "No path information provided" );
+        if (destKeyIndex < 0) {
+            throw new IllegalArgumentException("No path information provided");
         }
-        if(source == null) {
-            throw new NullPointerException( "source cannot be null" );
+        if (source == null) {
+            throw new NullPointerException("source cannot be null");
         }
-        for ( int i = 0; i < destKeyIndex; i++ ) {
+        for (int i = 0; i < destKeyIndex; i++) {
             Object currentPath = paths[i];
-            Object nextPath = paths[i+1];
-            source = getOrCreateNextObject( source, currentPath, nextPath );
+            Object nextPath = paths[i + 1];
+            source = getOrCreateNextObject(source, currentPath, nextPath);
         }
         Object path = paths[destKeyIndex];
-        if(source instanceof Map && path instanceof String) {
-            return cast( ( (Map) source ).put( path, value ) );
-        }
-        else if(source instanceof List && path instanceof Integer) {
-            ensureListAvailability( (List) source, (int) path );
-            return cast( ( (List) source ).set( (int) path, value ) );
-        }
-        else {
-            throw new UnsupportedOperationException( "Only Map/String and List/Integer types are supported" );
+        if (source instanceof Map && path instanceof String) {
+            return cast(((Map) source).put(path, value));
+        } else if (source instanceof List && path instanceof Integer) {
+            ensureListAvailability((List) source, (int) path);
+            return cast(((List) source).set((int) path, value));
+        } else {
+            throw new UnsupportedOperationException("Only Map/String and List/Integer types are supported");
         }
     }
 
     /**
      * For a given non-null (json) object, removes and returns the value in the nested path provided
-     *
+     * <p>
      * Warning: changes array order, to maintain order, use store(source, null, path ...) instead
      *
      * @param source the source json object
-     * @param paths var args Object path to navigate down and remove
+     * @param paths  var args Object path to navigate down and remove
      * @return existing value if available, null otherwise
      */
-    @SuppressWarnings( "unchecked" )
-    public static <T> T remove( Object source, Object... paths ) {
+    @SuppressWarnings("unchecked")
+    public static <T> T remove(Object source, Object... paths) {
         int destKeyIndex = paths.length - 1;
-        if(destKeyIndex < 0) {
-            throw new IllegalArgumentException( "No path information provided" );
+        if (destKeyIndex < 0) {
+            throw new IllegalArgumentException("No path information provided");
         }
-        if(source == null) {
-            throw new NullPointerException( "source cannot be null" );
+        if (source == null) {
+            throw new NullPointerException("source cannot be null");
         }
-        for ( int i = 0; i < destKeyIndex; i++ ) {
+        for (int i = 0; i < destKeyIndex; i++) {
             Object currentPath = paths[i];
-            Object nextPath = paths[i+1];
-            source = getOrCreateNextObject( source, currentPath, nextPath );
+            Object nextPath = paths[i + 1];
+            source = getOrCreateNextObject(source, currentPath, nextPath);
         }
         Object path = paths[destKeyIndex];
-        if(source instanceof Map && path instanceof String) {
-            return cast( ( (Map<?, ?>) source ).remove( path ) );
-        }
-        else if(source instanceof List && path instanceof Integer) {
-            ensureListAvailability( (List) source, (int) path );
-            return cast( ( (List<?>) source ).remove( (int) path) );
-        }
-        else {
-            throw new UnsupportedOperationException( "Only Map/String and List/Integer types are supported" );
+        if (source instanceof Map && path instanceof String) {
+            return cast(((Map<?, ?>) source).remove(path));
+        } else if (source instanceof List && path instanceof Integer) {
+            ensureListAvailability((List) source, (int) path);
+            return cast(((List<?>) source).remove((int) path));
+        } else {
+            throw new UnsupportedOperationException("Only Map/String and List/Integer types are supported");
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    private static void ensureListAvailability( List source, int index ) {
-        for ( int i = source.size(); i <= index; i++ ) {
-            source.add( i, null );
+    @SuppressWarnings("unchecked")
+    private static void ensureListAvailability(List source, int index) {
+        for (int i = source.size(); i <= index; i++) {
+            source.add(i, null);
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    private static Object getOrCreateNextObject( Object source, Object key, Object nextKey ) {
+    @SuppressWarnings("unchecked")
+    private static Object getOrCreateNextObject(Object source, Object key, Object nextKey) {
         Object value;
-        if ( source instanceof Map && key instanceof String ) {
-            if ( ( value = ( (Map<?, ?>) source ).get( key ) ) == null ) {
+        if (source instanceof Map && key instanceof String) {
+            if ((value = ((Map<?, ?>) source).get(key)) == null) {
                 Object newValue;
-                if ( nextKey instanceof String ) {
+                if (nextKey instanceof String) {
                     newValue = new HashMap<>();
-                }
-                else if ( nextKey instanceof Integer ) {
+                } else if (nextKey instanceof Integer) {
                     newValue = new LinkedList<>();
+                } else {
+                    throw new UnsupportedOperationException("Only String and Integer types are supported");
                 }
-                else {
-                    throw new UnsupportedOperationException( "Only String and Integer types are supported" );
-                }
-                ( (Map) source ).put( key, newValue );
+                ((Map) source).put(key, newValue);
                 value = newValue;
             }
-        }
-        else if ( source instanceof List && key instanceof Integer ) {
-            ensureListAvailability( ( (List) source ), (int) key );
-            if ( ( value = ( (List<?>) source ).get( (int) key ) ) == null ) {
+        } else if (source instanceof List && key instanceof Integer) {
+            ensureListAvailability(((List) source), (int) key);
+            if ((value = ((List<?>) source).get((int) key)) == null) {
                 Object newValue;
-                if ( nextKey instanceof String ) {
+                if (nextKey instanceof String) {
                     newValue = new HashMap<>();
-                }
-                else if ( nextKey instanceof Integer ) {
+                } else if (nextKey instanceof Integer) {
                     newValue = new LinkedList<>();
+                } else {
+                    throw new UnsupportedOperationException("Only String and Integer types are supported");
                 }
-                else {
-                    throw new UnsupportedOperationException( "Only String and Integer types are supported" );
-                }
-                ( (List) source ).set( (int) key, newValue );
+                ((List) source).set((int) key, newValue);
                 value = newValue;
             }
-        }
-        else if(source == null || key == null) {
-            throw new NullPointerException( "source and/or key cannot be null" );
-        }
-        else {
-            throw new UnsupportedOperationException( "Only Map and List types are supported" );
+        } else if (source == null || key == null) {
+            throw new NullPointerException("source and/or key cannot be null");
+        } else {
+            throw new UnsupportedOperationException("Only Map and List types are supported");
         }
 
-        if ( ( nextKey instanceof String && value instanceof Map ) || ( nextKey instanceof Integer && value instanceof List ) ) {
+        if ((nextKey instanceof String && value instanceof Map) || (nextKey instanceof Integer && value instanceof List)) {
             return value;
-        }
-        else {
-            throw new UnsupportedOperationException( "Only Map/String and List/Integer types are supported" );
+        } else {
+            throw new UnsupportedOperationException("Only Map/String and List/Integer types are supported");
         }
     }
 }

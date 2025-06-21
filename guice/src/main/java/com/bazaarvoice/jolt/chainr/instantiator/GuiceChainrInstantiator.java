@@ -44,45 +44,44 @@ public class GuiceChainrInstantiator implements ChainrInstantiator {
     /**
      * @param parentModule Guice module that will be used to create an injector to instantiate Transform classes
      */
-    public GuiceChainrInstantiator( Module parentModule ) {
+    public GuiceChainrInstantiator(Module parentModule) {
         this.parentModule = parentModule;
-        this.nonSpecInjector = Guice.createInjector( parentModule );
+        this.nonSpecInjector = Guice.createInjector(parentModule);
     }
 
     @Override
-    public JoltTransform hydrateTransform( ChainrEntry entry ) {
+    public JoltTransform hydrateTransform(ChainrEntry entry) {
 
         final Class<? extends JoltTransform> transformClass = entry.getJoltTransformClass();
         final Object transformSpec = entry.getSpec();
 
         try {
 
-            if ( entry.isSpecDriven() ) {
+            if (entry.isSpecDriven()) {
 
                 // In order to inject an "Object" into the constructor of a SpecTransform, we create an Injector just for this class.
                 Injector injector;
-                injector = Guice.createInjector( new AbstractModule() {
+                injector = Guice.createInjector(new AbstractModule() {
                     @Override
                     protected void configure() {
 
                         // install the parent module so that Custom Java Transforms or Templates can have @Injected properties filled in
-                        install( parentModule );
+                        install(parentModule);
 
                         // Bind the "spec" for the transform
-                        bind( Object.class ).toInstance( transformSpec );
+                        bind(Object.class).toInstance(transformSpec);
                     }
-                } );
+                });
 
-                return injector.getInstance( transformClass );
+                return injector.getInstance(transformClass);
 
             } else {
                 // else normal no-op constructor OR non-spec constructor with @Inject annotation
-                return nonSpecInjector.getInstance( transformClass );
+                return nonSpecInjector.getInstance(transformClass);
             }
 
-        }
-        catch ( Exception creationException ) {
-            throw new SpecException( "Exception using Guice to initialize class:" + transformClass.getCanonicalName() + entry.getErrorMessageIndexSuffix(), creationException );
+        } catch (Exception creationException) {
+            throw new SpecException("Exception using Guice to initialize class:" + transformClass.getCanonicalName() + entry.getErrorMessageIndexSuffix(), creationException);
         }
     }
 }

@@ -25,37 +25,37 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
-* StringTools Tester.
-*/
+ * StringTools Tester.
+ */
 public class StringToolsTest {
 
-    @DataProvider (parallel = true)
+    @DataProvider(parallel = true)
     public Iterator<Object[]> testCaseGenerator() {
         List<Object[]> testCases = Lists.newArrayList();
 
-        testCases.add(new String[] {null, null});
-        testCases.add(new String[] {"", ""});
+        testCases.add(new String[]{null, null});
+        testCases.add(new String[]{"", ""});
 
-        testCases.add(new String[] {null, ""});
-        testCases.add(new String[] {"", null});
+        testCases.add(new String[]{null, ""});
+        testCases.add(new String[]{"", null});
 
-        testCases.add(new String[] {RandomStringUtils.secure().nextAscii(1<<2), null});
-        testCases.add(new String[] {RandomStringUtils.secure().nextAscii(1<<2), ""});
+        testCases.add(new String[]{RandomStringUtils.secure().nextAscii(1 << 2), null});
+        testCases.add(new String[]{RandomStringUtils.secure().nextAscii(1 << 2), ""});
 
-        testCases.add(new String[] {null, RandomStringUtils.secure().nextAscii(1<<2)});
-        testCases.add(new String[] {"", RandomStringUtils.secure().nextAscii(1<<2)});
+        testCases.add(new String[]{null, RandomStringUtils.secure().nextAscii(1 << 2)});
+        testCases.add(new String[]{"", RandomStringUtils.secure().nextAscii(1 << 2)});
 
 
-        int i=1<<6;
-        while(i-- > 0) {
-            testCases.add(new String[] { RandomStringUtils.secure().nextAscii(1<<10), RandomStringUtils.secure().nextAscii(1<<2) });
-            testCases.add(new String[] { RandomStringUtils.secure().nextAscii(1<<2), RandomStringUtils.secure().nextAscii(1<<10) });
+        int i = 1 << 6;
+        while (i-- > 0) {
+            testCases.add(new String[]{RandomStringUtils.secure().nextAscii(1 << 10), RandomStringUtils.secure().nextAscii(1 << 2)});
+            testCases.add(new String[]{RandomStringUtils.secure().nextAscii(1 << 2), RandomStringUtils.secure().nextAscii(1 << 10)});
 
-            testCases.add(new String[] { RandomStringUtils.secure().nextAlphabetic(1<<10), RandomStringUtils.secure().nextAlphabetic(1<<2) });
-            testCases.add(new String[] { RandomStringUtils.secure().nextAlphabetic(1<<2), RandomStringUtils.secure().nextAlphabetic(1<<10) });
+            testCases.add(new String[]{RandomStringUtils.secure().nextAlphabetic(1 << 10), RandomStringUtils.secure().nextAlphabetic(1 << 2)});
+            testCases.add(new String[]{RandomStringUtils.secure().nextAlphabetic(1 << 2), RandomStringUtils.secure().nextAlphabetic(1 << 10)});
 
-            testCases.add(new String[] { RandomStringUtils.secure().nextAlphanumeric(1<<10), RandomStringUtils.secure().nextAlphanumeric(1<<2) });
-            testCases.add(new String[] { RandomStringUtils.secure().nextAlphanumeric(1<<2), RandomStringUtils.secure().nextAlphanumeric(1<<10) });
+            testCases.add(new String[]{RandomStringUtils.secure().nextAlphanumeric(1 << 10), RandomStringUtils.secure().nextAlphanumeric(1 << 2)});
+            testCases.add(new String[]{RandomStringUtils.secure().nextAlphanumeric(1 << 2), RandomStringUtils.secure().nextAlphanumeric(1 << 10)});
         }
 
         return testCases.iterator();

@@ -30,7 +30,7 @@ public abstract class BaseRealFilter4<T> implements QueryFilter4 {
     private final QueryParam queryParam;
 
     @JsonCreator
-    public BaseRealFilter4(@JsonProperty("queryParam") QueryParam queryParam ) {
+    public BaseRealFilter4(@JsonProperty("queryParam") QueryParam queryParam) {
         this.queryParam = queryParam;
     }
 

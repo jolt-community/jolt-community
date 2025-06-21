@@ -19,25 +19,24 @@ import com.bazaarvoice.jolt.cardinality.CardinalityCompositeSpec;
 import com.bazaarvoice.jolt.common.Optional;
 import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
-
 import jakarta.inject.Inject;
+
 import java.util.Map;
 
 /**
- *
  * The CardinalityTransform changes the cardinality of input JSON data elements.
  * The impetus for the CardinalityTransform, was to deal with data sources that are inconsistent with
- *  respect to the cardinality of their returned data.
- *
+ * respect to the cardinality of their returned data.
+ * <p>
  * For example, say you know that there will be a "photos" element in a document.  If your underlying data
- *  source is trying to be nice, it may adjust the "type" of the photos element, depending on how many
- *  photos there actually are.
- *
+ * source is trying to be nice, it may adjust the "type" of the photos element, depending on how many
+ * photos there actually are.
+ * <p>
  * Single photo :
  * <pre>
  *     "photos" : { "url" : "pants.com/1.jpg" }  // photos element is a "single" map entry
  * </pre>
- *
+ * <p>
  * Or multiple photos :
  * <pre>
  *     "photos" : [
@@ -45,17 +44,17 @@ import java.util.Map;
  *        { "url" : "pants.com/2.jpg" }
  *     ]
  * </pre>
- *
+ * <p>
  * The Shiftr and Defaultr transforms can't handle that variability, so the CardinalityTransform was
- *  created to "fix" document, so that the rest of the transforms can _assume_ "photos" will be an Array.
- *
- *
+ * created to "fix" document, so that the rest of the transforms can _assume_ "photos" will be an Array.
+ * <p>
+ * <p>
  * At a base level, a single Cardinality "command" maps data into a "ONE" or "MANY" state.
- *
+ * <p>
  * The idea is that you can start with a copy your JSON input and modify it into a Cardinality spec by
- *  specifying a "cardinality" for each piece of data that you care about changing in the output.
+ * specifying a "cardinality" for each piece of data that you care about changing in the output.
  * Input data that are not called out in the spec will remain in the output unchanged.
- *
+ * <p>
  * For example, given this simple input JSON :
  * <pre>
  * {
@@ -80,32 +79,32 @@ import java.util.Map;
  *   }
  * }
  * </pre>
- *
+ * <p>
  * In this case, we turn the array "[ 5, 4 ]" into a single value by pulling the first index of the array.
  * Hence, the output has "rating : 5".
- *
+ * <p>
  * Valid Cardinality Values (RHS : right hand side)
- *
+ * <p>
  * 'ONE'
- *   If the input value is a List, grab the first element in that list, and set it as the data for that element
- *   For all other input value types, no-op.
- *
+ * If the input value is a List, grab the first element in that list, and set it as the data for that element
+ * For all other input value types, no-op.
+ * <p>
  * 'MANY'
- *   If the input is not a List, make a list and set the first element to be the input value.
- *   If the input is "null", make it be an empty list.
- *   If the input is a list, no-op
- *
- *
+ * If the input is not a List, make a list and set the first element to be the input value.
+ * If the input is "null", make it be an empty list.
+ * If the input is a list, no-op
+ * <p>
+ * <p>
  * Cardinality Wildcards
- *
+ * <p>
  * As shown above, Cardinality specs can be entirely made up of literal string values, but wildcards similar
  * to some of those used by Shiftr can be used.
- *
+ * <p>
  * '*' Wildcard
- *   Valid only on the LHS ( input JSON keys ) side of a Cardinality Spec
- *   Unlike shiftr, the '*' wildcard can only be used by itself. It can be used
- *   achieve a for/each manner of processing input.
- *
+ * Valid only on the LHS ( input JSON keys ) side of a Cardinality Spec
+ * Unlike shiftr, the '*' wildcard can only be used by itself. It can be used
+ * achieve a for/each manner of processing input.
+ * <p>
  * Let's say we have the following input :
  * <pre>
  * {
@@ -146,11 +145,11 @@ import java.util.Map;
  *   ]
  * }
  * </pre>
- *
+ * <p>
  * '@' Wildcard
- *   Valid only on the LHS of the spec.
- *   This wildcard should be used when content nested within modified content needs to be modified as well.
- *
+ * Valid only on the LHS of the spec.
+ * This wildcard should be used when content nested within modified content needs to be modified as well.
+ * <p>
  * Let's say we have the following input:
  * <pre>
  * {
@@ -177,8 +176,8 @@ import java.util.Map;
  *   }
  * }
  * </pre>
- *
- *
+ * <p>
+ * <p>
  * Cardinality Logic Table
  *
  * <pre>
@@ -206,16 +205,16 @@ public class CardinalityTransform implements SpecDriven, Transform {
      * @throws com.bazaarvoice.jolt.exception.SpecException for a malformed spec
      */
     @Inject
-    public CardinalityTransform( Object spec ) {
+    public CardinalityTransform(Object spec) {
 
-        if ( spec == null ){
-            throw new SpecException( "CardinalityTransform expected a spec of Map type, got 'null'." );
+        if (spec == null) {
+            throw new SpecException("CardinalityTransform expected a spec of Map type, got 'null'.");
         }
-        if ( ! ( spec instanceof Map) ) {
-            throw new SpecException( "CardinalityTransform expected a spec of Map type, got " + spec.getClass().getSimpleName() );
+        if (!(spec instanceof Map)) {
+            throw new SpecException("CardinalityTransform expected a spec of Map type, got " + spec.getClass().getSimpleName());
         }
 
-        rootSpec = new CardinalityCompositeSpec( ROOT_KEY, (Map<String, Object>) spec );
+        rootSpec = new CardinalityCompositeSpec(ROOT_KEY, (Map<String, Object>) spec);
     }
 
 
@@ -225,12 +224,12 @@ public class CardinalityTransform implements SpecDriven, Transform {
      * @param input the JSON object to transform
      * @return the output object with data shifted to it
      * @throws com.bazaarvoice.jolt.exception.TransformException for a malformed spec or if there are issues during
-     * the transform
+     *                                                           the transform
      */
     @Override
-    public Object transform( Object input ) {
+    public Object transform(Object input) {
 
-        rootSpec.apply( ROOT_KEY, Optional.of( input ), new WalkedPath(), null, null );
+        rootSpec.apply(ROOT_KEY, Optional.of(input), new WalkedPath(), null, null);
 
         return input;
     }

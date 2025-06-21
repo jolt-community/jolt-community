@@ -20,11 +20,11 @@ package com.bazaarvoice.jolt.exception;
  */
 public class TransformException extends JoltException {
 
-    public TransformException( String msg ) {
+    public TransformException(String msg) {
         super(msg);
     }
 
-    public TransformException( String msg, Throwable t ) {
+    public TransformException(String msg, Throwable t) {
         super(msg, t);
     }
 }

@@ -23,7 +23,7 @@ import java.util.Map;
 public class ExplodingTestTransform implements ContextualTransform {
 
     @Override
-    public Object transform( Object input, Map<String, Object> context ) {
-        throw new TransformException( "kaboom" );
+    public Object transform(Object input, Map<String, Object> context) {
+        throw new TransformException("kaboom");
     }
 }

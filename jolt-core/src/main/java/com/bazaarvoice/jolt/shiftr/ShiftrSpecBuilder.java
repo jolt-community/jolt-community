@@ -24,14 +24,13 @@ import com.bazaarvoice.jolt.shiftr.spec.ShiftrSpec;
 import java.util.Map;
 
 public class ShiftrSpecBuilder extends SpecBuilder<ShiftrSpec> {
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     @Override
-    public ShiftrSpec createSpec( final String keyString, final Object rawRhs ) {
-        if( rawRhs instanceof Map ) {
-            return new ShiftrCompositeSpec(keyString, (Map<String, Object>) rawRhs );
-        }
-        else {
-            return new ShiftrLeafSpec(keyString, rawRhs );
+    public ShiftrSpec createSpec(final String keyString, final Object rawRhs) {
+        if (rawRhs instanceof Map) {
+            return new ShiftrCompositeSpec(keyString, (Map<String, Object>) rawRhs);
+        } else {
+            return new ShiftrLeafSpec(keyString, rawRhs);
         }
     }
 }

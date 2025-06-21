@@ -27,36 +27,35 @@ import java.lang.reflect.Constructor;
 public class DefaultChainrInstantiator implements ChainrInstantiator {
 
     @Override
-    public JoltTransform hydrateTransform( ChainrEntry entry ) {
+    public JoltTransform hydrateTransform(ChainrEntry entry) {
 
         Object spec = entry.getSpec();
         Class<? extends JoltTransform> transformClass = entry.getJoltTransformClass();
 
         try {
             // If the transform class is a SpecTransform, we try to construct it with the provided spec.
-            if ( entry.isSpecDriven() ) {
+            if (entry.isSpecDriven()) {
 
                 try {
                     // Lookup a Constructor with a Single "Object" arg.
-                    Constructor<? extends JoltTransform> constructor = transformClass.getConstructor( Object.class );
+                    Constructor<? extends JoltTransform> constructor = transformClass.getConstructor(Object.class);
 
-                    return (JoltTransform) constructor.newInstance( spec );
+                    return (JoltTransform) constructor.newInstance(spec);
 
-                } catch ( NoSuchMethodException nsme ) {
+                } catch (NoSuchMethodException nsme) {
                     // This means the transform class "violated" the SpecTransform marker interface
-                    throw new SpecException( "JOLT Chainr encountered an exception constructing SpecTransform className:" + transformClass.getCanonicalName() +
-                            ".  Specifically, no single arg constructor found" + entry.getErrorMessageIndexSuffix(), nsme );
+                    throw new SpecException("JOLT Chainr encountered an exception constructing SpecTransform className:" + transformClass.getCanonicalName() +
+                            ".  Specifically, no single arg constructor found" + entry.getErrorMessageIndexSuffix(), nsme);
                 }
-            }
-            else {
+            } else {
                 // The opClass is just a Transform, so just create a newInstance of it.
-                return transformClass.newInstance();
+                return transformClass.getDeclaredConstructor().newInstance();
             }
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             // FYI 3 exceptions are known to be thrown here
             // IllegalAccessException, InvocationTargetException, InstantiationException
-            throw new SpecException( "JOLT Chainr encountered an exception constructing Transform className:"
-                    + transformClass.getCanonicalName() + entry.getErrorMessageIndexSuffix(), e );
+            throw new SpecException("JOLT Chainr encountered an exception constructing Transform className:"
+                    + transformClass.getCanonicalName() + entry.getErrorMessageIndexSuffix(), e);
         }
     }
 }

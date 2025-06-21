@@ -21,7 +21,7 @@ import com.bazaarvoice.jolt.common.Optional;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings( "deprecated" )
+@SuppressWarnings("deprecated")
 public class Lists {
 
     /**
@@ -30,9 +30,9 @@ public class Lists {
     public static final class firstElement extends Function.ListFunction {
 
         @Override
-        protected Optional applyList( final List argList ) {
+        protected Optional applyList(final List argList) {
             return argList.size() > 0 ?
-                    Optional.of( argList.get(0) ) :
+                    Optional.of(argList.get(0)) :
                     Optional.empty();
         }
     }
@@ -43,7 +43,7 @@ public class Lists {
     public static final class lastElement extends Function.ListFunction {
 
         @Override
-        protected Optional applyList( final List argList ) {
+        protected Optional applyList(final List argList) {
             return argList.size() > 0 ?
                     Optional.of(argList.get(argList.size() - 1)) :
                     Optional.empty();
@@ -56,9 +56,9 @@ public class Lists {
     public static final class elementAt extends Function.ArgDrivenListFunction<Integer> {
 
         @Override
-        protected Optional<Object> applyList( final Integer specialArg, final List<Object> args ) {
-            if ( specialArg != null && args != null && args.size() > specialArg ) {
-                return Optional.of( args.get( specialArg ) );
+        protected Optional<Object> applyList(final Integer specialArg, final List<Object> args) {
+            if (specialArg != null && args != null && args.size() > specialArg) {
+                return Optional.of(args.get(specialArg));
             }
             return Optional.empty();
         }
@@ -69,13 +69,13 @@ public class Lists {
      */
     public static final class toList extends Function.BaseFunction<List> {
         @Override
-        protected Optional<Object> applyList( final List input ) {
-            return Optional.<Object>of( input );
+        protected Optional<Object> applyList(final List input) {
+            return Optional.<Object>of(input);
         }
 
         @Override
-        protected Optional<List> applySingle( final Object arg ) {
-            return Optional.<List>of( Arrays.asList( arg ) );
+        protected Optional<List> applySingle(final Object arg) {
+            return Optional.<List>of(Arrays.asList(arg));
         }
     }
 
@@ -85,21 +85,21 @@ public class Lists {
     public static final class sort extends Function.BaseFunction {
 
         @Override
-        protected Optional applyList( final List argList ) {
+        protected Optional applyList(final List argList) {
             try {
                 Object[] dest = argList.toArray();
-                Arrays.sort( dest );
-                return Optional.<Object>of( dest );
+                Arrays.sort(dest);
+                return Optional.<Object>of(dest);
             }
             // if any of the elements are not Comparable<?> it'll throw a ClassCastException
-            catch(Exception ignored) {
+            catch (Exception ignored) {
                 return Optional.empty();
             }
         }
 
         @Override
-        protected Optional applySingle( final Object arg ) {
-            return Optional.of( arg );
+        protected Optional applySingle(final Object arg) {
+            return Optional.of(arg);
         }
     }
 }

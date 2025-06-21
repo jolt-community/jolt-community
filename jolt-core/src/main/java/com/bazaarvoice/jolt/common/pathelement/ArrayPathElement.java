@@ -27,20 +27,17 @@ import com.bazaarvoice.jolt.exception.SpecException;
 
 public class ArrayPathElement extends BasePathElement implements MatchablePathElement, EvaluatablePathElement {
 
-    public enum ArrayPathType { AUTO_EXPAND, REFERENCE, HASH, TRANSPOSE, EXPLICIT_INDEX }
-
     private final ArrayPathType arrayPathType;
     private final PathReference ref;
     private final TransposePathElement transposePathElement;
-
     private final String canonicalForm;
     private final String arrayIndex;
 
-    public ArrayPathElement( String key ) {
+    public ArrayPathElement(String key) {
         super(key);
 
-        if ( key.charAt( 0 ) != '[' || key.charAt( key.length() - 1 ) != ']') {
-            throw new SpecException( "Invalid ArrayPathElement key:" + key );
+        if (key.charAt(0) != '[' || key.charAt(key.length() - 1) != ']') {
+            throw new SpecException("Invalid ArrayPathElement key:" + key);
         }
 
         ArrayPathType apt;
@@ -48,39 +45,34 @@ public class ArrayPathElement extends BasePathElement implements MatchablePathEl
         TransposePathElement tpe = null;
         String aI = "";
 
-        if ( key.length() == 2 ) {
+        if (key.length() == 2) {
             apt = ArrayPathType.AUTO_EXPAND;
             canonicalForm = "[]";
-        }
-        else {
-            String meat = key.substring( 1, key.length() - 1 );  // trim the [ ]
-            char firstChar = meat.charAt( 0 );
+        } else {
+            String meat = key.substring(1, key.length() - 1);  // trim the [ ]
+            char firstChar = meat.charAt(0);
 
-            if ( AmpReference.TOKEN.equals( firstChar ) ) {
-                r = new AmpReference( meat );
+            if (AmpReference.TOKEN.equals(firstChar)) {
+                r = new AmpReference(meat);
                 apt = ArrayPathType.REFERENCE;
                 canonicalForm = "[" + r.getCanonicalForm() + "]";
-            }
-            else if ( HashReference.TOKEN.equals( firstChar ) ) {
-                r = new HashReference( meat );
+            } else if (HashReference.TOKEN.equals(firstChar)) {
+                r = new HashReference(meat);
                 apt = ArrayPathType.HASH;
 
                 canonicalForm = "[" + r.getCanonicalForm() + "]";
-            }
-            else if( '@' == firstChar ) {
+            } else if ('@' == firstChar) {
                 apt = ArrayPathType.TRANSPOSE;
 
-                tpe = TransposePathElement.parse( meat );
+                tpe = TransposePathElement.parse(meat);
                 canonicalForm = "[" + tpe.getCanonicalForm() + "]";
-            }
-            else {
+            } else {
                 aI = verifyStringIsNonNegativeInteger(meat);
-                if ( aI != null ) {
+                if (aI != null) {
                     apt = ArrayPathType.EXPLICIT_INDEX;
                     canonicalForm = "[" + aI + "]";
-                }
-                else {
-                    throw new SpecException( "Bad explict array index:" + meat + " from key:" + key );
+                } else {
+                    throw new SpecException("Bad explict array index:" + meat + " from key:" + key);
                 }
             }
         }
@@ -91,6 +83,23 @@ public class ArrayPathElement extends BasePathElement implements MatchablePathEl
         arrayIndex = aI;
     }
 
+    /**
+     * @return the String version of a non-Negative integer, else null
+     */
+    private static String verifyStringIsNonNegativeInteger(String key) {
+        try {
+            int number = Integer.parseInt(key);
+            if (number >= 0) {
+                return key;
+            } else {
+                return null;
+            }
+        } catch (NumberFormatException nfe) {
+            // Jolt should not throw any exceptions just because the input data does not match what is expected.
+            // Thus the exception is being swallowed.
+            return null;
+        }
+    }
 
     @Override
     public String getCanonicalForm() {
@@ -98,9 +107,9 @@ public class ArrayPathElement extends BasePathElement implements MatchablePathEl
     }
 
     @Override
-    public String evaluate( WalkedPath walkedPath ) {
+    public String evaluate(WalkedPath walkedPath) {
 
-        switch ( arrayPathType ) {
+        switch (arrayPathType) {
             case AUTO_EXPAND:
                 return canonicalForm;
 
@@ -108,77 +117,55 @@ public class ArrayPathElement extends BasePathElement implements MatchablePathEl
                 return arrayIndex;
 
             case HASH:
-                MatchedElement element = walkedPath.elementFromEnd( ref.getPathIndex() ).getMatchedElement();
+                MatchedElement element = walkedPath.elementFromEnd(ref.getPathIndex()).getMatchedElement();
                 Integer index = element.getHashCount();
                 return index.toString();
 
             case TRANSPOSE:
-                String key = transposePathElement.evaluate( walkedPath );
-                return verifyStringIsNonNegativeInteger( key );
+                String key = transposePathElement.evaluate(walkedPath);
+                return verifyStringIsNonNegativeInteger(key);
 
             case REFERENCE:
-                MatchedElement lpe = walkedPath.elementFromEnd( ref.getPathIndex() ).getMatchedElement();
+                MatchedElement lpe = walkedPath.elementFromEnd(ref.getPathIndex()).getMatchedElement();
                 String keyPart;
 
-                if ( ref instanceof PathAndGroupReference ) {
-                    keyPart = lpe.getSubKeyRef( ( (PathAndGroupReference) ref).getKeyGroup() );
-                }
-                else {
-                    keyPart = lpe.getSubKeyRef( 0 );
+                if (ref instanceof PathAndGroupReference) {
+                    keyPart = lpe.getSubKeyRef(((PathAndGroupReference) ref).getKeyGroup());
+                } else {
+                    keyPart = lpe.getSubKeyRef(0);
                 }
 
-                return verifyStringIsNonNegativeInteger( keyPart );
+                return verifyStringIsNonNegativeInteger(keyPart);
             default:
-                throw new IllegalStateException( "ArrayPathType enum added two without updating this switch statement." );
-        }
-    }
-
-    /**
-     * @return the String version of a non-Negative integer, else null
-     */
-    private static String verifyStringIsNonNegativeInteger( String key ) {
-        try
-        {
-            int number = Integer.parseInt( key );
-            if ( number >= 0 ) {
-                return key;
-            }
-            else {
-                return null;
-            }
-        }
-        catch ( NumberFormatException nfe ) {
-            // Jolt should not throw any exceptions just because the input data does not match what is expected.
-            // Thus the exception is being swallowed.
-            return null;
+                throw new IllegalStateException("ArrayPathType enum added two without updating this switch statement.");
         }
     }
 
     public Integer getExplicitArrayIndex() {
         try {
-            return Integer.parseInt( arrayIndex );
-        }
-        catch ( Exception ignored ) {
+            return Integer.parseInt(arrayIndex);
+        } catch (Exception ignored) {
             return null;
         }
     }
 
     public boolean isExplicitArrayIndex() {
-        return arrayPathType.equals( ArrayPathType.EXPLICIT_INDEX );
+        return arrayPathType.equals(ArrayPathType.EXPLICIT_INDEX);
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
-        String evaled = evaluate( walkedPath );
-        if ( evaled.equals( dataKey ) ) {
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
+        String evaled = evaluate(walkedPath);
+        if (evaled.equals(dataKey)) {
             Optional<Integer> origSizeOptional = walkedPath.lastElement().getOrigSize();
-            if(origSizeOptional.isPresent()) {
-                return new ArrayMatchedElement( evaled, origSizeOptional.get());
-            }
-            else {
+            if (origSizeOptional.isPresent()) {
+                return new ArrayMatchedElement(evaled, origSizeOptional.get());
+            } else {
                 return null;
             }
         }
         return null;
     }
+
+    public enum ArrayPathType {AUTO_EXPAND, REFERENCE, HASH, TRANSPOSE, EXPLICIT_INDEX}
 }

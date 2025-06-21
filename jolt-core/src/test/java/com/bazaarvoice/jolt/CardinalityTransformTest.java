@@ -27,7 +27,7 @@ public class CardinalityTransformTest {
 
     @DataProvider
     public Object[][] getTestCaseUnits() {
-        return new Object[][] {
+        return new Object[][]{
                 {"oneLiteralTestData"},
                 {"manyLiteralTestData"},
                 {"starTestData"},
@@ -35,31 +35,31 @@ public class CardinalityTransformTest {
         };
     }
 
-    @Test (dataProvider = "getTestCaseUnits")
+    @Test(dataProvider = "getTestCaseUnits")
     public void runTestUnits(String testCaseName) throws IOException {
 
         String testPath = "/json/cardinality/" + testCaseName;
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath + ".json" );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
 
-        Object input = testUnit.get( "input" );
-        Object spec = testUnit.get( "spec" );
-        Object expected = testUnit.get( "expected" );
+        Object input = testUnit.get("input");
+        Object spec = testUnit.get("spec");
+        Object expected = testUnit.get("expected");
 
-        CardinalityTransform cardinalityTransform = new CardinalityTransform( spec );
-        Object actual = cardinalityTransform.transform( input );
+        CardinalityTransform cardinalityTransform = new CardinalityTransform(spec);
+        Object actual = cardinalityTransform.transform(input);
 
-        JoltTestUtil.runDiffy( "failed case " + testPath, expected, actual );
+        JoltTestUtil.runDiffy("failed case " + testPath, expected, actual);
     }
 
-    @Test(expectedExceptions=SpecException.class)
+    @Test(expectedExceptions = SpecException.class)
     public void testSpecExceptions() throws IOException {
         String testPath = "/json/cardinality/failCardinalityType";
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath + ".json" );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
 
-        Object spec = testUnit.get( "spec" );
+        Object spec = testUnit.get("spec");
 
         // Should throw exception
-        new CardinalityTransform( spec );
+        new CardinalityTransform(spec);
     }
 
     @Test

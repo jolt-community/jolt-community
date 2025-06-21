@@ -34,19 +34,18 @@ public class TemplatrSpecBuilder extends SpecBuilder<ModifierSpec> {
     private final Map<String, Function> functionsMap;
 
 
-    public TemplatrSpecBuilder( OpMode opMode, Map<String, Function> functionsMap ) {
+    public TemplatrSpecBuilder(OpMode opMode, Map<String, Function> functionsMap) {
         this.opMode = opMode;
         this.functionsMap = functionsMap;
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public ModifierSpec createSpec( final String lhs, final Object rhs ) {
-        if( rhs instanceof Map  && (!( (Map<?, ?>) rhs ).isEmpty())) {
-            return new ModifierCompositeSpec(lhs, (Map)rhs, opMode, this );
-        }
-        else {
-            return new ModifierLeafSpec( lhs, rhs, opMode, functionsMap );
+    @SuppressWarnings("unchecked")
+    public ModifierSpec createSpec(final String lhs, final Object rhs) {
+        if (rhs instanceof Map && (!((Map<?, ?>) rhs).isEmpty())) {
+            return new ModifierCompositeSpec(lhs, (Map) rhs, opMode, this);
+        } else {
+            return new ModifierLeafSpec(lhs, rhs, opMode, functionsMap);
         }
     }
 }

@@ -60,12 +60,12 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
 
     static {
         orderMap = new HashMap<>();
-        orderMap.put( AmpPathElement.class, 1 );
-        orderMap.put( StarRegexPathElement.class, 2 );
-        orderMap.put( StarDoublePathElement.class, 3 );
-        orderMap.put( StarSinglePathElement.class, 4 );
-        orderMap.put( StarAllPathElement.class, 5 );
-        computedKeysComparator = ComputedKeysComparator.fromOrder( orderMap );
+        orderMap.put(AmpPathElement.class, 1);
+        orderMap.put(StarRegexPathElement.class, 2);
+        orderMap.put(StarDoublePathElement.class, 3);
+        orderMap.put(StarSinglePathElement.class, 4);
+        orderMap.put(StarAllPathElement.class, 5);
+        computedKeysComparator = ComputedKeysComparator.fromOrder(orderMap);
         specBuilder = new ShiftrSpecBuilder();
     }
 
@@ -75,40 +75,39 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
     private final List<ShiftrSpec> computedChildren;        // children that are regex matches against the input data
     private final ExecutionStrategy executionStrategy;
 
-    public ShiftrCompositeSpec(String rawKey, Map<String, Object> spec ) {
-        super( rawKey );
+    public ShiftrCompositeSpec(String rawKey, Map<String, Object> spec) {
+        super(rawKey);
 
         ArrayList<ShiftrSpec> special = new ArrayList<>();
         Map<String, ShiftrSpec> literals = new LinkedHashMap<>();
         ArrayList<ShiftrSpec> computed = new ArrayList<>();
 
         // self check
-        if ( pathElement instanceof AtPathElement ) {
-            throw new SpecException( "@ Shiftr key, can not have children." );
+        if (pathElement instanceof AtPathElement) {
+            throw new SpecException("@ Shiftr key, can not have children.");
         }
-        if ( pathElement instanceof DollarPathElement ) {
-            throw new SpecException( "$ Shiftr key, can not have children." );
-        }
-
-        List<ShiftrSpec> children = specBuilder.createSpec( spec );
-
-        if ( children.isEmpty() ) {
-            throw new SpecException( "Shift ShiftrSpec format error : ShiftrSpec line with empty {} as value is not valid." );
+        if (pathElement instanceof DollarPathElement) {
+            throw new SpecException("$ Shiftr key, can not have children.");
         }
 
-        for ( ShiftrSpec child : children ) {
-            if ( child.pathElement instanceof LiteralPathElement ) {
-                literals.put( child.pathElement.getRawKey(), child );
+        List<ShiftrSpec> children = specBuilder.createSpec(spec);
+
+        if (children.isEmpty()) {
+            throw new SpecException("Shift ShiftrSpec format error : ShiftrSpec line with empty {} as value is not valid.");
+        }
+
+        for (ShiftrSpec child : children) {
+            if (child.pathElement instanceof LiteralPathElement) {
+                literals.put(child.pathElement.getRawKey(), child);
             }
             // special is it is "@" or "$"
-            else if ( child.pathElement instanceof AtPathElement ||
-                      child.pathElement instanceof HashPathElement ||
-                      child.pathElement instanceof DollarPathElement ||
-                      child.pathElement instanceof TransposePathElement ) {
-                special.add( child );
-            }
-            else {   // star || (& with children)
-                computed.add( child );
+            else if (child.pathElement instanceof AtPathElement ||
+                    child.pathElement instanceof HashPathElement ||
+                    child.pathElement instanceof DollarPathElement ||
+                    child.pathElement instanceof TransposePathElement) {
+                special.add(child);
+            } else {   // star || (& with children)
+                computed.add(child);
             }
         }
 
@@ -118,9 +117,9 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
         special.trimToSize();
         computed.trimToSize();
 
-        specialChildren = Collections.unmodifiableList( special );
-        literalChildren = Collections.unmodifiableMap( literals );
-        computedChildren = Collections.unmodifiableList( computed );
+        specialChildren = Collections.unmodifiableList(special);
+        literalChildren = Collections.unmodifiableMap(literals);
+        computedChildren = Collections.unmodifiableList(computed);
 
         executionStrategy = determineExecutionStrategy();
     }
@@ -138,20 +137,19 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
 
     @Override
     public ExecutionStrategy determineExecutionStrategy() {
-        if ( computedChildren.isEmpty() ) {
+        if (computedChildren.isEmpty()) {
             return ExecutionStrategy.AVAILABLE_LITERALS;
-        }
-        else if ( literalChildren.isEmpty() ) {
+        } else if (literalChildren.isEmpty()) {
             return ExecutionStrategy.COMPUTED;
         }
 
-        for ( BaseSpec computed : computedChildren ) {
-            if ( ! (computed.getPathElement() instanceof StarPathElement starPathElement) ) {
+        for (BaseSpec computed : computedChildren) {
+            if (!(computed.getPathElement() instanceof StarPathElement starPathElement)) {
                 return ExecutionStrategy.CONFLICT;
             }
 
-            for ( String literal : literalChildren.keySet() ) {
-                if ( starPathElement.stringMatch( literal ) ) {
+            for (String literal : literalChildren.keySet()) {
+                if (starPathElement.stringMatch(literal)) {
                     return ExecutionStrategy.CONFLICT;
                 }
             }
@@ -162,47 +160,46 @@ public class ShiftrCompositeSpec extends ShiftrSpec implements OrderedCompositeS
 
     /**
      * If this Spec matches the inputKey, then perform one step in the Shiftr parallel treewalk.
-     *
+     * <p>
      * Step one level down the input "tree" by carefully handling the List/Map nature the input to
-     *  get the "one level down" data.
-     *
+     * get the "one level down" data.
+     * <p>
      * Step one level down the Spec tree by carefully and efficiently applying our children to the
-     *  "one level down" data.
+     * "one level down" data.
      *
      * @return true if this this spec "handles" the inputKey such that no sibling specs need to see it
      */
     @Override
-    public boolean apply( String inputKey, Optional<Object> inputOptional, WalkedPath walkedPath, Map<String,Object> output, Map<String, Object> context )
-    {
-        MatchedElement thisLevel = pathElement.match( inputKey, walkedPath );
-        if ( thisLevel == null ) {
+    public boolean apply(String inputKey, Optional<Object> inputOptional, WalkedPath walkedPath, Map<String, Object> output, Map<String, Object> context) {
+        MatchedElement thisLevel = pathElement.match(inputKey, walkedPath);
+        if (thisLevel == null) {
             return false;
         }
 
         // If we are a TransposePathElement, try to swap the "input" with what we lookup from the Transpose
-        if ( pathElement instanceof TransposePathElement ) {
+        if (pathElement instanceof TransposePathElement) {
 
             TransposePathElement tpe = (TransposePathElement) this.pathElement;
 
             // Note the data found may not be a String, thus we have to call the special objectEvaluate
             // Optional, because the input data could have been a valid null.
-            Optional<Object> optional = tpe.objectEvaluate( walkedPath );
-            if ( !optional.isPresent() ) {
+            Optional<Object> optional = tpe.objectEvaluate(walkedPath);
+            if (!optional.isPresent()) {
                 return false;
             }
             inputOptional = optional;
         }
 
         // add ourselves to the path, so that our children can reference us
-        walkedPath.add( inputOptional.get(), thisLevel );
+        walkedPath.add(inputOptional.get(), thisLevel);
 
         // Handle any special / key based children first, but don't have them block anything
-        for( ShiftrSpec subSpec : specialChildren ) {
-            subSpec.apply( inputKey, inputOptional, walkedPath, output, context );
+        for (ShiftrSpec subSpec : specialChildren) {
+            subSpec.apply(inputKey, inputOptional, walkedPath, output, context);
         }
 
         // Handle the rest of the children
-        executionStrategy.process( this, inputOptional, walkedPath, output, context );
+        executionStrategy.process(this, inputOptional, walkedPath, output, context);
 
         // We are done, so remove ourselves from the walkedPath
         walkedPath.removeLastElement();

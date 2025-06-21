@@ -31,20 +31,20 @@ public class ChainrFactory {
      * @param chainrSpecClassPath The class path that points to the chainr spec.
      * @return a Chainr instance
      */
-    public static Chainr fromClassPath( String chainrSpecClassPath ) {
-        return fromClassPath( chainrSpecClassPath, null );
+    public static Chainr fromClassPath(String chainrSpecClassPath) {
+        return fromClassPath(chainrSpecClassPath, null);
     }
 
     /**
      * Builds a Chainr instance using the spec described in the data via the class path that is passed in.
      *
      * @param chainrSpecClassPath The class path that points to the chainr spec.
-     * @param chainrInstantiator the ChainrInstantiator to use to initialze the Chainr instance
+     * @param chainrInstantiator  the ChainrInstantiator to use to initialze the Chainr instance
      * @return a Chainr instance
      */
-    public static Chainr fromClassPath( String chainrSpecClassPath, ChainrInstantiator chainrInstantiator ) {
-        Object chainrSpec = JsonUtils.classpathToObject( chainrSpecClassPath );
-        return getChainr( chainrInstantiator, chainrSpec );
+    public static Chainr fromClassPath(String chainrSpecClassPath, ChainrInstantiator chainrInstantiator) {
+        Object chainrSpec = JsonUtils.classpathToObject(chainrSpecClassPath);
+        return getChainr(chainrInstantiator, chainrSpec);
     }
 
     /**
@@ -53,8 +53,8 @@ public class ChainrFactory {
      * @param chainrSpecFilePath The file path that points to the chainr spec.
      * @return a Chainr instance
      */
-    public static Chainr fromFileSystem( String chainrSpecFilePath ) {
-        return fromFileSystem( chainrSpecFilePath, null );
+    public static Chainr fromFileSystem(String chainrSpecFilePath) {
+        return fromFileSystem(chainrSpecFilePath, null);
     }
 
     /**
@@ -64,9 +64,9 @@ public class ChainrFactory {
      * @param chainrInstantiator the ChainrInstantiator to use to initialze the Chainr instance
      * @return a Chainr instance
      */
-    public static Chainr fromFileSystem( String chainrSpecFilePath, ChainrInstantiator chainrInstantiator ) {
-        Object chainrSpec = JsonUtils.filepathToObject( chainrSpecFilePath );
-        return getChainr( chainrInstantiator, chainrSpec );
+    public static Chainr fromFileSystem(String chainrSpecFilePath, ChainrInstantiator chainrInstantiator) {
+        Object chainrSpec = JsonUtils.filepathToObject(chainrSpecFilePath);
+        return getChainr(chainrInstantiator, chainrSpec);
     }
 
     /**
@@ -75,42 +75,41 @@ public class ChainrFactory {
      * @param chainrSpecFile The File which contains the chainr spec.
      * @return a Chainr instance
      */
-    public static Chainr fromFile( File chainrSpecFile ) {
-        return fromFile( chainrSpecFile, null );
+    public static Chainr fromFile(File chainrSpecFile) {
+        return fromFile(chainrSpecFile, null);
     }
 
     /**
      * Builds a Chainr instance using the spec described in the File that is passed in.
      *
-     * @param chainrSpecFile The File which contains the chainr spec.
+     * @param chainrSpecFile     The File which contains the chainr spec.
      * @param chainrInstantiator the ChainrInstantiator to use to initialze the Chainr instance
      * @return a Chainr instance
      */
-    public static Chainr fromFile( File chainrSpecFile, ChainrInstantiator chainrInstantiator ) {
+    public static Chainr fromFile(File chainrSpecFile, ChainrInstantiator chainrInstantiator) {
         Object chainrSpec;
         try {
-            FileInputStream fileInputStream = new FileInputStream( chainrSpecFile );
-            chainrSpec = JsonUtils.jsonToObject( fileInputStream );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "Unable to load chainr spec file " + chainrSpecFile.getAbsolutePath() );
+            FileInputStream fileInputStream = new FileInputStream(chainrSpecFile);
+            chainrSpec = JsonUtils.jsonToObject(fileInputStream);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load chainr spec file " + chainrSpecFile.getAbsolutePath());
         }
-        return getChainr( chainrInstantiator, chainrSpec );
+        return getChainr(chainrInstantiator, chainrSpec);
     }
 
     /**
      * The main engine in ChainrFactory for building a Chainr Instance.
      *
      * @param chainrInstantiator The ChainrInstantiator to use. If null it will not be used.
-     * @param chainrSpec The json spec for the chainr transformation
+     * @param chainrSpec         The json spec for the chainr transformation
      * @return the Chainr instance created from the chainrInstantiator and inputStream
      */
-    private static Chainr getChainr( ChainrInstantiator chainrInstantiator, Object chainrSpec ) {
+    private static Chainr getChainr(ChainrInstantiator chainrInstantiator, Object chainrSpec) {
         Chainr chainr;
-        if (chainrInstantiator == null ) {
-            chainr = Chainr.fromSpec( chainrSpec );
-        }
-        else {
-            chainr = Chainr.fromSpec( chainrSpec, chainrInstantiator );
+        if (chainrInstantiator == null) {
+            chainr = Chainr.fromSpec(chainrSpec);
+        } else {
+            chainr = Chainr.fromSpec(chainrSpec, chainrInstantiator);
         }
         return chainr;
     }

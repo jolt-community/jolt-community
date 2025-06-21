@@ -23,48 +23,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  PathElement for the a double "*" wildcard such as tag-*-*.   In this case we can avoid doing any
- *  regex work by doing String begins, ends and mid element exists.
+ * PathElement for the a double "*" wildcard such as tag-*-*.   In this case we can avoid doing any
+ * regex work by doing String begins, ends and mid element exists.
  */
 public class StarDoublePathElement extends BasePathElement implements StarPathElement {
 
-    private final String prefix,suffix, mid;
+    private final String prefix, suffix, mid;
 
-    /**+
+    /**
+     * +
      *
      * @param key : should be a String with two "*" elements.
      */
     public StarDoublePathElement(String key) {
         super(key);
 
-        if ( StringTools.countMatches(key, "*") != 2 ) {
-            throw new IllegalArgumentException( "StarDoublePathElement should have two '*' in its key. Was: " + key );
+        if (StringTools.countMatches(key, "*") != 2) {
+            throw new IllegalArgumentException("StarDoublePathElement should have two '*' in its key. Was: " + key);
         }
 
         String[] split = key.split("\\*");
-        boolean startsWithStar = key.startsWith( "*" );
+        boolean startsWithStar = key.startsWith("*");
         boolean endsWithStar = key.endsWith("*");
-        if (  startsWithStar && endsWithStar) {
+        if (startsWithStar && endsWithStar) {
             prefix = "";
             mid = split[1];
             suffix = "";
-        }
-        else if ( endsWithStar ) {
+        } else if (endsWithStar) {
             prefix = split[0];
             mid = split[1];
             suffix = "";
-        }
-        else if ( startsWithStar ) {
+        } else if (startsWithStar) {
             prefix = "";
             mid = split[1];
             suffix = split[2];
-        }
-        else{
-            prefix=split[0];
-            mid=split[1];
-            suffix=split[2];
+        } else {
+            prefix = split[0];
+            mid = split[1];
+            suffix = split[2];
         }
     }
+
     /**
      * @param literal test to see if the provided string will match this Element's regex
      * @return true if the provided literal will match this Element's regex
@@ -72,7 +71,7 @@ public class StarDoublePathElement extends BasePathElement implements StarPathEl
     @Override
     public boolean stringMatch(String literal) {
         boolean isMatch = false;
-        if(literal.startsWith(prefix) && literal.endsWith(suffix)){
+        if (literal.startsWith(prefix) && literal.endsWith(suffix)) {
 
             isMatch = finMidIndex(literal) > 0;
         }
@@ -84,7 +83,7 @@ public class StarDoublePathElement extends BasePathElement implements StarPathEl
      * starts, we have found a mid match. Also, it will be the first occurrence of the mid in the literal, so we are not 'greedy' to capture as much as
      * in the '*'
      */
-    private int finMidIndex(String literal){
+    private int finMidIndex(String literal) {
         int startOffset = prefix.length() + 1;
         int endOffset = literal.length() - suffix.length() - 1;
 
@@ -98,16 +97,16 @@ public class StarDoublePathElement extends BasePathElement implements StarPathEl
          *      endoffset -> 5 - 0 - 1 = 4
          *  We are left with no substring to search for the mid. Bail out!
          */
-        if(startOffset >= endOffset)  {
+        if (startOffset >= endOffset) {
 
             return -1;
 
         }
         int midIndex = literal.substring(startOffset, endOffset).indexOf(mid);
 
-        if(midIndex >= 0) {
+        if (midIndex >= 0) {
 
-            return midIndex +  startOffset;
+            return midIndex + startOffset;
         }
         return -1;
     }
@@ -115,17 +114,17 @@ public class StarDoublePathElement extends BasePathElement implements StarPathEl
 
     @Override
     public MatchedElement match(String dataKey, WalkedPath walkedPath) {
-        if ( stringMatch( dataKey ) )  {
+        if (stringMatch(dataKey)) {
             List<String> subKeys = new ArrayList<>(2);
 
             int midStart = finMidIndex(dataKey);
             int midEnd = midStart + mid.length();
 
-            String firstStarPart = dataKey.substring( prefix.length(), midStart);
-            subKeys.add( firstStarPart );
+            String firstStarPart = dataKey.substring(prefix.length(), midStart);
+            subKeys.add(firstStarPart);
 
-            String secondStarPart = dataKey.substring( midEnd, dataKey.length() - suffix.length()  );
-            subKeys.add( secondStarPart );
+            String secondStarPart = dataKey.substring(midEnd, dataKey.length() - suffix.length());
+            subKeys.add(secondStarPart);
 
             return new MatchedElement(dataKey, subKeys);
         }

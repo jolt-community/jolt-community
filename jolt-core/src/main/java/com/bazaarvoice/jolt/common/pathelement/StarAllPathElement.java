@@ -22,13 +22,13 @@ import com.bazaarvoice.jolt.common.tree.WalkedPath;
 
 /**
  * PathElement for the lone "*" wildcard.   In this case we can avoid doing any
- *  regex or string comparison work at all.
+ * regex or string comparison work at all.
  */
 public class StarAllPathElement implements StarPathElement {
 
-    public StarAllPathElement( String key ) {
-        if ( ! "*".equals( key ) ) {
-            throw new IllegalArgumentException( "StarAllPathElement key should just be a single '*'.  Was: " + key );
+    public StarAllPathElement(String key) {
+        if (!"*".equals(key)) {
+            throw new IllegalArgumentException("StarAllPathElement key should just be a single '*'.  Was: " + key);
         }
     }
 
@@ -37,18 +37,17 @@ public class StarAllPathElement implements StarPathElement {
      * @return true if the provided literal will match this Element's regex
      */
     @Override
-    public boolean stringMatch( String literal ) {
+    public boolean stringMatch(String literal) {
         return true;
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
         Optional<Integer> origSizeOptional = walkedPath.lastElement().getOrigSize();
-        if(origSizeOptional.isPresent()) {
-            return new ArrayMatchedElement( dataKey, origSizeOptional.get() );
-        }
-        else {
-            return new MatchedElement( dataKey );
+        if (origSizeOptional.isPresent()) {
+            return new ArrayMatchedElement(dataKey, origSizeOptional.get());
+        } else {
+            return new MatchedElement(dataKey);
         }
     }
 

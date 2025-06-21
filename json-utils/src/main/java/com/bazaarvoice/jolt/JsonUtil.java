@@ -23,10 +23,10 @@ import java.util.Map;
 
 /**
  * Utility methods for getting JSON content loaded from
- *  the filesystem, the classpath, or in memory Strings.
- *
+ * the filesystem, the classpath, or in memory Strings.
+ * <p>
  * Also has methods to serialize Java object to JSON strings.
- *
+ * <p>
  * Implementations of this interface can specify their own
  * Jackson ObjectMapper so that Domain specific Java Objects
  * can successfully be serialized and de-serialized.
@@ -34,61 +34,76 @@ import java.util.Map;
 public interface JsonUtil {
 
     // DE-SERIALIZATION
-    Object jsonToObject( String json );
-    Object jsonToObject( String json , String charset );
-    Object jsonToObject( InputStream in );
+    Object jsonToObject(String json);
 
-    Map<String, Object> jsonToMap( String json );
-    Map<String, Object> jsonToMap( String json, String charset );
-    Map<String, Object> jsonToMap( InputStream in );
+    Object jsonToObject(String json, String charset);
 
-    List<Object> jsonToList( String json);
-    List<Object> jsonToList( String json , String charset );
-    List<Object> jsonToList( InputStream in );
+    Object jsonToObject(InputStream in);
 
-    Object           filepathToObject( String filePath );
-    Map<String, Object> filepathToMap( String filePath );
-    List<Object>       filepathToList( String filePath );
+    Map<String, Object> jsonToMap(String json);
 
-    Object           classpathToObject( String classPath );
-    Map<String, Object> classpathToMap( String classPath );
-    List<Object>       classpathToList( String classPath );
+    Map<String, Object> jsonToMap(String json, String charset);
+
+    Map<String, Object> jsonToMap(InputStream in);
+
+    List<Object> jsonToList(String json);
+
+    List<Object> jsonToList(String json, String charset);
+
+    List<Object> jsonToList(InputStream in);
+
+    Object filepathToObject(String filePath);
+
+    Map<String, Object> filepathToMap(String filePath);
+
+    List<Object> filepathToList(String filePath);
+
+    Object classpathToObject(String classPath);
+
+    Map<String, Object> classpathToMap(String classPath);
+
+    List<Object> classpathToList(String classPath);
 
     /**
      * Use the stringToType method instead.
      */
     @Deprecated
-    <T> T jsonTo(    String json, TypeReference<T> typeRef );
+    <T> T jsonTo(String json, TypeReference<T> typeRef);
 
     /**
      * Use the streamToType method instead.
      */
     @Deprecated
-    <T> T jsonTo( InputStream in, TypeReference<T> typeRef );
+    <T> T jsonTo(InputStream in, TypeReference<T> typeRef);
 
-    <T> T stringToType   (String json, TypeReference<T> typeRef );
-    <T> T stringToType   (String json, Class<T> aClass );
+    <T> T stringToType(String json, TypeReference<T> typeRef);
 
-    <T> T classpathToType(String classPath, TypeReference<T> typeRef );
-    <T> T classpathToType(String classPath, Class<T> aClass );
+    <T> T stringToType(String json, Class<T> aClass);
 
-    <T> T fileToType     (String filePath, TypeReference<T> typeRef );
-    <T> T fileToType     (String filePath, Class<T> aClass );
+    <T> T classpathToType(String classPath, TypeReference<T> typeRef);
 
-    <T> T streamToType   ( InputStream in, TypeReference<T> typeRef );
-    <T> T streamToType   ( InputStream in, Class<T> aClass );
+    <T> T classpathToType(String classPath, Class<T> aClass);
 
-    String toJsonString( Object obj );
-    String toPrettyJsonString( Object obj );
+    <T> T fileToType(String filePath, TypeReference<T> typeRef);
+
+    <T> T fileToType(String filePath, Class<T> aClass);
+
+    <T> T streamToType(InputStream in, TypeReference<T> typeRef);
+
+    <T> T streamToType(InputStream in, Class<T> aClass);
+
+    String toJsonString(Object obj);
+
+    String toPrettyJsonString(Object obj);
 
     /**
      * Makes a deep copy of a Map<String, Object> object by converting it to a String and then
      * back onto stock JSON objects.
-     *
+     * <p>
      * Leverages Serialization
      *
      * @param obj object tree to copy
      * @return deep copy of the incoming obj
      */
-    Object cloneJson( Object obj );
+    Object cloneJson(Object obj);
 }

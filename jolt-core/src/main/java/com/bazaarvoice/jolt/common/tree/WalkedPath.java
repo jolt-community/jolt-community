@@ -20,17 +20,17 @@ import java.util.Collection;
 
 /**
  * DataStructure used by a SpecTransform during it's parallel tree walk.
- *
+ * <p>
  * Basically this is Stack that records the steps down the tree that have been taken.
  * For each level, there is a PathStep, which contains a pointer the data of that level,
- *  and a pointer to the LiteralPathElement matched at that level.
- *
+ * and a pointer to the LiteralPathElement matched at that level.
+ * <p>
  * At any given point in time, it represents where in the tree walk a Spec is operating.
  * It is primarily used to by the ShiftrLeafSpec and CardinalityLeafSpec as a reference
  * to lookup real values for output "&(1,1)" references.
- *
+ * <p>
  * It is expected that as the SpecTransform navigates down the tree, MatchedElements will be added and then
- *  removed when that subtree has been walked.
+ * removed when that subtree has been walked.
  */
 public class WalkedPath extends ArrayList<PathStep> {
 
@@ -42,16 +42,16 @@ public class WalkedPath extends ArrayList<PathStep> {
         super(c);
     }
 
-    public WalkedPath( Object treeRef, MatchedElement matchedElement ) {
+    public WalkedPath(Object treeRef, MatchedElement matchedElement) {
         super();
-        this.add( new PathStep( treeRef, matchedElement ) );
+        this.add(new PathStep(treeRef, matchedElement));
     }
 
     /**
      * Convenience method
      */
-    public boolean add( Object treeRef, MatchedElement matchedElement ) {
-        return super.add( new PathStep( treeRef, matchedElement ) );
+    public boolean add(Object treeRef, MatchedElement matchedElement) {
+        return super.add(new PathStep(treeRef, matchedElement));
     }
 
     public PathStep removeLastElement() {

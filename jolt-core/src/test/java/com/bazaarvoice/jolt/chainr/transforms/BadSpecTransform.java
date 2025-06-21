@@ -25,7 +25,7 @@ import com.bazaarvoice.jolt.Transform;
 public class BadSpecTransform implements SpecDriven, Transform {
 
     @Override
-    public Object transform( Object input ) {
+    public Object transform(Object input) {
         return input;
     }
 }

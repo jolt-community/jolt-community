@@ -26,12 +26,12 @@ import java.util.List;
  */
 public class ShiftrWriter extends PathEvaluatingTraversal {
 
-    public ShiftrWriter( String dotNotation ) {
-        super( dotNotation );
+    public ShiftrWriter(String dotNotation) {
+        super(dotNotation);
     }
 
     @Override
-    protected Traversr createTraversr( List<String> paths ) {
-        return new ShiftrTraversr( paths );
+    protected Traversr createTraversr(List<String> paths) {
+        return new ShiftrTraversr(paths);
     }
 }

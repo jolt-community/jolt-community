@@ -42,9 +42,9 @@ public class ArrayOrderObliviousDiffyTest {
     @DataProvider(parallel = true)
     public Iterator<Object[]> testCases() {
         List<Object[]> testCases = Lists.newArrayList();
-        testCases.add(new Object[] {"arrayOrderObliviousDiffy/bugFix95"}); // see https://github.com/bazaarvoice/jolt/issues/95
-        testCases.add(new Object[] {"arrayOrderObliviousDiffy/simpleCase"});
-        testCases.add(new Object[] {"arrayOrderObliviousDiffy/complexCase"});
+        testCases.add(new Object[]{"arrayOrderObliviousDiffy/bugFix95"}); // see https://github.com/bazaarvoice/jolt/issues/95
+        testCases.add(new Object[]{"arrayOrderObliviousDiffy/simpleCase"});
+        testCases.add(new Object[]{"arrayOrderObliviousDiffy/complexCase"});
         return testCases.iterator();
     }
 

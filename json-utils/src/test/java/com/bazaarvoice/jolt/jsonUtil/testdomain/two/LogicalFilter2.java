@@ -24,22 +24,22 @@ import java.util.Map;
 
 /**
  * Note this class does not have any Jackson markup as all the work is being done
- *  in the Jackson Module inside CustomObjectMapperTest2...
- *
+ * in the Jackson Module inside CustomObjectMapperTest2...
+ * <p>
  * This is an improvement over LogicalFilter1 in that we write out an Array but still
- *  have a Map in memory, for easy filter lookup.
+ * have a Map in memory, for easy filter lookup.
  */
 public class LogicalFilter2 implements QueryFilter {
 
     private final QueryParam queryParam;
     private final Map<QueryParam, QueryFilter> filters;
 
-    public LogicalFilter2( QueryParam queryParam, List<QueryFilter> filters ) {
+    public LogicalFilter2(QueryParam queryParam, List<QueryFilter> filters) {
         this.queryParam = queryParam;
 
         this.filters = new LinkedHashMap<>();
-        for ( QueryFilter queryFilter : filters ) {
-            this.filters.put( queryFilter.queryParam(), queryFilter );
+        for (QueryFilter queryFilter : filters) {
+            this.filters.put(queryFilter.queryParam(), queryFilter);
         }
     }
 

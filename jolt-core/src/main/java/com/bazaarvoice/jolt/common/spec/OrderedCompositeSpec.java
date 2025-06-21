@@ -25,10 +25,10 @@ import java.util.Map;
  * An ordered composite spec denotes the spec will have Literal and Computed children that
  * must be Ordered Spec, which should be subject to sorting to before applying any of the
  * determined execution strategies!
- *
+ * <p>
  * This is not enforced directly, but these interface methods ensure the executionStrategy
  * gets the literal and computed children lists to process its exec strategy
- *
+ * <p>
  * The order is provided by a Map<Class, int> and then ordering is achieved using a comparator
  */
 public interface OrderedCompositeSpec extends BaseSpec {

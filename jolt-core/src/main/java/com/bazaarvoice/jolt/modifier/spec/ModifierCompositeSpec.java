@@ -42,11 +42,11 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
 
     static {
         orderMap = new HashMap<>();
-        orderMap.put( ArrayPathElement.class, 1 );
-        orderMap.put( StarRegexPathElement.class, 2 );
-        orderMap.put( StarDoublePathElement.class, 3 );
-        orderMap.put( StarSinglePathElement.class, 4 );
-        orderMap.put( StarAllPathElement.class, 5 );
+        orderMap.put(ArrayPathElement.class, 1);
+        orderMap.put(StarRegexPathElement.class, 2);
+        orderMap.put(StarDoublePathElement.class, 3);
+        orderMap.put(StarSinglePathElement.class, 4);
+        orderMap.put(StarAllPathElement.class, 5);
         computedKeysComparator = ComputedKeysComparator.fromOrder(orderMap);
     }
 
@@ -55,20 +55,20 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
     private final ExecutionStrategy executionStrategy;
     private final DataType specDataType;
 
-    public ModifierCompositeSpec( final String key, final Map<String, Object> spec, final OpMode opMode, TemplatrSpecBuilder specBuilder ) {
+    public ModifierCompositeSpec(final String key, final Map<String, Object> spec, final OpMode opMode, TemplatrSpecBuilder specBuilder) {
         super(key, opMode);
 
         Map<String, ModifierSpec> literals = new LinkedHashMap<>();
         ArrayList<ModifierSpec> computed = new ArrayList<>();
 
-        List<ModifierSpec> children = specBuilder.createSpec( spec );
+        List<ModifierSpec> children = specBuilder.createSpec(spec);
 
         // remember max explicit index from spec to expand input array at runtime
         // need to validate spec such that it does not specify both array and literal path element
         int maxExplicitIndexFromSpec = -1, confirmedMapAtIndex = -1, confirmedArrayAtIndex = -1;
 
-        for(int i=0; i<children.size(); i++) {
-            ModifierSpec childSpec = children.get( i );
+        for (int i = 0; i < children.size(); i++) {
+            ModifierSpec childSpec = children.get(i);
             PathElement childPathElement = childSpec.pathElement;
 
             // for every child,
@@ -77,49 +77,47 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
             //  c) if arrayPathElement,
             //      - make sure its an explicit index type
             //      - save the max explicit index in spec
-            if(childPathElement instanceof LiteralPathElement) {
+            if (childPathElement instanceof LiteralPathElement) {
                 confirmedMapAtIndex = i;
-                literals.put(childPathElement.getRawKey(), childSpec );
-            }
-            else if(childPathElement instanceof ArrayPathElement childArrayPathElement) {
+                literals.put(childPathElement.getRawKey(), childSpec);
+            } else if (childPathElement instanceof ArrayPathElement childArrayPathElement) {
                 confirmedArrayAtIndex = i;
 
-                if(!childArrayPathElement.isExplicitArrayIndex()) {
-                    throw new SpecException( opMode.name() + " RHS only supports explicit Array path element" );
+                if (!childArrayPathElement.isExplicitArrayIndex()) {
+                    throw new SpecException(opMode.name() + " RHS only supports explicit Array path element");
                 }
                 int explicitIndex = childArrayPathElement.getExplicitArrayIndex();
                 // if explicit index from spec also enforces "[...]?" don't bother using that as max index
-                if ( !childSpec.checkValue ) {
-                    maxExplicitIndexFromSpec = Math.max( maxExplicitIndexFromSpec, explicitIndex );
+                if (!childSpec.checkValue) {
+                    maxExplicitIndexFromSpec = Math.max(maxExplicitIndexFromSpec, explicitIndex);
                 }
 
-                literals.put( String.valueOf( explicitIndex ), childSpec );
-            }
-            else {
+                literals.put(String.valueOf(explicitIndex), childSpec);
+            } else {
                 // StarPathElements evaluates to String keys in a Map, EXCEPT StarAllPathElement
                 // which can be both all keys in a map or all indexes in a list
-                if(!(childPathElement instanceof StarAllPathElement)) {
+                if (!(childPathElement instanceof StarAllPathElement)) {
                     confirmedMapAtIndex = i;
                 }
-                computed.add( childSpec );
+                computed.add(childSpec);
             }
 
             // Bail as soon as both confirmedMapAtIndex & confirmedArrayAtIndex is set
-            if(confirmedMapAtIndex > -1 && confirmedArrayAtIndex > -1) {
-                throw new SpecException( opMode.name() + " RHS cannot mix int array index and string map key, defined spec for " + key + " contains: " + children.get( confirmedMapAtIndex ).pathElement.getCanonicalForm() + " conflicting " + children.get( confirmedArrayAtIndex ).pathElement.getCanonicalForm() );
+            if (confirmedMapAtIndex > -1 && confirmedArrayAtIndex > -1) {
+                throw new SpecException(opMode.name() + " RHS cannot mix int array index and string map key, defined spec for " + key + " contains: " + children.get(confirmedMapAtIndex).pathElement.getCanonicalForm() + " conflicting " + children.get(confirmedArrayAtIndex).pathElement.getCanonicalForm());
             }
         }
 
         // set the dataType from calculated indexes
-        specDataType = DataType.determineDataType( confirmedArrayAtIndex, confirmedMapAtIndex, maxExplicitIndexFromSpec );
+        specDataType = DataType.determineDataType(confirmedArrayAtIndex, confirmedMapAtIndex, maxExplicitIndexFromSpec);
 
         // Only the computed children need to be sorted
         computed.sort(computedKeysComparator);
 
         computed.trimToSize();
 
-        literalChildren = Collections.unmodifiableMap( literals );
-        computedChildren = Collections.unmodifiableList( computed );
+        literalChildren = Collections.unmodifiableMap(literals);
+        computedChildren = Collections.unmodifiableList(computed);
 
         // extract generic execution strategy
         executionStrategy = determineExecutionStrategy();
@@ -127,41 +125,40 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public void applyElement( final String inputKey, Optional<Object> inputOptional, MatchedElement thisLevel, final WalkedPath walkedPath, final Map<String, Object> context ) {
+    @SuppressWarnings("unchecked")
+    public void applyElement(final String inputKey, Optional<Object> inputOptional, MatchedElement thisLevel, final WalkedPath walkedPath, final Map<String, Object> context) {
 
         Object input = inputOptional.get();
         // sanity checks, cannot work on a list spec with map input and vice versa, and runtime with null input
-        if(!specDataType.isCompatible( input )) {
+        if (!specDataType.isCompatible(input)) {
             return;
         }
 
         // create input if it is null
-        if( input == null ) {
-            input = specDataType.create( inputKey, walkedPath, opMode );
+        if (input == null) {
+            input = specDataType.create(inputKey, walkedPath, opMode);
             // if input has changed, wrap
-            if ( input != null ) {
-                inputOptional = Optional.of( input );
+            if (input != null) {
+                inputOptional = Optional.of(input);
             }
         }
 
         // if input is List, create special ArrayMatchedElement, which tracks the original size of the input array
-        if(input instanceof List) {
+        if (input instanceof List) {
             // LIST means spec had array index explicitly specified, hence expand if needed
-            if( specDataType instanceof DataType.LIST ) {
-                int origSize = specDataType.expand( input );
-                thisLevel = new ArrayMatchedElement( thisLevel.getRawKey(), origSize );
-            }
-            else {
+            if (specDataType instanceof DataType.LIST) {
+                int origSize = specDataType.expand(input);
+                thisLevel = new ArrayMatchedElement(thisLevel.getRawKey(), origSize);
+            } else {
                 // specDataType is RUNTIME, so spec had no array index explicitly specified, no need to expand
-                thisLevel = new ArrayMatchedElement( thisLevel.getRawKey(), ((List<?>) input).size() );
+                thisLevel = new ArrayMatchedElement(thisLevel.getRawKey(), ((List<?>) input).size());
             }
         }
 
         // add self to walked path
-        walkedPath.add( input, thisLevel );
+        walkedPath.add(input, thisLevel);
         // Handle the rest of the children
-        executionStrategy.process( this, inputOptional, walkedPath, null, context );
+        executionStrategy.process(this, inputOptional, walkedPath, null, context);
         // We are done, so remove ourselves from the walkedPath
         walkedPath.removeLastElement();
     }
@@ -179,16 +176,13 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
     @Override
     public ExecutionStrategy determineExecutionStrategy() {
 
-        if ( computedChildren.isEmpty() ) {
+        if (computedChildren.isEmpty()) {
             return ExecutionStrategy.ALL_LITERALS;
-        }
-        else if ( literalChildren.isEmpty() ) {
+        } else if (literalChildren.isEmpty()) {
             return ExecutionStrategy.COMPUTED;
-        }
-        else if(opMode.equals( OpMode.DEFINER ) && specDataType instanceof DataType.LIST ) {
+        } else if (opMode.equals(OpMode.DEFINER) && specDataType instanceof DataType.LIST) {
             return ExecutionStrategy.CONFLICT;
-        }
-        else {
+        } else {
             return ExecutionStrategy.ALL_LITERALS_WITH_COMPUTED;
         }
     }

@@ -33,30 +33,30 @@ public class JsonUtilsTest {
 
     private Diffy diffy = new Diffy();
 
-    private Map<Object, Object> ab = ImmutableMap.builder().put( "a", "b" ).build();
-    private Map<Object, Object> cd = ImmutableMap.builder().put( "c", "d" ).build();
-    private Map<Object, Object> top = ImmutableMap.builder().put( "A", ab ).put( "B", cd ).build();
+    private Map<Object, Object> ab = ImmutableMap.builder().put("a", "b").build();
+    private Map<Object, Object> cd = ImmutableMap.builder().put("c", "d").build();
+    private Map<Object, Object> top = ImmutableMap.builder().put("A", ab).put("B", cd).build();
 
     private String jsonSourceString = "{ " +
-                                      "    \"a\": { " +
-                                      "        \"b\": [ " +
-                                      "            0, " +
-                                      "            1, " +
-                                      "            2, " +
-                                      "            1.618 " +
-                                      "        ] " +
-                                      "    }, " +
-                                      "    \"p\": [ " +
-                                      "        \"m\", " +
-                                      "        \"n\", " +
-                                      "        { " +
-                                      "            \"1\": 1, " +
-                                      "            \"2\": 2, " +
-                                      "            \"pi\": 3.14159 " +
-                                      "        } " +
-                                      "    ], " +
-                                      "    \"x\": \"y\" " +
-                                      "}\n";
+            "    \"a\": { " +
+            "        \"b\": [ " +
+            "            0, " +
+            "            1, " +
+            "            2, " +
+            "            1.618 " +
+            "        ] " +
+            "    }, " +
+            "    \"p\": [ " +
+            "        \"m\", " +
+            "        \"n\", " +
+            "        { " +
+            "            \"1\": 1, " +
+            "            \"2\": 2, " +
+            "            \"pi\": 3.14159 " +
+            "        } " +
+            "    ], " +
+            "    \"x\": \"y\" " +
+            "}\n";
 
     private Object jsonSource;
 
@@ -75,34 +75,34 @@ public class JsonUtilsTest {
     public Object[][] removeRecursiveCases() {
 
         Map<Object, Object> empty = ImmutableMap.builder().build();
-        Map<Object, Object> barToFoo = ImmutableMap.builder().put( "bar", "foo" ).build();
-        Map<Object, Object> fooToBar = ImmutableMap.builder().put( "foo", "bar" ).build();
-        return new Object[][] {
-                { null, null, null },
-                { null, "foo", null },
-                { "foo", null, "foo" },
-                { "foo", "foo", "foo" },
-                { Maps.newHashMap(), "foo", empty },
-                { Maps.newHashMap( barToFoo ), "foo", barToFoo },
-                { Maps.newHashMap( fooToBar ), "foo", empty },
-                { Lists.newArrayList(), "foo", ImmutableList.builder().build() },
+        Map<Object, Object> barToFoo = ImmutableMap.builder().put("bar", "foo").build();
+        Map<Object, Object> fooToBar = ImmutableMap.builder().put("foo", "bar").build();
+        return new Object[][]{
+                {null, null, null},
+                {null, "foo", null},
+                {"foo", null, "foo"},
+                {"foo", "foo", "foo"},
+                {Maps.newHashMap(), "foo", empty},
+                {Maps.newHashMap(barToFoo), "foo", barToFoo},
+                {Maps.newHashMap(fooToBar), "foo", empty},
+                {Lists.newArrayList(), "foo", ImmutableList.builder().build()},
                 {
-                        Lists.newArrayList( ImmutableList.builder()
-                            .add( Maps.newHashMap( barToFoo ) )
-                            .build() ),
+                        Lists.newArrayList(ImmutableList.builder()
+                                .add(Maps.newHashMap(barToFoo))
+                                .build()),
                         "foo",
                         ImmutableList.builder()
-                            .add( barToFoo )
-                            .build()
+                                .add(barToFoo)
+                                .build()
                 },
                 {
-                        Lists.newArrayList( ImmutableList.builder()
-                            .add( Maps.newHashMap( fooToBar ) )
-                            .build() ),
+                        Lists.newArrayList(ImmutableList.builder()
+                                .add(Maps.newHashMap(fooToBar))
+                                .build()),
                         "foo",
                         ImmutableList.builder()
-                            .add( empty )
-                            .build()
+                                .add(empty)
+                                .build()
                 }
         };
     }
@@ -112,11 +112,11 @@ public class JsonUtilsTest {
     @SuppressWarnings("deprecation")
     public void testRemoveRecursive(Object json, String key, Object expected) throws IOException {
 
-        JsonUtils.removeRecursive( json, key );
+        JsonUtils.removeRecursive(json, key);
 
-        Diffy.Result result = diffy.diff( expected, json );
+        Diffy.Result result = diffy.diff(expected, json);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 
@@ -126,19 +126,19 @@ public class JsonUtilsTest {
 
         String testFixture = "/jsonUtils/jsonUtils-removeRecursive.json";
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> tests = (List<Map<String, Object>>) JsonUtils.classpathToObject( testFixture );
+        List<Map<String, Object>> tests = (List<Map<String, Object>>) JsonUtils.classpathToObject(testFixture);
 
-        for ( Map<String,Object> testUnit : tests ) {
+        for (Map<String, Object> testUnit : tests) {
 
-            Object data = testUnit.get( "input" );
-            String toRemove = (String) testUnit.get( "remove" );
-            Object expected = testUnit.get( "expected" );
+            Object data = testUnit.get("input");
+            String toRemove = (String) testUnit.get("remove");
+            Object expected = testUnit.get("expected");
 
-            JsonUtils.removeRecursive( data, toRemove );
+            JsonUtils.removeRecursive(data, toRemove);
 
-            Diffy.Result result = diffy.diff( expected, data );
+            Diffy.Result result = diffy.diff(expected, data);
             if (!result.isEmpty()) {
-                Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
+                Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
             }
         }
     }
@@ -147,7 +147,7 @@ public class JsonUtilsTest {
     public void validateJacksonClosesInputStreams() {
 
         final Set<String> closedSet = new HashSet<>();
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream( "{ \"a\" : \"b\" }".getBytes() ) {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("{ \"a\" : \"b\" }".getBytes()) {
             @Override
             public void close() throws IOException {
                 closedSet.add("closed");
@@ -156,53 +156,53 @@ public class JsonUtilsTest {
         };
 
         // Pass our wrapped InputStream to Jackson via JsonUtils.
-        Map<String,Object> map = JsonUtils.jsonToMap( byteArrayInputStream );
+        Map<String, Object> map = JsonUtils.jsonToMap(byteArrayInputStream);
 
         // Verify that we in fact loaded some data
-        Assert.assertNotNull( map );
-        Assert.assertEquals( 1, map.size() );
+        Assert.assertNotNull(map);
+        Assert.assertEquals(1, map.size());
 
         // Verify that the close method was in fact called on the InputStream
-        Assert.assertEquals( 1, closedSet.size() );
+        Assert.assertEquals(1, closedSet.size());
     }
 
-    @DataProvider (parallel = true)
-         public Iterator<Object[]> coordinates() throws IOException {
-             List<Object[]> testCases = com.beust.jcommander.internal.Lists.newArrayList();
-     
-             testCases.add(new Object[] { 0, new Object[] {"a", "b", 0}} );
-             testCases.add(new Object[] { 1, new Object[] {"a", "b", 1}} );
-             testCases.add(new Object[] { 2, new Object[] {"a", "b", 2}} );
-             testCases.add(new Object[] { 1.618, new Object[] {"a", "b", 3}} );
-             testCases.add(new Object[] { "m", new Object[] {"p", 0}} );
-             testCases.add(new Object[] { "n", new Object[] {"p", 1}} );
-             testCases.add(new Object[] { 1, new Object[] {"p", 2, "1"}} );
-             testCases.add(new Object[] { 2, new Object[] {"p", 2, "2"}} );
-             testCases.add(new Object[] { 3.14159, new Object[] {"p", 2, "pi"}} );
-             testCases.add(new Object[] { "y", new Object[] {"x"}} );
-     
-             testCases.add(new Object[] { ((Map<?, ?>) jsonSource).get("a"), new Object[] {"a"}} );
-             testCases.add(new Object[] { ((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b"), new Object[] {"a", "b"}} );
-             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(0), new Object[] {"a", "b", 0}} );
-             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(1), new Object[] {"a", "b", 1}} );
-             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(2), new Object[] {"a", "b", 2}} );
-             testCases.add(new Object[] { ((List<?>)((Map<?, ?>)(((Map<?, ?>) jsonSource).get("a"))).get("b")).get(3), new Object[] {"a", "b", 3}} );
-             testCases.add(new Object[] { ((Map<?, ?>) jsonSource).get("p"), new Object[] {"p"}} );
-             testCases.add(new Object[] { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(0), new Object[] {"p", 0}} );
-             testCases.add(new Object[] { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(1), new Object[] {"p", 1}} );
-             testCases.add(new Object[] { ((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2), new Object[] {"p", 2}} );
-             testCases.add(new Object[] { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("1"), new Object[] {"p", 2, "1"}} );
-             testCases.add(new Object[] { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("2"), new Object[] {"p", 2, "2"}} );
-             testCases.add(new Object[] { ((Map<?, ?>)((List<?>)(((Map<?, ?>) jsonSource).get("p"))).get(2)).get("pi"), new Object[] {"p", 2, "pi"}} );
-             testCases.add(new Object[] { ((Map<?, ?>) jsonSource).get("x"), new Object[] {"x"}} );
-     
-             return testCases.iterator();
-         }
+    @DataProvider(parallel = true)
+    public Iterator<Object[]> coordinates() throws IOException {
+        List<Object[]> testCases = com.beust.jcommander.internal.Lists.newArrayList();
+
+        testCases.add(new Object[]{0, new Object[]{"a", "b", 0}});
+        testCases.add(new Object[]{1, new Object[]{"a", "b", 1}});
+        testCases.add(new Object[]{2, new Object[]{"a", "b", 2}});
+        testCases.add(new Object[]{1.618, new Object[]{"a", "b", 3}});
+        testCases.add(new Object[]{"m", new Object[]{"p", 0}});
+        testCases.add(new Object[]{"n", new Object[]{"p", 1}});
+        testCases.add(new Object[]{1, new Object[]{"p", 2, "1"}});
+        testCases.add(new Object[]{2, new Object[]{"p", 2, "2"}});
+        testCases.add(new Object[]{3.14159, new Object[]{"p", 2, "pi"}});
+        testCases.add(new Object[]{"y", new Object[]{"x"}});
+
+        testCases.add(new Object[]{((Map<?, ?>) jsonSource).get("a"), new Object[]{"a"}});
+        testCases.add(new Object[]{((Map<?, ?>) (((Map<?, ?>) jsonSource).get("a"))).get("b"), new Object[]{"a", "b"}});
+        testCases.add(new Object[]{((List<?>) ((Map<?, ?>) (((Map<?, ?>) jsonSource).get("a"))).get("b")).get(0), new Object[]{"a", "b", 0}});
+        testCases.add(new Object[]{((List<?>) ((Map<?, ?>) (((Map<?, ?>) jsonSource).get("a"))).get("b")).get(1), new Object[]{"a", "b", 1}});
+        testCases.add(new Object[]{((List<?>) ((Map<?, ?>) (((Map<?, ?>) jsonSource).get("a"))).get("b")).get(2), new Object[]{"a", "b", 2}});
+        testCases.add(new Object[]{((List<?>) ((Map<?, ?>) (((Map<?, ?>) jsonSource).get("a"))).get("b")).get(3), new Object[]{"a", "b", 3}});
+        testCases.add(new Object[]{((Map<?, ?>) jsonSource).get("p"), new Object[]{"p"}});
+        testCases.add(new Object[]{((List<?>) (((Map<?, ?>) jsonSource).get("p"))).get(0), new Object[]{"p", 0}});
+        testCases.add(new Object[]{((List<?>) (((Map<?, ?>) jsonSource).get("p"))).get(1), new Object[]{"p", 1}});
+        testCases.add(new Object[]{((List<?>) (((Map<?, ?>) jsonSource).get("p"))).get(2), new Object[]{"p", 2}});
+        testCases.add(new Object[]{((Map<?, ?>) ((List<?>) (((Map<?, ?>) jsonSource).get("p"))).get(2)).get("1"), new Object[]{"p", 2, "1"}});
+        testCases.add(new Object[]{((Map<?, ?>) ((List<?>) (((Map<?, ?>) jsonSource).get("p"))).get(2)).get("2"), new Object[]{"p", 2, "2"}});
+        testCases.add(new Object[]{((Map<?, ?>) ((List<?>) (((Map<?, ?>) jsonSource).get("p"))).get(2)).get("pi"), new Object[]{"p", 2, "pi"}});
+        testCases.add(new Object[]{((Map<?, ?>) jsonSource).get("x"), new Object[]{"x"}});
+
+        return testCases.iterator();
+    }
 
     /**
      * Method: navigate(Object source, Object... paths)
      */
-    @Test (dataProvider = "coordinates")
+    @Test(dataProvider = "coordinates")
     @SuppressWarnings("deprecation")
     public void navigator(Object expected, Object[] path) throws Exception {
         Object actual = JsonUtils.navigate(jsonSource, path);

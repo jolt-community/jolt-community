@@ -34,26 +34,26 @@ public class DiffyCliProcessor implements JoltCliProcessor {
      * @param subparsers The Subparsers object to attach the new Subparser to
      */
     @Override
-    public void intializeSubCommand( Subparsers subparsers ) {
-        Subparser diffyParser = subparsers.addParser( "diffy" )
-                .description( "Jolt CLI Diffy Tool. This tool will ingest two JSON inputs (from files or standard input) and " +
+    public void intializeSubCommand(Subparsers subparsers) {
+        Subparser diffyParser = subparsers.addParser("diffy")
+                .description("Jolt CLI Diffy Tool. This tool will ingest two JSON inputs (from files or standard input) and " +
                         "perform the Jolt Diffy operation to detect any differences. The program will return an exit code of " +
-                        "0 if no differences are found or a 1 if a difference is found or an error is encountered." )
-                .defaultHelp( true );
+                        "0 if no differences are found or a 1 if a difference is found or an error is encountered.")
+                .defaultHelp(true);
 
-        diffyParser.addArgument( "filePath1" ).help( "File path to feed to Input #1 for the Diffy operation. " +
-                "This file should contain valid JSON." )
-                .type( Arguments.fileType().verifyExists().verifyIsFile().verifyCanRead() );
-        diffyParser.addArgument( "filePath2" ).help( "File path to feed to Input #2 for the Diffy operation. " +
-                "This file should contain valid JSON. " +
-                "If this argument is not specified then standard input will be used." )
-                .type( Arguments.fileType().verifyExists().verifyIsFile().verifyCanRead() )
-                .nargs( "?" ).setDefault( (File) null );   // these last two method calls make filePath2 optional
+        diffyParser.addArgument("filePath1").help("File path to feed to Input #1 for the Diffy operation. " +
+                        "This file should contain valid JSON.")
+                .type(Arguments.fileType().verifyExists().verifyIsFile().verifyCanRead());
+        diffyParser.addArgument("filePath2").help("File path to feed to Input #2 for the Diffy operation. " +
+                        "This file should contain valid JSON. " +
+                        "If this argument is not specified then standard input will be used.")
+                .type(Arguments.fileType().verifyExists().verifyIsFile().verifyCanRead())
+                .nargs("?").setDefault((File) null);   // these last two method calls make filePath2 optional
 
-        diffyParser.addArgument( "-s" ).help( "Diffy will suppress output and run silently." )
-                .action( Arguments.storeTrue() );
-        diffyParser.addArgument( "-a" ).help( "Diffy will not consider array order when detecting differences" )
-                .action( Arguments.storeTrue() );
+        diffyParser.addArgument("-s").help("Diffy will suppress output and run silently.")
+                .action(Arguments.storeTrue());
+        diffyParser.addArgument("-a").help("Diffy will not consider array order when detecting differences")
+                .action(Arguments.storeTrue());
     }
 
     /**
@@ -63,34 +63,33 @@ public class DiffyCliProcessor implements JoltCliProcessor {
      * @return true if no differences are found, false if a difference is found or an error occurs
      */
     @Override
-    public boolean process( Namespace ns ) {
-        boolean suppressOutput = ns.getBoolean( "s" );
+    public boolean process(Namespace ns) {
+        boolean suppressOutput = ns.getBoolean("s");
 
-        Object jsonObject1 = JoltCliUtilities.createJsonObjectFromFile( (File) ns.get( "filePath1" ), suppressOutput );
-        File file = ns.get( "filePath2" );
-        Object jsonObject2 = JoltCliUtilities.readJsonInput( file, suppressOutput );
+        Object jsonObject1 = JoltCliUtilities.createJsonObjectFromFile((File) ns.get("filePath1"), suppressOutput);
+        File file = ns.get("filePath2");
+        Object jsonObject2 = JoltCliUtilities.readJsonInput(file, suppressOutput);
 
         Diffy diffy;
-        if ( ns.getBoolean( "a" ) ) {
+        if (ns.getBoolean("a")) {
             diffy = new ArrayOrderObliviousDiffy();
         } else {
             diffy = new Diffy();
         }
-        Diffy.Result result = diffy.diff( jsonObject1, jsonObject2 );
+        Diffy.Result result = diffy.diff(jsonObject1, jsonObject2);
 
-        if ( result.isEmpty() ) {
-            JoltCliUtilities.printToStandardOut( "Diffy found no differences", suppressOutput );
+        if (result.isEmpty()) {
+            JoltCliUtilities.printToStandardOut("Diffy found no differences", suppressOutput);
             return true;
         } else {
             try {
-                JoltCliUtilities.printToStandardOut( "Differences found. Input #1 contained this:\n" +
-                        JsonUtils.toPrettyJsonString( result.expected ) + "\n" +
+                JoltCliUtilities.printToStandardOut("Differences found. Input #1 contained this:\n" +
+                        JsonUtils.toPrettyJsonString(result.expected) + "\n" +
                         "Input #2 contained this:\n" +
-                        JsonUtils.toPrettyJsonString( result.actual ), suppressOutput );
+                        JsonUtils.toPrettyJsonString(result.actual), suppressOutput);
 
-            }
-            catch ( Exception e ) {
-                JoltCliUtilities.printToStandardOut( "Differences found, but diffy encountered an error while writing the result.", suppressOutput );
+            } catch (Exception e) {
+                JoltCliUtilities.printToStandardOut("Differences found, but diffy encountered an error while writing the result.", suppressOutput);
             }
             return false;
         }

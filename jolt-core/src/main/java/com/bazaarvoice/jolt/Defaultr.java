@@ -18,8 +18,8 @@ package com.bazaarvoice.jolt;
 import com.bazaarvoice.jolt.defaultr.Key;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.exception.TransformException;
-
 import jakarta.inject.Inject;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,11 +27,11 @@ import java.util.Map;
 
 /**
  * Defaultr is a kind of JOLT transform that applies default values in a non-destructive way.
- *
+ * <p>
  * For comparison :
  * Shitr walks the input data and asks its spec "Where should this go?"
  * Defaultr walks the spec and asks "Does this exist in the data?  If not, add it."
- *
+ * <p>
  * Example : Given input JSON like
  * <pre>
  * {
@@ -102,16 +102,16 @@ import java.util.Map;
  *   }
  * }
  * </pre>
- *
+ * <p>
  * The Spec file format for Defaulr a tree Map<String, Object> objects.   Defaultr handles outputting
- *  of JSON Arrays via special wildcard in the Spec.
- *
+ * of JSON Arrays via special wildcard in the Spec.
+ * <p>
  * Defaltr Spec WildCards and Flag :
  * "*" aka STAR : Apply these defaults to all input keys at this level
  * "|" aka OR  : Apply these defaults to input keys, if they exist
  * "[]" aka : Signal to Defaultr that the data for this key should be an array.
- *   This means all defaultr keys below this entry have to be "integers".
- *
+ * This means all defaultr keys below this entry have to be "integers".
+ * <p>
  * Valid Array Specification :
  * <pre>
  * {
@@ -123,7 +123,7 @@ import java.util.Map;
  *   }
  * }
  * </pre>
- *
+ * <p>
  * An Invalid Array Specification would be :
  * <pre>
  * {
@@ -135,21 +135,21 @@ import java.util.Map;
  *   }
  * }
  * </pre>
- *
+ * <p>
  * Algorithm
  * Defaultr walks its Spec in a depth first way.
  * At each level in the Spec tree, Defaultr, works from most specific to least specific Spec key:
- *   Literals key values
- *   "|", sub-sorted by how many or values there, then alphabetically (for deterministic behavior)
- *   "*"
- *
+ * Literals key values
+ * "|", sub-sorted by how many or values there, then alphabetically (for deterministic behavior)
+ * "*"
+ * <p>
  * At a given level in the Defaultr Spec tree, only literal keys force Defaultr to create new entries
- *  in the input data: either as a single literal value or adding new nested Array or Map objects.
+ * in the input data: either as a single literal value or adding new nested Array or Map objects.
  * The wildcard operators, are applied after the literal keys, and will not cause the those keys to be
- *  added if they are not already present in the input document (either naturally or having been defaulted
- *  in from literal spec keys).
- *
- *
+ * added if they are not already present in the input document (either naturally or having been defaulted
+ * in from literal spec keys).
+ * <p>
+ * <p>
  * Algorithm :
  * 1) Walk the spec
  * 2) for each literal key in the spec (specKey)
@@ -160,9 +160,9 @@ import java.util.Map;
  * 3) for each wildcard in the spec
  * 3.1) find all keys from the defaultee that match the wildcard
  * 3.2) treat each key as a literal speckey
- *
+ * <p>
  * Corner Cases :
- *
+ * <p>
  * Due to Defaultr's array syntax, we can't actually express that we expect the top level of the input to be an Array.
  * The workaround for this is that we check the type of the object that is at the root level of the input.
  * If it is a map, no problem.
@@ -170,12 +170,6 @@ import java.util.Map;
  * To force unambiguity, Defaultr throws an Exception if the input is null.
  */
 public class Defaultr implements SpecDriven, Transform {
-
-    public interface WildCards {
-        String STAR = "*";
-        String OR = "|";
-        String ARRAY = "[]";
-    }
 
     private final Key mapRoot;
     private final Key arrayRoot;
@@ -186,7 +180,7 @@ public class Defaultr implements SpecDriven, Transform {
      * @throws SpecException for a malformed spec or if there are issues
      */
     @Inject
-    public Defaultr( Object spec ) {
+    public Defaultr(Object spec) {
 
         String rootString = "root";
 
@@ -197,19 +191,18 @@ public class Defaultr implements SpecDriven, Transform {
 
         {
             Map<String, Object> rootSpec = new LinkedHashMap<>();
-            rootSpec.put( rootString, spec );
-            mapRoot = Key.parseSpec( rootSpec ).iterator().next();
+            rootSpec.put(rootString, spec);
+            mapRoot = Key.parseSpec(rootSpec).iterator().next();
         }
 
         //  Thus we check the top level type of the input.
         {
             Map<String, Object> rootSpec = new LinkedHashMap<>();
-            rootSpec.put( rootString + WildCards.ARRAY, spec );
+            rootSpec.put(rootString + WildCards.ARRAY, spec);
             Key tempKey = null;
             try {
-                tempKey = Key.parseSpec( rootSpec ).iterator().next();
-            }
-            catch ( NumberFormatException nfe ) {
+                tempKey = Key.parseSpec(rootSpec).iterator().next();
+            } catch (NumberFormatException nfe) {
                 // this is fine, it means the top level spec has non numeric keys
                 //  if someone passes a top level array as input later we will error then
             }
@@ -224,24 +217,29 @@ public class Defaultr implements SpecDriven, Transform {
      * @return the modified input
      */
     @Override
-    public Object transform( Object input ) {
+    public Object transform(Object input) {
 
-        if ( input == null ) {
+        if (input == null) {
             // if null, assume HashMap
             input = new HashMap<>();
         }
 
         // TODO : Make copy of the defaultee or like shiftr create a new output object
-        if ( input instanceof List ) {
-            if  ( arrayRoot == null ) {
-                throw new TransformException( "The Spec provided can not handle input that is a top level Json Array." );
+        if (input instanceof List) {
+            if (arrayRoot == null) {
+                throw new TransformException("The Spec provided can not handle input that is a top level Json Array.");
             }
-            arrayRoot.applyChildren( input );
-        }
-        else {
-            mapRoot.applyChildren( input );
+            arrayRoot.applyChildren(input);
+        } else {
+            mapRoot.applyChildren(input);
         }
 
         return input;
+    }
+
+    public interface WildCards {
+        String STAR = "*";
+        String OR = "|";
+        String ARRAY = "[]";
     }
 }

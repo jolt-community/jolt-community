@@ -29,21 +29,15 @@ import java.util.*;
  */
 public class CardinalityLeafSpec extends CardinalitySpec {
 
-    public enum CardinalityRelationship {
-        ONE,
-        MANY
-    }
-
     private CardinalityRelationship cardinalityRelationship;
 
-    public CardinalityLeafSpec( String rawKey, Object rhs ) {
-        super( rawKey );
+    public CardinalityLeafSpec(String rawKey, Object rhs) {
+        super(rawKey);
 
         try {
-            cardinalityRelationship = CardinalityRelationship.valueOf( rhs.toString() );
-        }
-        catch( Exception e ) {
-            throw new SpecException( "Invalid Cardinality type :" + rhs.toString(), e );
+            cardinalityRelationship = CardinalityRelationship.valueOf(rhs.toString());
+        } catch (Exception e) {
+            throw new SpecException("Invalid Cardinality type :" + rhs.toString(), e);
         }
     }
 
@@ -53,13 +47,13 @@ public class CardinalityLeafSpec extends CardinalitySpec {
      * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
      */
     @Override
-    public boolean applyCardinality( String inputKey, Object input, WalkedPath walkedPath, Object parentContainer ) {
+    public boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer) {
 
-        MatchedElement thisLevel = getMatch( inputKey, walkedPath );
-        if ( thisLevel == null ) {
+        MatchedElement thisLevel = getMatch(inputKey, walkedPath);
+        if (thisLevel == null) {
             return false;
         }
-        performCardinalityAdjustment( inputKey, input, walkedPath, (Map) parentContainer, thisLevel );
+        performCardinalityAdjustment(inputKey, input, walkedPath, (Map) parentContainer, thisLevel);
         return true;
     }
 
@@ -68,51 +62,46 @@ public class CardinalityLeafSpec extends CardinalitySpec {
      *
      * @return null if no work was done, otherwise returns the re-parented data
      */
-    public Object applyToParentContainer ( String inputKey, Object input, WalkedPath walkedPath, Object parentContainer ) {
+    public Object applyToParentContainer(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer) {
 
-        MatchedElement thisLevel = getMatch( inputKey, walkedPath );
-        if ( thisLevel == null ) {
+        MatchedElement thisLevel = getMatch(inputKey, walkedPath);
+        if (thisLevel == null) {
             return null;
         }
-        return performCardinalityAdjustment( inputKey, input, walkedPath, (Map) parentContainer, thisLevel );
+        return performCardinalityAdjustment(inputKey, input, walkedPath, (Map) parentContainer, thisLevel);
     }
 
     /**
-     *
      * @return null if no work was done, otherwise returns the re-parented data
      */
-    private Object performCardinalityAdjustment( String inputKey, Object input, WalkedPath walkedPath, Map parentContainer, MatchedElement thisLevel ) {
+    private Object performCardinalityAdjustment(String inputKey, Object input, WalkedPath walkedPath, Map parentContainer, MatchedElement thisLevel) {
 
         // Add our the LiteralPathElement for this level, so that write path References can use it as &(0,0)
-        walkedPath.add( input, thisLevel );
+        walkedPath.add(input, thisLevel);
 
         Object returnValue = null;
-        if ( cardinalityRelationship == CardinalityRelationship.MANY ) {
-            if ( input instanceof List ) {
+        if (cardinalityRelationship == CardinalityRelationship.MANY) {
+            if (input instanceof List) {
                 returnValue = input;
-            }
-            else if ( input instanceof Object[] ) {
+            } else if (input instanceof Object[]) {
                 returnValue = Arrays.asList(((Object[]) input));
-            }
-            else if ( input instanceof Map || input instanceof String || input instanceof Number || input instanceof Boolean ) {
-                Object one = parentContainer.remove( inputKey );
-                List<Object> tempList =  new ArrayList<>();
-                tempList.add( one );
+            } else if (input instanceof Map || input instanceof String || input instanceof Number || input instanceof Boolean) {
+                Object one = parentContainer.remove(inputKey);
+                List<Object> tempList = new ArrayList<>();
+                tempList.add(one);
                 returnValue = tempList;
 
-            }
-            else if ( input == null ) {
+            } else if (input == null) {
                 returnValue = Collections.emptyList();
             }
-            parentContainer.put( inputKey, returnValue );
-        }
-        else if ( cardinalityRelationship == CardinalityRelationship.ONE ) {
-            if ( input instanceof List ) {
-                if (!( (List<?>) input ).isEmpty()) {
-                    returnValue = ( (List<?>) input ).get(0);
+            parentContainer.put(inputKey, returnValue);
+        } else if (cardinalityRelationship == CardinalityRelationship.ONE) {
+            if (input instanceof List) {
+                if (!((List<?>) input).isEmpty()) {
+                    returnValue = ((List<?>) input).get(0);
                 }
-                parentContainer.put( inputKey, returnValue );
-            } else if ( input instanceof Object[] ) {
+                parentContainer.put(inputKey, returnValue);
+            } else if (input instanceof Object[]) {
                 returnValue = ((Object[]) input)[0];
                 parentContainer.put(inputKey, returnValue);
             }
@@ -123,7 +112,12 @@ public class CardinalityLeafSpec extends CardinalitySpec {
         return returnValue;
     }
 
-    private MatchedElement getMatch( String inputKey, WalkedPath walkedPath ) {
-        return pathElement.match( inputKey, walkedPath );
+    private MatchedElement getMatch(String inputKey, WalkedPath walkedPath) {
+        return pathElement.match(inputKey, walkedPath);
+    }
+
+    public enum CardinalityRelationship {
+        ONE,
+        MANY
     }
 }

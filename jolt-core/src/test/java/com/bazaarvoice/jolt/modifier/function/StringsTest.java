@@ -27,29 +27,29 @@ import java.util.List;
 @SuppressWarnings("deprecated")
 public class StringsTest extends AbstractTester {
 
-  @DataProvider(parallel = true)
-  public Iterator<Object[]> getTestCases() {
-    List<Object[]> testCases = new LinkedList<>(  );
+    @DataProvider(parallel = true)
+    public Iterator<Object[]> getTestCases() {
+        List<Object[]> testCases = new LinkedList<>();
 
-    Function SPLIT = new Strings.split();
+        Function SPLIT = new Strings.split();
 
-    testCases.add( new Object[] {"split-invalid-null", SPLIT, null, Optional.empty() } );
-    testCases.add( new Object[] {"split-invalid-string", SPLIT, "", Optional.empty() } );
+        testCases.add(new Object[]{"split-invalid-null", SPLIT, null, Optional.empty()});
+        testCases.add(new Object[]{"split-invalid-string", SPLIT, "", Optional.empty()});
 
-    testCases.add( new Object[] {"split-null-string", SPLIT, new Object[] {",", null}, Optional.empty() } );
-    testCases.add( new Object[] {"split-null-separator", SPLIT, new Object[] {null, "test"}, Optional.empty() } );
+        testCases.add(new Object[]{"split-null-string", SPLIT, new Object[]{",", null}, Optional.empty()});
+        testCases.add(new Object[]{"split-null-separator", SPLIT, new Object[]{null, "test"}, Optional.empty()});
 
-    testCases.add( new Object[] {"split-empty-string", SPLIT, new Object[] {",", ""}, Optional.of( Arrays.asList("") ) } );
-    testCases.add( new Object[] {"split-single-token-string", SPLIT, new Object[] {",", "test"}, Optional.of( Arrays.asList("test") )} );
+        testCases.add(new Object[]{"split-empty-string", SPLIT, new Object[]{",", ""}, Optional.of(Arrays.asList(""))});
+        testCases.add(new Object[]{"split-single-token-string", SPLIT, new Object[]{",", "test"}, Optional.of(Arrays.asList("test"))});
 
-    testCases.add( new Object[] {"split-double-token-string", SPLIT, new Object[] {",", "test,TEST"}, Optional.of( Arrays.asList("test", "TEST") )} );
-    testCases.add( new Object[] {"split-multi-token-string", SPLIT, new Object[] {",", "test,TEST,Test,TeSt"}, Optional.of( Arrays.asList("test", "TEST", "Test", "TeSt") )} );
-    testCases.add( new Object[] {"split-spaced-token-string", SPLIT, new Object[] {",", "test, TEST"}, Optional.of( Arrays.asList("test", " TEST") )} );
-    testCases.add( new Object[] {"split-long-separator-spaced-token-string", SPLIT, new Object[] {", ", "test, TEST"}, Optional.of( Arrays.asList("test", "TEST") )} );
+        testCases.add(new Object[]{"split-double-token-string", SPLIT, new Object[]{",", "test,TEST"}, Optional.of(Arrays.asList("test", "TEST"))});
+        testCases.add(new Object[]{"split-multi-token-string", SPLIT, new Object[]{",", "test,TEST,Test,TeSt"}, Optional.of(Arrays.asList("test", "TEST", "Test", "TeSt"))});
+        testCases.add(new Object[]{"split-spaced-token-string", SPLIT, new Object[]{",", "test, TEST"}, Optional.of(Arrays.asList("test", " TEST"))});
+        testCases.add(new Object[]{"split-long-separator-spaced-token-string", SPLIT, new Object[]{", ", "test, TEST"}, Optional.of(Arrays.asList("test", "TEST"))});
 
-    testCases.add( new Object[] {"split-regex-token-string", SPLIT, new Object[] {"[eE]", "test,TEST"}, Optional.of( Arrays.asList("t", "st,T", "ST") )} );
-    testCases.add( new Object[] {"split-regex2-token-string", SPLIT, new Object[] {"\\s+", "test TEST  Test    TeSt"}, Optional.of( Arrays.asList("test", "TEST", "Test", "TeSt") )} );
+        testCases.add(new Object[]{"split-regex-token-string", SPLIT, new Object[]{"[eE]", "test,TEST"}, Optional.of(Arrays.asList("t", "st,T", "ST"))});
+        testCases.add(new Object[]{"split-regex2-token-string", SPLIT, new Object[]{"\\s+", "test TEST  Test    TeSt"}, Optional.of(Arrays.asList("test", "TEST", "Test", "TeSt"))});
 
-    return testCases.iterator();
-  }
+        return testCases.iterator();
+    }
 }

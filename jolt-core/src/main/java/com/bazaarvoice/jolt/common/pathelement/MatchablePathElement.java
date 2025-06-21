@@ -22,12 +22,12 @@ public interface MatchablePathElement extends PathElement {
 
     /**
      * See if this PathElement matches the given dataKey.  If it does not match, this method returns null.
-     *
+     * <p>
      * If this PathElement does match, it returns a LiteralPathElement with subKeys filled in.
      *
-     * @param dataKey String key value from the input data
+     * @param dataKey    String key value from the input data
      * @param walkedPath "up the tree" list of LiteralPathElements, that may be used by this key as it is computing its match
      * @return null or a matched LiteralPathElement
      */
-    MatchedElement match( String dataKey, WalkedPath walkedPath );
+    MatchedElement match(String dataKey, WalkedPath walkedPath);
 }

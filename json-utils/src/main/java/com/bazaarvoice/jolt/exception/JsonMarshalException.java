@@ -17,11 +17,11 @@ package com.bazaarvoice.jolt.exception;
 
 public class JsonMarshalException extends RuntimeException {
 
-    public JsonMarshalException( String msg ) {
+    public JsonMarshalException(String msg) {
         super(msg);
     }
 
-    public JsonMarshalException( String msg, Throwable t ) {
+    public JsonMarshalException(String msg, Throwable t) {
         super(msg, t);
     }
 

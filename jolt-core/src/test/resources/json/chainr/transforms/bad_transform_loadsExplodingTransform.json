@@ -1,5 +1,5 @@
 [
     {
-        "operation" : "com.bazaarvoice.jolt.chainr.transforms.ExplodingTestTransform"
+        "operation": "com.bazaarvoice.jolt.chainr.transforms.ExplodingTestTransform"
     }
 ]

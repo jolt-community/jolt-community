@@ -24,50 +24,50 @@ public class PathAndGroupReferenceTest {
 
     @DataProvider
     public Object[][] getValidReferenceTests() {
-        return new Object[][] {
-            {     "", 0, 0, "(0,0)" },
-            {    "3", 3, 0, "(3,0)" },
-            {  "(3)", 3, 0, "(3,0)" },
-            {"(1,2)", 1, 2, "(1,2)" }
+        return new Object[][]{
+                {"", 0, 0, "(0,0)"},
+                {"3", 3, 0, "(3,0)"},
+                {"(3)", 3, 0, "(3,0)"},
+                {"(1,2)", 1, 2, "(1,2)"}
         };
     }
 
-    @Test( dataProvider = "getValidReferenceTests" )
+    @Test(dataProvider = "getValidReferenceTests")
     public void validAmpReferencePatternTest(String key, int pathIndex, int keyGroup, String canonicalForm) {
 
-        PathAndGroupReference amp = new AmpReference( "&" + key );
-        Assert.assertEquals( pathIndex, amp.getPathIndex() );
-        Assert.assertEquals( keyGroup, amp.getKeyGroup() );
-        Assert.assertEquals( "&" + canonicalForm, amp.getCanonicalForm() );
+        PathAndGroupReference amp = new AmpReference("&" + key);
+        Assert.assertEquals(pathIndex, amp.getPathIndex());
+        Assert.assertEquals(keyGroup, amp.getKeyGroup());
+        Assert.assertEquals("&" + canonicalForm, amp.getCanonicalForm());
     }
 
-    @Test( dataProvider = "getValidReferenceTests" )
+    @Test(dataProvider = "getValidReferenceTests")
     public void validDollarReferencePatternTest(String key, int pathIndex, int keyGroup, String canonicalForm) {
 
-        PathAndGroupReference amp = new DollarReference( "$" + key );
-        Assert.assertEquals( pathIndex, amp.getPathIndex() );
-        Assert.assertEquals( keyGroup, amp.getKeyGroup() );
-        Assert.assertEquals( "$" + canonicalForm, amp.getCanonicalForm() );
+        PathAndGroupReference amp = new DollarReference("$" + key);
+        Assert.assertEquals(pathIndex, amp.getPathIndex());
+        Assert.assertEquals(keyGroup, amp.getKeyGroup());
+        Assert.assertEquals("$" + canonicalForm, amp.getCanonicalForm());
     }
 
 
     @DataProvider
     public Object[][] getFailReferenceTests() {
-        return new Object[][] {
-            { "pants" },
-            { "-1" },
-            { "(-1,2)" },
-            { "(1,-2)" },
+        return new Object[][]{
+                {"pants"},
+                {"-1"},
+                {"(-1,2)"},
+                {"(1,-2)"},
         };
     }
 
-    @Test( dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class  )
-    public void failAmpReferencePatternTest(String key ) {
-        new AmpReference( "&" + key );
+    @Test(dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class)
+    public void failAmpReferencePatternTest(String key) {
+        new AmpReference("&" + key);
     }
 
-    @Test( dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class )
-    public void failDollarReferencePatternTest(String key ) {
-        new DollarReference( "$" + key );
+    @Test(dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class)
+    public void failDollarReferencePatternTest(String key) {
+        new DollarReference("$" + key);
     }
 }

@@ -20,27 +20,27 @@ import com.bazaarvoice.jolt.common.tree.WalkedPath;
 
 /**
  * Meant to be an immutable PathElement from a Spec, and therefore shareable across
- *  threads running multiple transforms using the same spec.
+ * threads running multiple transforms using the same spec.
  */
 public class LiteralPathElement extends BasePathElement implements MatchablePathElement, EvaluatablePathElement {
 
     private final String canonicalForm;
 
-    public LiteralPathElement( String key ) {
+    public LiteralPathElement(String key) {
         super(key);
 
-        this.canonicalForm = key.replace( ".", "\\." );
+        this.canonicalForm = key.replace(".", "\\.");
     }
 
     @Override
-    public String evaluate( WalkedPath walkedPath ) {
+    public String evaluate(WalkedPath walkedPath) {
         return getRawKey();
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
-        if ( getRawKey().equals( dataKey ) ) {
-            return new MatchedElement( getRawKey() );
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
+        if (getRawKey().equals(dataKey)) {
+            return new MatchedElement(getRawKey());
         }
         return null;
     }

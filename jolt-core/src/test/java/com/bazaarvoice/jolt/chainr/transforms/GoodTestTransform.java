@@ -17,7 +17,6 @@ package com.bazaarvoice.jolt.chainr.transforms;
 
 import com.bazaarvoice.jolt.SpecDriven;
 import com.bazaarvoice.jolt.Transform;
-
 import jakarta.inject.Inject;
 
 public class GoodTestTransform implements SpecDriven, Transform {
@@ -25,12 +24,12 @@ public class GoodTestTransform implements SpecDriven, Transform {
     private final Object spec;
 
     @Inject
-    public GoodTestTransform( Object spec ) {
+    public GoodTestTransform(Object spec) {
         this.spec = spec;
     }
 
     @Override
-    public Object transform( Object input ) {
-        return new TransformTestResult( input, spec );
+    public Object transform(Object input) {
+        return new TransformTestResult(input, spec);
     }
 }

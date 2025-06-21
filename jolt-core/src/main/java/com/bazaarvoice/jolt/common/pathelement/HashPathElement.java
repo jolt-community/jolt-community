@@ -28,32 +28,30 @@ public class HashPathElement extends BasePathElement implements MatchablePathEle
 
     private final String keyValue;
 
-    public HashPathElement( String key ) {
+    public HashPathElement(String key) {
         super(key);
 
-        if ( StringTools.isBlank( key ) ) {
-            throw new SpecException( "HashPathElement cannot have empty String as input." );
+        if (StringTools.isBlank(key)) {
+            throw new SpecException("HashPathElement cannot have empty String as input.");
         }
 
-        if ( ! key.startsWith( "#" ) ) {
-            throw new SpecException( "LHS # should start with a # : " + key );
+        if (!key.startsWith("#")) {
+            throw new SpecException("LHS # should start with a # : " + key);
         }
 
-        if ( key.length() <= 1 ) {
-            throw new SpecException( "HashPathElement input is too short : " + key );
+        if (key.length() <= 1) {
+            throw new SpecException("HashPathElement input is too short : " + key);
         }
 
 
-        if ( key.charAt( 1 ) == '(' ) {
-            if ( key.charAt( key.length() -1 ) == ')' ) {
-                keyValue = key.substring( 2, key.length() -1 );
+        if (key.charAt(1) == '(') {
+            if (key.charAt(key.length() - 1) == ')') {
+                keyValue = key.substring(2, key.length() - 1);
+            } else {
+                throw new SpecException("HashPathElement, mismatched parens : " + key);
             }
-            else {
-                throw new SpecException( "HashPathElement, mismatched parens : " + key );
-            }
-        }
-        else {
-            keyValue = key.substring( 1 );
+        } else {
+            keyValue = key.substring(1);
         }
     }
 
@@ -63,7 +61,7 @@ public class HashPathElement extends BasePathElement implements MatchablePathEle
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
-        return new MatchedElement( keyValue );
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
+        return new MatchedElement(keyValue);
     }
 }

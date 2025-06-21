@@ -39,28 +39,28 @@ public class GuicedChainrContextTest {
     public Iterator<Object[]> getCases() throws IOException {
 
         String testPath = "/json/chainr/guice_spec_with_context.json";
-        Map<String, Object> testSuite = JsonUtils.classpathToMap( testPath );
+        Map<String, Object> testSuite = JsonUtils.classpathToMap(testPath);
 
-        Object spec = testSuite.get( "spec" );
-        List<Map> tests = (List<Map>) testSuite.get( "tests" );
+        Object spec = testSuite.get("spec");
+        List<Map> tests = (List<Map>) testSuite.get("tests");
 
         List<Object[]> accum = Lists.newLinkedList();
 
-        for ( Map testCase : tests ) {
+        for (Map testCase : tests) {
 
-            String testCaseName = (String) testCase.get( "testCaseName" );
-            Object input = testCase.get( "input" );
-            Map<String,Object> context = (Map<String,Object>) testCase.get( "context" );
-            Object expected = testCase.get( "expected" );
+            String testCaseName = (String) testCase.get("testCaseName");
+            Object input = testCase.get("input");
+            Map<String, Object> context = (Map<String, Object>) testCase.get("context");
+            Object expected = testCase.get("expected");
 
-            accum.add( new Object[] { testCaseName, spec, input, context, expected } );
+            accum.add(new Object[]{testCaseName, spec, input, context, expected});
         }
 
         return accum.iterator();
     }
 
-    @Test( dataProvider = "getCases")
-    public void successCases( String testCaseName, Object spec, Object input, Map<String,Object> context, Object expected ) throws IOException {
+    @Test(dataProvider = "getCases")
+    public void successCases(String testCaseName, Object spec, Object input, Map<String, Object> context, Object expected) throws IOException {
 
         Module parentModule = new AbstractModule() {
             @Override
@@ -69,22 +69,22 @@ public class GuicedChainrContextTest {
 
             @Provides
             public GuiceContextDrivenTransform.GuiceConfig getConfigC() {
-                return new GuiceContextDrivenTransform.GuiceConfig( "c", "cc" );
+                return new GuiceContextDrivenTransform.GuiceConfig("c", "cc");
             }
 
             @Provides
             public GuiceSpecAndContextDrivenTransform.GuiceConfig getConfigD() {
-                return new GuiceSpecAndContextDrivenTransform.GuiceConfig( "dd" );
+                return new GuiceSpecAndContextDrivenTransform.GuiceConfig("dd");
             }
         };
 
-        Chainr unit = Chainr.fromSpec( spec, new GuiceChainrInstantiator( parentModule ) );
+        Chainr unit = Chainr.fromSpec(spec, new GuiceChainrInstantiator(parentModule));
 
-        Assert.assertTrue( unit.hasContextualTransforms() );
-        Assert.assertEquals( unit.getContextualTransforms().size(), 2 );
+        Assert.assertTrue(unit.hasContextualTransforms());
+        Assert.assertEquals(unit.getContextualTransforms().size(), 2);
 
-        Object actual = unit.transform( input, context );
+        Object actual = unit.transform(input, context);
 
-        JoltTestUtil.runDiffy( "failed case " + testCaseName, expected, actual );
+        JoltTestUtil.runDiffy("failed case " + testCaseName, expected, actual);
     }
 }

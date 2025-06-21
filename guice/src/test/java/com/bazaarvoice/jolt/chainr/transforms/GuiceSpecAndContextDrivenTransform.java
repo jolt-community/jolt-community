@@ -17,8 +17,8 @@ package com.bazaarvoice.jolt.chainr.transforms;
 
 import com.bazaarvoice.jolt.ContextualTransform;
 import com.bazaarvoice.jolt.SpecDriven;
-
 import jakarta.inject.Inject;
+
 import java.util.Map;
 
 public class GuiceSpecAndContextDrivenTransform implements SpecDriven, ContextualTransform {
@@ -30,27 +30,27 @@ public class GuiceSpecAndContextDrivenTransform implements SpecDriven, Contextua
     private final String specKeyValue;  // Value we get from the spec
     private final GuiceConfig guiceConfig;   // Value we get form Guice
 
-    public static class GuiceConfig {
-        private final String value;
-
-        public GuiceConfig( String value ) {
-            this.value = value;
-        }
-    }
-
     @Inject
-    public GuiceSpecAndContextDrivenTransform( GuiceConfig guiceConfig, Object spec ) {
+    public GuiceSpecAndContextDrivenTransform(GuiceConfig guiceConfig, Object spec) {
         this.guiceConfig = guiceConfig;
-        specKeyValue = (String) ( (Map<?, ?>) spec ).get( SPEC_DRIVEN_KEY );
+        specKeyValue = (String) ((Map<?, ?>) spec).get(SPEC_DRIVEN_KEY);
     }
 
     @Override
-    public Object transform( Object input, Map<String, Object> context ) {
+    public Object transform(Object input, Map<String, Object> context) {
 
-        String suffix = (String) context.get( CONTEXT_KEY );
+        String suffix = (String) context.get(CONTEXT_KEY);
 
-        ( (Map) input ).put( specKeyValue, guiceConfig.value + suffix );
+        ((Map) input).put(specKeyValue, guiceConfig.value + suffix);
 
         return input;
+    }
+
+    public static class GuiceConfig {
+        private final String value;
+
+        public GuiceConfig(String value) {
+            this.value = value;
+        }
     }
 }

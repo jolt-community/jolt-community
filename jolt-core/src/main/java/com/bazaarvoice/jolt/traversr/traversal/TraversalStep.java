@@ -25,30 +25,25 @@ import java.util.Iterator;
 public interface TraversalStep<StepType, DataType> {
 
     /**
-     * The three things you can do with a Traversal.
-     */
-    public enum Operation { SET, GET, REMOVE }
-
-    /**
      * Return the data for the key from the provided tree object.
      *
      * @return data object if available, or null.
      */
-    public Optional<DataType> get( StepType tree, String key );
+    public Optional<DataType> get(StepType tree, String key);
 
     /**
      * Remove and return the data for the key from the provided tree object.
      *
      * @return data object if available, or null.
      */
-    public Optional<DataType> remove( StepType tree, String key );
+    public Optional<DataType> remove(StepType tree, String key);
 
     /**
      * Insert the data into the tree, overwriting any data that is there.
      *
      * @return returns the data object if successful or null if it could not
      */
-    public Optional<DataType> overwriteSet( StepType tree, String key, DataType data );
+    public Optional<DataType> overwriteSet(StepType tree, String key, DataType data);
 
     /**
      * @return the child Traversal or null if this Traversal has no child
@@ -64,7 +59,7 @@ public interface TraversalStep<StepType, DataType> {
 
     /**
      * Return the Class of the Generic T, so that it can be used in an
-     *  "instanceof" style check.
+     * "instanceof" style check.
      *
      * @return Class that matches Generic parameter T
      */
@@ -72,15 +67,20 @@ public interface TraversalStep<StepType, DataType> {
 
     /**
      * The meat of the Traversal.
-     *
+     * <p>
      * Pull a key from the iterator, use it to make the traversal, and then
-     *  call traverse on your child Traversal.
+     * call traverse on your child Traversal.
      *
      * @param tree tree of data to walk
-     * @param op the Operation to perform is this is the last node of the Traversal
+     * @param op   the Operation to perform is this is the last node of the Traversal
      * @param keys keys to use
      * @param data the data to place if the operation is SET
      * @return if SET, null for fail or the "data" object for ok.  if GET, PANTS
      */
-    public Optional<DataType> traverse( StepType tree, Operation op, Iterator<String> keys, DataType data );
+    public Optional<DataType> traverse(StepType tree, Operation op, Iterator<String> keys, DataType data);
+
+    /**
+     * The three things you can do with a Traversal.
+     */
+    public enum Operation {SET, GET, REMOVE}
 }

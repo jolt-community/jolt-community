@@ -29,23 +29,23 @@ import java.io.IOException;
 public class ChainrSpecLoadingTest {
     @DataProvider
     public Object[][] badFormatSpecs() throws IOException {
-        return new Object[][] {
-                {JsonUtils.classpathToObject( "/json/chainr/specloading/bad_spec_SpecTransform.json" )}
+        return new Object[][]{
+                {JsonUtils.classpathToObject("/json/chainr/specloading/bad_spec_SpecTransform.json")}
         };
     }
 
-    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class )
-    public void testBadSpecs( Object chainrSpecObj ) {
-        ChainrSpec chainrSpec = new ChainrSpec( chainrSpecObj );
+    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class)
+    public void testBadSpecs(Object chainrSpecObj) {
+        ChainrSpec chainrSpec = new ChainrSpec(chainrSpecObj);
         ChainrEntry chainrEntry = chainrSpec.getChainrEntries().get(0);
         DefaultChainrInstantiator instantiator = new DefaultChainrInstantiator();
 
         // This should fail
-        instantiator.hydrateTransform( chainrEntry );
+        instantiator.hydrateTransform(chainrEntry);
     }
 
-    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class )
-    public void staticChainrMethod( Object chainrSpec ) {
-        Chainr.fromSpec( chainrSpec ); // should fail when parsing spec
+    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class)
+    public void staticChainrMethod(Object chainrSpec) {
+        Chainr.fromSpec(chainrSpec); // should fail when parsing spec
     }
 }

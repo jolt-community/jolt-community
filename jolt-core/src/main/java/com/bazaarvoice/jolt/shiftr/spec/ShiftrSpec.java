@@ -21,31 +21,31 @@ import com.bazaarvoice.jolt.common.spec.BaseSpec;
 
 /**
  * A Spec Object represents a single line from the JSON Shiftr Spec.
- *
+ * <p>
  * At a minimum a single Spec has :
- *   Raw LHS spec value
- *   Some kind of PathElement (based off that raw LHS value)
- *
+ * Raw LHS spec value
+ * Some kind of PathElement (based off that raw LHS value)
+ * <p>
  * Additionally there are 2 distinct subclasses of the base Spec
- *  LeafSpec : where the RHS is a String or Array of Strings, that specify an write path for the data from this level in the tree
- *  CompositeSpec : where the RHS is a map of children Specs
- *
+ * LeafSpec : where the RHS is a String or Array of Strings, that specify an write path for the data from this level in the tree
+ * CompositeSpec : where the RHS is a map of children Specs
+ * <p>
  * Mapping of JSON Shiftr Spec to Spec objects :
  * {
- *   rating-*" : {      // CompositeSpec with one child and a Star PathElement
- *     "&(1)" : {       // CompositeSpec with one child and a Reference PathElement
- *       "foo: {        // CompositeSpec with one child and a Literal PathElement
- *         "value" : "Rating-&1.value"  // OutputtingSpec with a Literal PathElement and one write path
- *       }
- *     }
- *   }
+ * rating-*" : {      // CompositeSpec with one child and a Star PathElement
+ * "&(1)" : {       // CompositeSpec with one child and a Reference PathElement
+ * "foo: {        // CompositeSpec with one child and a Literal PathElement
+ * "value" : "Rating-&1.value"  // OutputtingSpec with a Literal PathElement and one write path
  * }
- *
+ * }
+ * }
+ * }
+ * <p>
  * The tree structure of formed by the CompositeSpecs is what is used during Shiftr transforms
- *  to do the parallel tree walk with the input data tree.
- *
+ * to do the parallel tree walk with the input data tree.
+ * <p>
  * During the parallel tree walk a stack of data (a WalkedPath) is maintained, and used when
- *  a tree walk encounters an Outputting spec to evaluate the wildcards in the write DotNotationPath.
+ * a tree walk encounters an Outputting spec to evaluate the wildcards in the write DotNotationPath.
  */
 public abstract class ShiftrSpec implements BaseSpec {
 
@@ -53,7 +53,7 @@ public abstract class ShiftrSpec implements BaseSpec {
     protected final MatchablePathElement pathElement;
 
     public ShiftrSpec(String rawJsonKey) {
-        this.pathElement = PathElementBuilder.buildMatchablePathElement( rawJsonKey );
+        this.pathElement = PathElementBuilder.buildMatchablePathElement(rawJsonKey);
     }
 
     @Override

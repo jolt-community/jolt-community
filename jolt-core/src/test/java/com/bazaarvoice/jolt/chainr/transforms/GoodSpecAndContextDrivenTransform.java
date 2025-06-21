@@ -17,8 +17,8 @@ package com.bazaarvoice.jolt.chainr.transforms;
 
 import com.bazaarvoice.jolt.ContextualTransform;
 import com.bazaarvoice.jolt.SpecDriven;
-
 import jakarta.inject.Inject;
+
 import java.util.Map;
 
 public class GoodSpecAndContextDrivenTransform implements SpecDriven, ContextualTransform {
@@ -30,16 +30,16 @@ public class GoodSpecAndContextDrivenTransform implements SpecDriven, Contextual
     private final String specKeyValue;
 
     @Inject
-    public GoodSpecAndContextDrivenTransform( Object spec ) {
-        specKeyValue = (String) ((Map<?, ?>) spec).get( SPEC_DRIVEN_KEY );
+    public GoodSpecAndContextDrivenTransform(Object spec) {
+        specKeyValue = (String) ((Map<?, ?>) spec).get(SPEC_DRIVEN_KEY);
     }
 
     @Override
-    public Object transform( Object input, Map<String, Object> context ) {
+    public Object transform(Object input, Map<String, Object> context) {
 
-        String contextValue = (String) context.get( CONTEXT_KEY );
+        String contextValue = (String) context.get(CONTEXT_KEY);
 
-        ((Map) input).put( specKeyValue, contextValue );
+        ((Map) input).put(specKeyValue, contextValue);
 
         return input;
     }

@@ -31,36 +31,36 @@ public class ChainrContextTest {
     public Iterator<Object[]> getTests() {
 
         String testPath = "/json/chainr/context/spec_with_context.json";
-        Map<String, Object> testSuite = JsonUtils.classpathToMap( testPath );
+        Map<String, Object> testSuite = JsonUtils.classpathToMap(testPath);
 
-        Object spec = testSuite.get( "spec" );
-        List<Map> tests = (List<Map>) testSuite.get( "tests" );
+        Object spec = testSuite.get("spec");
+        List<Map> tests = (List<Map>) testSuite.get("tests");
 
         List<Object[]> accum = Lists.newLinkedList();
 
-        for ( Map testCase : tests ) {
+        for (Map testCase : tests) {
 
-            String testCaseName = (String) testCase.get( "testCaseName" );
-            Object input = testCase.get( "input" );
-            Map<String,Object> context = (Map<String,Object>) testCase.get( "context" );
-            Object expected = testCase.get( "expected" );
+            String testCaseName = (String) testCase.get("testCaseName");
+            Object input = testCase.get("input");
+            Map<String, Object> context = (Map<String, Object>) testCase.get("context");
+            Object expected = testCase.get("expected");
 
-            accum.add( new Object[] { testCaseName, spec, input, context, expected } );
+            accum.add(new Object[]{testCaseName, spec, input, context, expected});
         }
 
         return accum.iterator();
     }
 
-    @Test( dataProvider = "getTests" )
-    public void successCase( String testCaseName, Object spec, Object input, Map<String,Object> context, Object expected ) throws IOException {
+    @Test(dataProvider = "getTests")
+    public void successCase(String testCaseName, Object spec, Object input, Map<String, Object> context, Object expected) throws IOException {
 
-        Chainr unit = Chainr.fromSpec( spec );
+        Chainr unit = Chainr.fromSpec(spec);
 
-        Assert.assertTrue( unit.hasContextualTransforms() );
-        Assert.assertEquals( unit.getContextualTransforms().size(), 2 );
+        Assert.assertTrue(unit.hasContextualTransforms());
+        Assert.assertEquals(unit.getContextualTransforms().size(), 2);
 
-        Object actual = unit.transform( input, context );
+        Object actual = unit.transform(input, context);
 
-        JoltTestUtil.runDiffy( "failed case " + testCaseName, expected, actual );
+        JoltTestUtil.runDiffy("failed case " + testCaseName, expected, actual);
     }
 }

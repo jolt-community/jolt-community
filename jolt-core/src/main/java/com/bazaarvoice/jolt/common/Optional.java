@@ -22,12 +22,21 @@ package com.bazaarvoice.jolt.common;
  */
 public class Optional<T> {
 
+    private static final Optional<?> EMPTY = new Optional<>();
     private final T obj;
     private final boolean abs;
 
-    private static final Optional<?> EMPTY = new Optional<>();
+    private Optional() {
+        obj = null;
+        abs = true;
+    }
 
-    public static<T> Optional<T> empty() {
+    private Optional(T obj) {
+        this.obj = obj;
+        abs = false;
+    }
+
+    public static <T> Optional<T> empty() {
         @SuppressWarnings("unchecked")
         Optional<T> t = (Optional<T>) EMPTY;
         return t;
@@ -37,35 +46,25 @@ public class Optional<T> {
         return new Optional<>(value);
     }
 
-    private Optional() {
-        obj = null;
-        abs = true;
-    }
-
-    private Optional( T obj ) {
-        this.obj = obj;
-        abs = false;
-    }
-
     public T get() {
         return obj;
     }
 
     public boolean isPresent() {
-        return ! abs;
+        return !abs;
     }
 
     @Override
-    public boolean equals( final Object obj ) {
-        if(!(obj instanceof Optional that)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Optional that)) {
             return false;
         }
         return that == EMPTY || (
                 this.abs == that.abs && (
                         (this.obj == null && that.obj == null) || (
                                 this.obj != null &&
-                                that.obj != null &&
-                                this.obj.equals( that.obj )
+                                        that.obj != null &&
+                                        this.obj.equals(that.obj)
                         )
                 )
         );
@@ -73,6 +72,6 @@ public class Optional<T> {
 
     @Override
     public String toString() {
-        return "Optional<" + (abs?"?":obj==null?"?":obj.getClass().getSimpleName()) + ">: present=" + !abs + ", value=(" + obj + ")";
+        return "Optional<" + (abs ? "?" : obj == null ? "?" : obj.getClass().getSimpleName()) + ">: present=" + !abs + ", value=(" + obj + ")";
     }
 }

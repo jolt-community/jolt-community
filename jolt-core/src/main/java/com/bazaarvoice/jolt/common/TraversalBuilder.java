@@ -28,31 +28,31 @@ import com.bazaarvoice.jolt.utils.StringTools;
  */
 public abstract class TraversalBuilder {
 
-    public <T extends PathEvaluatingTraversal> T build( Object rawObj ) {
+    public <T extends PathEvaluatingTraversal> T build(Object rawObj) {
 
-        if ( ! (rawObj instanceof String outputPathStr) ) {
-            throw new SpecException( "Invalid spec, RHS should be a String or array of Strings. Value in question : " + rawObj );
+        if (!(rawObj instanceof String outputPathStr)) {
+            throw new SpecException("Invalid spec, RHS should be a String or array of Strings. Value in question : " + rawObj);
         }
 
         // Prepend "root" to each output path.
         // This is needed for the "identity" transform, eg if we are just supposed to put the input into the output
         //  what key do we put it under?
-        if ( StringTools.isBlank( outputPathStr ) ) {
+        if (StringTools.isBlank(outputPathStr)) {
             outputPathStr = SpecDriven.ROOT_KEY;
-        }
-        else {
+        } else {
             outputPathStr = SpecDriven.ROOT_KEY + "." + outputPathStr;
         }
 
-        return buildFromPath( outputPathStr );
+        return buildFromPath(outputPathStr);
     }
 
     /**
      * Given a path to traverse, and based on what Type T of traverser requested,
      * build and appropriate traversr
+     *
      * @param path to trvarse
-     * @param <T> Type of Traversr required
+     * @param <T>  Type of Traversr required
      * @return a Traversr of type T that con traverse given path
      */
-    public abstract <T extends PathEvaluatingTraversal> T buildFromPath( String path );
+    public abstract <T extends PathEvaluatingTraversal> T buildFromPath(String path);
 }
