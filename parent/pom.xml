@@ -5,22 +5,21 @@
 
     <groupId>com.bazaarvoice.jolt</groupId>
     <artifactId>jolt-parent</artifactId>
-    <version>0.1.9-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Jolt Parent</name>
 
     <scm>
-        <url>https://github.com/bazaarvoice/jolt</url>
-        <connection>scm:git:git@github.com:bazaarvoice/jolt.git</connection>
-        <developerConnection>scm:git:git@github.com:bazaarvoice/jolt.git</developerConnection>
+        <url>https://github.com/jolt-community/jolt-community</url>
+        <connection>scm:git:git@github.com:jolt-community/jolt-community.git</connection>
+        <developerConnection>scm:git:git@github.com:jolt-community/jolt-community.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <properties>
-        <!-- Override Java compiler version from the parent super-pom. -->
         <java.minimum.version>17</java.minimum.version>
-        <maven.version>3.6.3</maven.version>
+        <maven.minimum.version>3.9.0</maven.minimum.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -40,7 +39,7 @@
         <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
-        <exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
+        <maven-rat-plugin.version>0.16.1</maven-rat-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
 
@@ -131,9 +130,6 @@
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
-            <resource>
-                <directory>src/main/translations</directory>
-            </resource>
         </resources>
 
         <testResources>
@@ -163,7 +159,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[${maven.version},)</version>
+                                    <version>[${maven.minimum.version},)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${java.minimum.version}</version>
@@ -174,8 +170,7 @@
                 </executions>
             </plugin>
             <!--
-                Require minimum of java 1.8 for all compilation (child projects
-                may override via the "java.minimum.version" property).
+                Require minimum of java 17 for all compilation.
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -191,7 +186,7 @@
             </plugin>
             <!--
                 Add the OWASP dependency check plugin, which warns if using
-                insecure version. This must be kept up to date, at the latest
+                an insecure version. This must be kept up to date, at the latest
                 version.
             -->
             <plugin>
@@ -222,7 +217,7 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <version>0.12</version>
+                <version>${maven-rat-plugin.version}</version>
                 <configuration>
                     <includes>
                         <include>**/*.java</include>
@@ -235,40 +230,6 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                    </execution>
-                </executions>
-
-                <!-- work around https://issues.apache.org/jira/browse/RAT-158 -->
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-core</artifactId>
-                        <version>1.6</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>xerces</groupId>
-                                <artifactId>xercesImpl</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <!-- Added due to DocLint being enabled by default in Java 8; w/out this release build fails -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                            <failOnError>false</failOnError>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -375,29 +336,9 @@
                 </plugin>
                 <!-- Specialized plugins. -->
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>xml-maven-plugin</artifactId>
-                    <version>${xml-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.gmaven</groupId>
-                    <artifactId>gmaven-plugin</artifactId>
-                    <version>${gmaven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.google.code.maven-replacer-plugin</groupId>
-                    <artifactId>maven-replacer-plugin</artifactId>
-                    <version>${maven-replacer-plugin.version}</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>${maven-shade-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
