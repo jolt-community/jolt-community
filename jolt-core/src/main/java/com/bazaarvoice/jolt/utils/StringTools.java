@@ -17,9 +17,8 @@
 package com.bazaarvoice.jolt.utils;
 
 /**
- *
  * This class mimics the behavior of apache StringTools, except that it works on CharSequence instead of String
- *
+ * <p>
  * Also, with this, jolt-core can finally be free of apache-common dependency
  */
 public class StringTools {
@@ -28,7 +27,7 @@ public class StringTools {
      * Count the num# of matches of subSequence in sourceSequence
      *
      * @param sourceSequence to find occurrence from
-     * @param subSequence to find occurrence of
+     * @param subSequence    to find occurrence of
      * @return num of occurrences of subSequence in sourceSequence
      */
     public static int countMatches(CharSequence sourceSequence, CharSequence subSequence) {
@@ -40,18 +39,18 @@ public class StringTools {
         int sourceSequenceIndex = 0;
         int subSequenceIndex = 0;
 
-        while(sourceSequenceIndex < sourceSequence.length()) {
-            if(sourceSequence.charAt(sourceSequenceIndex) == subSequence.charAt(subSequenceIndex)) {
+        while (sourceSequenceIndex < sourceSequence.length()) {
+            if (sourceSequence.charAt(sourceSequenceIndex) == subSequence.charAt(subSequenceIndex)) {
                 sourceSequenceIndex++;
                 subSequenceIndex++;
-                while(sourceSequenceIndex < sourceSequence.length() && subSequenceIndex < subSequence.length()) {
-                    if(sourceSequence.charAt(sourceSequenceIndex) != subSequence.charAt(subSequenceIndex)) {
+                while (sourceSequenceIndex < sourceSequence.length() && subSequenceIndex < subSequence.length()) {
+                    if (sourceSequence.charAt(sourceSequenceIndex) != subSequence.charAt(subSequenceIndex)) {
                         break;
                     }
                     sourceSequenceIndex++;
                     subSequenceIndex++;
                 }
-                if(subSequenceIndex == subSequence.length()) {
+                if (subSequenceIndex == subSequence.length()) {
                     count++;
                 }
                 subSequenceIndex = 0;

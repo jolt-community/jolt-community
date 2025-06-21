@@ -31,51 +31,48 @@ import java.util.*;
 
 /**
  * Leaf level Spec object.
- *
+ * <p>
  * If this Spec's PathElement matches the input (successful parallel tree walk)
- *  this Spec has the information needed to write the given data to the output object.
+ * this Spec has the information needed to write the given data to the output object.
  */
 public class ShiftrLeafSpec extends ShiftrSpec {
 
     // traversal builder that uses a ShifterWriter to create a PathEvaluatingTraversal
     private static final TraversalBuilder TRAVERSAL_BUILDER = new TraversalBuilder() {
         @Override
-        @SuppressWarnings( "unchecked" )
-        public <T extends PathEvaluatingTraversal> T buildFromPath( final String path ) {
-            return (T) new ShiftrWriter( path );
+        @SuppressWarnings("unchecked")
+        public <T extends PathEvaluatingTraversal> T buildFromPath(final String path) {
+            return (T) new ShiftrWriter(path);
         }
     };
 
     // List of the processed version of the "write specifications"
     private final List<? extends PathEvaluatingTraversal> shiftrWriters;
 
-    public ShiftrLeafSpec( String rawKey, Object rhs ) {
-        super( rawKey );
+    public ShiftrLeafSpec(String rawKey, Object rhs) {
+        super(rawKey);
 
         List<PathEvaluatingTraversal> writers;
-        if ( rhs instanceof String ) {
+        if (rhs instanceof String) {
             // leaf level so spec is an dot notation write path
-            writers = Arrays.asList( TRAVERSAL_BUILDER.build( rhs ) );
-        }
-        else if ( rhs instanceof List ) {
+            writers = Arrays.asList(TRAVERSAL_BUILDER.build(rhs));
+        } else if (rhs instanceof List) {
             // leaf level list
             // Spec : "foo": ["a", "b"] : Shift the value of "foo" to both "a" and "b"
-            @SuppressWarnings( "unchecked" )
+            @SuppressWarnings("unchecked")
             List<Object> rhsList = (List<Object>) rhs;
-            writers = new ArrayList<>( rhsList.size() );
-            for ( Object dotNotation : rhsList ) {
-                writers.add( TRAVERSAL_BUILDER.build( dotNotation ) );
+            writers = new ArrayList<>(rhsList.size());
+            for (Object dotNotation : rhsList) {
+                writers.add(TRAVERSAL_BUILDER.build(dotNotation));
             }
-        }
-        else if ( rhs == null ) {
+        } else if (rhs == null) {
             // this means someone wanted to match something, but not send it anywhere.  Basically like a removal.
             writers = Collections.emptyList();
-        }
-        else {
-            throw new SpecException( "Invalid Shiftr spec RHS.  Should be map, string, or array of strings.  Spec in question : " + rhs );
+        } else {
+            throw new SpecException("Invalid Shiftr spec RHS.  Should be map, string, or array of strings.  Spec in question : " + rhs);
         }
 
-        shiftrWriters = Collections.unmodifiableList( writers );
+        shiftrWriters = Collections.unmodifiableList(writers);
     }
 
     /**
@@ -84,42 +81,38 @@ public class ShiftrLeafSpec extends ShiftrSpec {
      * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
      */
     @Override
-    public boolean apply( String inputKey, Optional<Object> inputOptional, WalkedPath walkedPath, Map<String,Object> output, Map<String, Object> context){
+    public boolean apply(String inputKey, Optional<Object> inputOptional, WalkedPath walkedPath, Map<String, Object> output, Map<String, Object> context) {
 
         Object input = inputOptional.get();
-        MatchedElement thisLevel = pathElement.match( inputKey, walkedPath );
-        if ( thisLevel == null ) {
+        MatchedElement thisLevel = pathElement.match(inputKey, walkedPath);
+        if (thisLevel == null) {
             return false;
         }
 
         Object data;
         boolean realChild = false;  // by default don't block further Shiftr matches
 
-        if ( this.pathElement instanceof DollarPathElement ||
-             this.pathElement instanceof HashPathElement ) {
+        if (this.pathElement instanceof DollarPathElement ||
+                this.pathElement instanceof HashPathElement) {
 
             // The data is already encoded in the thisLevel object created by the pathElement.match called above
             data = thisLevel.getCanonicalForm();
-        }
-        else if ( this.pathElement instanceof AtPathElement ) {
+        } else if (this.pathElement instanceof AtPathElement) {
 
             // The data is our parent's data
             data = input;
-        }
-        else if (this.pathElement instanceof TransposePathElement tpe) {
+        } else if (this.pathElement instanceof TransposePathElement tpe) {
             // We try to walk down the tree to find the value / data we want
 
             // Note the data found may not be a String, thus we have to call the special objectEvaluate
-            Optional<Object> evaledData = tpe.objectEvaluate( walkedPath );
-            if ( evaledData.isPresent() ) {
+            Optional<Object> evaledData = tpe.objectEvaluate(walkedPath);
+            if (evaledData.isPresent()) {
                 data = evaledData.get();
-            }
-            else {
+            } else {
                 // if we could not find the value we want looking down the tree, bail
                 return false;
             }
-        }
-        else {
+        } else {
             // the data is the input
             data = input;
             // tell our parent that we matched and no further processing for this inputKey should be done
@@ -127,16 +120,16 @@ public class ShiftrLeafSpec extends ShiftrSpec {
         }
 
         // Add our the LiteralPathElement for this level, so that write path References can use it as &(0,0)
-        walkedPath.add( input, thisLevel );
+        walkedPath.add(input, thisLevel);
 
         // Write out the data
-        for ( PathEvaluatingTraversal outputPath : shiftrWriters ) {
-            outputPath.write( data, output, walkedPath );
+        for (PathEvaluatingTraversal outputPath : shiftrWriters) {
+            outputPath.write(data, output, walkedPath);
         }
 
         walkedPath.removeLastElement();
 
-        if ( realChild ) {
+        if (realChild) {
             // we were a "real" child, so increment the matchCount of our parent
             walkedPath.lastElement().getMatchedElement().incrementHashCount();
         }

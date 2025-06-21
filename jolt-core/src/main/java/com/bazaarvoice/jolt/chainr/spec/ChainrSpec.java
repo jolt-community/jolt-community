@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * Helper class that encapsulates the Chainr spec's list.
- *
+ * <p>
  * For reference : a Chainr spec should be an array of objects in order that look like this:
  *
  * <pre>
@@ -35,7 +35,7 @@ import java.util.List;
  *     ...
  * ]
  * </pre>
- *
+ * <p>
  * This class represents the Array, while the ChainrEntry class encompass the individual elements
  * of the array.
  */
@@ -46,35 +46,35 @@ public class ChainrSpec {
     /**
      * @param chainrSpec Plain vanilla hydrated JSON representation of a Chainr spec .json file.
      */
-    public ChainrSpec( Object chainrSpec ) {
-        this( chainrSpec, ChainrSpec.class.getClassLoader() );
+    public ChainrSpec(Object chainrSpec) {
+        this(chainrSpec, ChainrSpec.class.getClassLoader());
     }
 
-    public ChainrSpec( Object chainrSpec, ClassLoader classLoader ) {
+    public ChainrSpec(Object chainrSpec, ClassLoader classLoader) {
 
-        if ( !( chainrSpec instanceof List ) ) {
-            throw new SpecException(  "JOLT Chainr expects a JSON array of objects - Malformed spec." );
+        if (!(chainrSpec instanceof List)) {
+            throw new SpecException("JOLT Chainr expects a JSON array of objects - Malformed spec.");
         }
 
-        @SuppressWarnings( "unchecked" ) // We know its a list due to the check above
+        @SuppressWarnings("unchecked") // We know its a list due to the check above
         List<Object> operations = (List<Object>) chainrSpec;
 
-        if ( operations.isEmpty() ) {
-            throw new SpecException( "JOLT Chainr passed an empty JSON array.");
+        if (operations.isEmpty()) {
+            throw new SpecException("JOLT Chainr passed an empty JSON array.");
         }
 
         List<ChainrEntry> entries = new ArrayList<>(operations.size());
 
-        for ( int index = 0; index < operations.size(); index++ ) {
+        for (int index = 0; index < operations.size(); index++) {
 
-            Object chainrEntryObj = operations.get( index );
+            Object chainrEntryObj = operations.get(index);
 
-            ChainrEntry entry = new ChainrEntry( index, chainrEntryObj, classLoader );
+            ChainrEntry entry = new ChainrEntry(index, chainrEntryObj, classLoader);
 
-            entries.add( entry );
+            entries.add(entry);
         }
 
-        chainrEntries = Collections.unmodifiableList( entries );
+        chainrEntries = Collections.unmodifiableList(entries);
     }
 
     /**

@@ -24,53 +24,52 @@ import java.util.Set;
 
 public class MapKey extends Key {
 
-    public MapKey( String jsonKey, Object spec ) {
-        super( jsonKey, spec );
+    public MapKey(String jsonKey, Object spec) {
+        super(jsonKey, spec);
     }
 
     @Override
     protected int getLiteralIntKey() {
-        throw new UnsupportedOperationException( "Shouldn't be be asking a MapKey for int getLiteralIntKey()."  );
+        throw new UnsupportedOperationException("Shouldn't be be asking a MapKey for int getLiteralIntKey().");
     }
 
     @Override
-    protected void applyChild( Object container ) {
+    protected void applyChild(Object container) {
 
-        if ( container instanceof Map ) {
+        if (container instanceof Map) {
             Map<String, Object> defaulteeMap = (Map<String, Object>) container;
 
             // Find all defaultee keys that match the childKey spec.  Simple for Literal keys, more work for * and |.
-            for ( String literalKey : determineMatchingContainerKeys( defaulteeMap ) ) {
-                applyLiteralKeyToContainer( literalKey, defaulteeMap );
+            for (String literalKey : determineMatchingContainerKeys(defaulteeMap)) {
+                applyLiteralKeyToContainer(literalKey, defaulteeMap);
             }
         }
         // Else there is disagreement (with respect to Array vs Map) between the data in
         //  the Container vs the Defaultr Spec type for this key.  Container wins, so do nothing.
     }
 
-    private void applyLiteralKeyToContainer( String literalKey, Map<String, Object> container ) {
+    private void applyLiteralKeyToContainer(String literalKey, Map<String, Object> container) {
 
-        Object defaulteeValue = container.get( literalKey );
+        Object defaulteeValue = container.get(literalKey);
 
-        if ( children == null ) {
-            if ( defaulteeValue == null ) {
-                container.put( literalKey, DeepCopy.simpleDeepCopy( literalValue ) );  // apply a copy of the default value into a map
+        if (children == null) {
+            if (defaulteeValue == null) {
+                container.put(literalKey, DeepCopy.simpleDeepCopy(literalValue));  // apply a copy of the default value into a map
             }
-        }
-        else {
-            if ( defaulteeValue == null ) {
+        } else {
+            if (defaulteeValue == null) {
                 defaulteeValue = createOutputContainerObject();
-                container.put( literalKey, defaulteeValue );  // push a new sub-container into this map
+                container.put(literalKey, defaulteeValue);  // push a new sub-container into this map
             }
 
             // recurse by applying my children to this known valid container
-            applyChildren( defaulteeValue );
+            applyChildren(defaulteeValue);
         }
     }
 
-    private Collection<String> determineMatchingContainerKeys( Map<String, Object> container ) {
+    private Collection<String> determineMatchingContainerKeys(Map<String, Object> container) {
 
-        switch ( getOp() ) {
+        switch (getOp()) {
             case LITERAL:
                 // the container should get these literal values added to it
                 return keyStrings;
@@ -79,11 +78,11 @@ public class MapKey extends Key {
                 return container.keySet();
             case OR:
                 // Identify the intersection between its keys and the OR values
-                Set<String> intersection = new HashSet<>( container.keySet() );
-                intersection.retainAll( keyStrings );
+                Set<String> intersection = new HashSet<>(container.keySet());
+                intersection.retainAll(keyStrings);
                 return intersection;
-            default :
-                throw new IllegalStateException( "Someone has added an op type without changing this method." );
+            default:
+                throw new IllegalStateException("Someone has added an op type without changing this method.");
         }
     }
 }

@@ -32,41 +32,41 @@ public class JoltUtilsRemoveTest {
 
     private Diffy diffy = new Diffy();
 
-    private Map<Object, Object> ab = ImmutableMap.builder().put( "a", "b" ).build();
-    private Map<Object, Object> cd = ImmutableMap.builder().put( "c", "d" ).build();
-    private Map<Object, Object> top = ImmutableMap.builder().put( "A", ab ).put( "B", cd ).build();
+    private Map<Object, Object> ab = ImmutableMap.builder().put("a", "b").build();
+    private Map<Object, Object> cd = ImmutableMap.builder().put("c", "d").build();
+    private Map<Object, Object> top = ImmutableMap.builder().put("A", ab).put("B", cd).build();
 
     @DataProvider
     public Object[][] removeRecursiveCases() {
 
         Map<Object, Object> empty = ImmutableMap.builder().build();
-        Map<Object, Object> barToFoo = ImmutableMap.builder().put( "bar", "foo" ).build();
-        Map<Object, Object> fooToBar = ImmutableMap.builder().put( "foo", "bar" ).build();
-        return new Object[][] {
-                { null, null, null },
-                { null, "foo", null },
-                { "foo", null, "foo" },
-                { "foo", "foo", "foo" },
-                { Maps.newHashMap(), "foo", empty },
-                { Maps.newHashMap( barToFoo ), "foo", barToFoo },
-                { Maps.newHashMap( fooToBar ), "foo", empty },
-                { Lists.newArrayList(), "foo", ImmutableList.builder().build() },
+        Map<Object, Object> barToFoo = ImmutableMap.builder().put("bar", "foo").build();
+        Map<Object, Object> fooToBar = ImmutableMap.builder().put("foo", "bar").build();
+        return new Object[][]{
+                {null, null, null},
+                {null, "foo", null},
+                {"foo", null, "foo"},
+                {"foo", "foo", "foo"},
+                {Maps.newHashMap(), "foo", empty},
+                {Maps.newHashMap(barToFoo), "foo", barToFoo},
+                {Maps.newHashMap(fooToBar), "foo", empty},
+                {Lists.newArrayList(), "foo", ImmutableList.builder().build()},
                 {
-                        Lists.newArrayList( ImmutableList.builder()
-                                .add( Maps.newHashMap( barToFoo ) )
-                                .build() ),
+                        Lists.newArrayList(ImmutableList.builder()
+                                .add(Maps.newHashMap(barToFoo))
+                                .build()),
                         "foo",
                         ImmutableList.builder()
-                                .add( barToFoo )
+                                .add(barToFoo)
                                 .build()
                 },
                 {
-                        Lists.newArrayList( ImmutableList.builder()
-                                .add( Maps.newHashMap( fooToBar ) )
-                                .build() ),
+                        Lists.newArrayList(ImmutableList.builder()
+                                .add(Maps.newHashMap(fooToBar))
+                                .build()),
                         "foo",
                         ImmutableList.builder()
-                                .add( empty )
+                                .add(empty)
                                 .build()
                 }
         };
@@ -75,11 +75,11 @@ public class JoltUtilsRemoveTest {
     @Test(dataProvider = "removeRecursiveCases")
     public void testRemoveRecursive(Object json, String key, Object expected) {
 
-        JoltUtils.removeRecursive( json, key );
+        JoltUtils.removeRecursive(json, key);
 
-        Diffy.Result result = diffy.diff( expected, json );
+        Diffy.Result result = diffy.diff(expected, json);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 
@@ -88,39 +88,37 @@ public class JoltUtilsRemoveTest {
 
         String testFixture = "/json/utils/joltUtils-removeRecursive.json";
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> tests = (List<Map<String, Object>>) JsonUtils.classpathToObject( testFixture );
+        List<Map<String, Object>> tests = (List<Map<String, Object>>) JsonUtils.classpathToObject(testFixture);
 
-        for ( Map<String,Object> testUnit : tests ) {
+        for (Map<String, Object> testUnit : tests) {
 
-            Object data = testUnit.get( "input" );
-            String toRemove = (String) testUnit.get( "remove" );
-            Object expected = testUnit.get( "expected" );
+            Object data = testUnit.get("input");
+            String toRemove = (String) testUnit.get("remove");
+            Object expected = testUnit.get("expected");
 
-            JoltUtils.removeRecursive( data, toRemove );
+            JoltUtils.removeRecursive(data, toRemove);
 
-            Diffy.Result result = diffy.diff( expected, data );
+            Diffy.Result result = diffy.diff(expected, data);
             if (!result.isEmpty()) {
-                Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
+                Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
             }
         }
     }
 
-    @Test( description = "No exception if we don't try to remove from an ImmutableMap.")
-    public void doNotUnnecessarilyDieOnImmutableMaps()
-    {
-        Map<String, Object> expected = JsonUtils.jsonToMap( JsonUtils.toJsonString( top ) );
+    @Test(description = "No exception if we don't try to remove from an ImmutableMap.")
+    public void doNotUnnecessarilyDieOnImmutableMaps() {
+        Map<String, Object> expected = JsonUtils.jsonToMap(JsonUtils.toJsonString(top));
 
-        JoltUtils.removeRecursive( top, "tuna" );
+        JoltUtils.removeRecursive(top, "tuna");
 
-        Diffy.Result result = diffy.diff( expected, top );
+        Diffy.Result result = diffy.diff(expected, top);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 
-    @Test( expectedExceptions = UnsupportedOperationException.class, description = "Exception if try to remove from an Immutable map.")
-    public void correctExceptionWithImmutableMap()
-    {
-        JoltUtils.removeRecursive( top, "c" );
+    @Test(expectedExceptions = UnsupportedOperationException.class, description = "Exception if try to remove from an Immutable map.")
+    public void correctExceptionWithImmutableMap() {
+        JoltUtils.removeRecursive(top, "c");
     }
 }

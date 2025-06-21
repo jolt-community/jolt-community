@@ -35,8 +35,8 @@ public class JoltCli {
         );
     }
 
-    public static void main( String[] args ) {
-        System.exit( runJolt( args ) ? 0 : 1 );
+    public static void main(String[] args) {
+        System.exit(runJolt(args) ? 0 : 1);
     }
 
     /**
@@ -46,31 +46,31 @@ public class JoltCli {
      * @param args the arguments from the command line input
      * @return true if two inputs were read with no differences, false if differences were found or an error was encountered
      */
-    protected static boolean runJolt( String[] args ) {
+    protected static boolean runJolt(String[] args) {
         ArgumentParser parser = ArgumentParsers.newFor("jolt").build();
         Subparsers subparsers = parser.addSubparsers().help(
                 """
-                transform: given a Jolt transform spec, runs the specified transforms on the input data.
-                diffy: diff two JSON documents.
-                sort: sort a JSON document alphabetically for human readability.
-                """
+                        transform: given a Jolt transform spec, runs the specified transforms on the input data.
+                        diffy: diff two JSON documents.
+                        sort: sort a JSON document alphabetically for human readability.
+                        """
         );
 
-        for ( Map.Entry<String, JoltCliProcessor> entry : JOLT_CLI_PROCESSOR_MAP.entrySet() ) {
-            entry.getValue().intializeSubCommand( subparsers );
+        for (Map.Entry<String, JoltCliProcessor> entry : JOLT_CLI_PROCESSOR_MAP.entrySet()) {
+            entry.getValue().intializeSubCommand(subparsers);
         }
 
         Namespace ns;
         try {
-            ns = parser.parseArgs( args );
-        } catch ( ArgumentParserException e ) {
-            parser.handleError( e );
+            ns = parser.parseArgs(args);
+        } catch (ArgumentParserException e) {
+            parser.handleError(e);
             return false;
         }
 
-        JoltCliProcessor joltToolProcessor = JOLT_CLI_PROCESSOR_MAP.get( args[0] );
-        if ( joltToolProcessor != null ) {
-            return joltToolProcessor.process( ns );
+        JoltCliProcessor joltToolProcessor = JOLT_CLI_PROCESSOR_MAP.get(args[0]);
+        if (joltToolProcessor != null) {
+            return joltToolProcessor.process(ns);
         } else {
             // TODO: error message, print usage. although I don't think it will ever get to this point.
             return false;

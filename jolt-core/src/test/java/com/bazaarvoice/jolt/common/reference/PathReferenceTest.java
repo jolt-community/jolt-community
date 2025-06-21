@@ -24,33 +24,33 @@ public class PathReferenceTest {
 
     @DataProvider
     public Object[][] getValidReferenceTests() {
-        return new Object[][] {
-            {     "", 0, "0" },
-            {    "3", 3, "3" },
-            {  "12", 12, "12" }
+        return new Object[][]{
+                {"", 0, "0"},
+                {"3", 3, "3"},
+                {"12", 12, "12"}
         };
     }
 
-    @Test( dataProvider = "getValidReferenceTests" )
+    @Test(dataProvider = "getValidReferenceTests")
     public void validAmpReferencePatternTest(String key, int pathIndex, String canonicalForm) {
 
-        PathReference ref = new HashReference( "#" + key );
-        Assert.assertEquals( pathIndex, ref.getPathIndex() );
-        Assert.assertEquals( "#" + canonicalForm, ref.getCanonicalForm() );
+        PathReference ref = new HashReference("#" + key);
+        Assert.assertEquals(pathIndex, ref.getPathIndex());
+        Assert.assertEquals("#" + canonicalForm, ref.getCanonicalForm());
     }
 
 
     @DataProvider
     public Object[][] getFailReferenceTests() {
-        return new Object[][] {
-            { "pants" },
-            { "-1" },
-            { "(1)" }
+        return new Object[][]{
+                {"pants"},
+                {"-1"},
+                {"(1)"}
         };
     }
 
-    @Test( dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class  )
-    public void failAmpReferencePatternTest(String key ) {
-        new HashReference( "#" + key );
+    @Test(dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class)
+    public void failAmpReferencePatternTest(String key) {
+        new HashReference("#" + key);
     }
 }

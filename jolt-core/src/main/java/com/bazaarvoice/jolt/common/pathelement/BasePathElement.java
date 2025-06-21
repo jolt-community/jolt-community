@@ -19,7 +19,7 @@ public abstract class BasePathElement implements PathElement {
 
     private final String rawKey;
 
-    public BasePathElement( String key ) {
+    public BasePathElement(String key) {
         rawKey = key;
     }
 

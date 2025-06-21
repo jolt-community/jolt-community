@@ -15,13 +15,13 @@
  */
 package com.bazaarvoice.jolt.traversr;
 
-public class TraversrException extends RuntimeException{
+public class TraversrException extends RuntimeException {
 
-    public TraversrException( String message ) {
+    public TraversrException(String message) {
         super(message);
     }
 
-    public TraversrException( String message, Exception e) {
-        super( message, e );
+    public TraversrException(String message, Exception e) {
+        super(message, e);
     }
 }

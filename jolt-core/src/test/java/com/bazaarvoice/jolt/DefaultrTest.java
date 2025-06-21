@@ -27,69 +27,69 @@ public class DefaultrTest {
 
     @DataProvider
     public Object[][] getDiffyTestCases() {
-        return new Object[][] {
-            {"arrayMismatch1"},
-            {"arrayMismatch2"},
-            {"defaultNulls"},
-            {"expansionOnly"},
-            {"firstSample"},
-            {"identity"},
-            {"nestedArrays1"},
-            {"nestedArrays2"},
-            {"orOrdering"},
-            {"photosArray"},
-            {"starsOfStars"},
-            {"topLevelIsArray"},
+        return new Object[][]{
+                {"arrayMismatch1"},
+                {"arrayMismatch2"},
+                {"defaultNulls"},
+                {"expansionOnly"},
+                {"firstSample"},
+                {"identity"},
+                {"nestedArrays1"},
+                {"nestedArrays2"},
+                {"orOrdering"},
+                {"photosArray"},
+                {"starsOfStars"},
+                {"topLevelIsArray"},
         };
     }
 
-    @Test(dataProvider = "getDiffyTestCases" )
-    public void runDiffyTests( String testCaseName ) throws IOException {
+    @Test(dataProvider = "getDiffyTestCases")
+    public void runDiffyTests(String testCaseName) throws IOException {
 
         String testPath = "/json/defaultr/" + testCaseName;
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath + ".json" );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
 
-        Object input = testUnit.get( "input" );
-        Object spec = testUnit.get( "spec" );
-        Object expected = testUnit.get( "expected" );
+        Object input = testUnit.get("input");
+        Object spec = testUnit.get("spec");
+        Object expected = testUnit.get("expected");
 
         Defaultr defaultr = new Defaultr(spec);
-        Object actual = defaultr.transform( input );
+        Object actual = defaultr.transform(input);
 
-        JoltTestUtil.runDiffy( "failed case " + testPath, expected, actual );
+        JoltTestUtil.runDiffy("failed case " + testPath, expected, actual);
     }
 
     @Test
     public void deepCopyTest() throws IOException {
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( "/json/defaultr/__deepCopyTest.json" );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap("/json/defaultr/__deepCopyTest.json");
 
-        Object spec = testUnit.get( "spec" );
+        Object spec = testUnit.get("spec");
 
         Defaultr defaultr = new Defaultr(spec);
         {
-            Object input = testUnit.get( "input" );
-            Map<String, Object> fiddle = (Map<String, Object>) defaultr.transform( input );
+            Object input = testUnit.get("input");
+            Map<String, Object> fiddle = (Map<String, Object>) defaultr.transform(input);
 
-            List array = (List) fiddle.get( "array" );
+            List array = (List) fiddle.get("array");
             array.add("a");
 
-            Map<String,Object> subMap = (Map<String,Object>) fiddle.get( "map" );
+            Map<String, Object> subMap = (Map<String, Object>) fiddle.get("map");
             subMap.put("c", "c");
         }
         {
-            Map<String, Object> testUnit2 = JsonUtils.classpathToMap( "/json/defaultr/__deepCopyTest.json" );
+            Map<String, Object> testUnit2 = JsonUtils.classpathToMap("/json/defaultr/__deepCopyTest.json");
 
-            Object input = testUnit2.get( "input" );
-            Object expected = testUnit2.get( "expected" );
+            Object input = testUnit2.get("input");
+            Object expected = testUnit2.get("expected");
 
-            Object actual = defaultr.transform( input );
-            JoltTestUtil.runDiffy( "Same spec deepcopy fail.", expected, actual );
+            Object actual = defaultr.transform(input);
+            JoltTestUtil.runDiffy("Same spec deepcopy fail.", expected, actual);
         }
     }
 
     @Test(expectedExceptions = SpecException.class)
     public void throwExceptionOnBadSpec() throws IOException {
-        Object spec = JsonUtils.jsonToMap( "{ \"tuna*\": \"marlin\" }" );
-        new Defaultr( spec );
+        Object spec = JsonUtils.jsonToMap("{ \"tuna*\": \"marlin\" }");
+        new Defaultr(spec);
     }
 }

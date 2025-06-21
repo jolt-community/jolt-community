@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Interface for Jolt Transforms that can incorporate context information along with the
  * source input JSON.
- *
+ * <p>
  * These Jolt Transforms should be stateless, thus allowing multiple threads to
  * call the transform method simultaneously.
  */
@@ -28,24 +28,24 @@ public interface ContextualTransform extends JoltTransform {
 
     /**
      * Execute a transform on some input JSON with optionally provided "context" and return the result.
-     *
+     * <p>
      * The "context" allows transforms to tweak their behavior based upon criteria outside of the input JSON object.
-     *
+     * <p>
      * The canonical example for the need to have Transforms consider "context" is a Transform that creates
      * urls based upon input data.  Should it generate "http" or "https" urls?
-     *
+     * <p>
      * Most likely the input JSON data does not provide any guidance. This is what the "context" is for.
      * It allows the consumer of the Transform to specialize itself based on data outside the scope of the input JSON.
-     *
+     * <p>
      * Without the "context" notion you would instead create a HttpUrlTransform and a HttpsUrlTransform.
      * This creates problems when you want to used them as part of a larger Chainr Transform, as you
      * would need to create two Chainrs that are almost the same.   The number of Chainrs needed grows
      * exponentially as you add other context sensitive transforms.
      *
-     * @param input the JSON object to transform in plain vanilla Jackson Map<String, Object> style
+     * @param input   the JSON object to transform in plain vanilla Jackson Map<String, Object> style
      * @param context information outside of the input JSON that needs to be taken into account when doing the transform
      * @return the results of the transformation
      * @throws com.bazaarvoice.jolt.exception.TransformException if there are issues with the transform
      */
-    Object transform( Object input, Map<String, Object> context );
+    Object transform(Object input, Map<String, Object> context);
 }

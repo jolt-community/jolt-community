@@ -37,7 +37,7 @@ public class JoltUtilsTest {
 
     private Diffy diffy = new Diffy();
 
-    private Object[] flattenedValues = {0, 1, 2, 1.618, "m", "n", 1, 2, 3.14159, "y" };
+    private Object[] flattenedValues = {0, 1, 2, 1.618, "m", "n", 1, 2, 3.14159, "y"};
 
     private Object jsonSource;
     private Object jsonSource_empty;
@@ -46,26 +46,26 @@ public class JoltUtilsTest {
     @SuppressWarnings("unchecked")
     public void setup() {
         String jsonSourceString = "{ " +
-            "    'a': { " +
-            "        'b': [ 0, 1, 2, 1.618 ] " +
-            "    }, " +
-            "    'p': [ 'm', 'n', " +
-            "        { " +
-            "            '1': 1, " +
-            "            '2': 2, " +
-            "            'pi': 3.14159 " +
-            "        } " +
-            "    ], " +
-            "    'x': 'y' " +
-            "}\n";
+                "    'a': { " +
+                "        'b': [ 0, 1, 2, 1.618 ] " +
+                "    }, " +
+                "    'p': [ 'm', 'n', " +
+                "        { " +
+                "            '1': 1, " +
+                "            '2': 2, " +
+                "            'pi': 3.14159 " +
+                "        } " +
+                "    ], " +
+                "    'x': 'y' " +
+                "}\n";
 
         jsonSource = JsonUtils.javason(jsonSourceString);
 
         String jsonSourceString_empty =
-            "{" +
-                "'e': { 'f': {}, 'g': [] }," +
-                "'h': [ {}, [] ]" +
-            "}";
+                "{" +
+                        "'e': { 'f': {}, 'g': [] }," +
+                        "'h': [ {}, [] ]" +
+                        "}";
 
         jsonSource_empty = JsonUtils.javason(jsonSourceString_empty);
     }
@@ -87,7 +87,7 @@ public class JoltUtilsTest {
     @Test
     public void testListKeyChains() {
         List<Object[]> keyChains = JoltUtils.listKeyChains(jsonSource);
-        for(int i=0; i<keyChains.size(); i++) {
+        for (int i = 0; i < keyChains.size(); i++) {
             Object[] keyChain = keyChains.get(i);
             Object expected = flattenedValues[i];
             Object actual = navigate(jsonSource, keyChain);
@@ -95,7 +95,7 @@ public class JoltUtilsTest {
         }
 
         keyChains = JoltUtils.listKeyChains(jsonSource_empty);
-        for(Object[] keyChain: keyChains) {
+        for (Object[] keyChain : keyChains) {
             Assert.assertTrue(isVacantJson(navigate(jsonSource_empty, keyChain)));
         }
     }
@@ -114,7 +114,7 @@ public class JoltUtilsTest {
     @Test
     public void testE2E() {
         Object duplicate = Maps.newHashMap();
-        for(Object[] paths : JoltUtils.listKeyChains(jsonSource)) {
+        for (Object[] paths : JoltUtils.listKeyChains(jsonSource)) {
             String humanReadablePath = JoltUtils.toSimpleTraversrPath(paths);
             new SimpleTraversal<>(humanReadablePath).set(duplicate, navigate(jsonSource, paths));
         }
@@ -126,15 +126,15 @@ public class JoltUtilsTest {
 
         String testFixture = "/json/utils/joltUtils-store-remove-compact.json";
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> tests = (List<Map<String, Object>>) JsonUtils.classpathToObject( testFixture );
+        List<Map<String, Object>> tests = (List<Map<String, Object>>) JsonUtils.classpathToObject(testFixture);
 
         List<Object[]> testCases = new LinkedList<>();
 
-        for(Map<String, Object> testCase: tests) {
-            testCases.add(new Object[] {
+        for (Map<String, Object> testCase : tests) {
+            testCases.add(new Object[]{
                     testCase.get("description"),
                     testCase.get("source"),
-                    ((List<?>)testCase.get("path")).toArray(),
+                    ((List<?>) testCase.get("path")).toArray(),
                     testCase.get("value"),
                     testCase.get("output")
             });
@@ -147,12 +147,12 @@ public class JoltUtilsTest {
      * Given a source, an output, and a pair of path-to-values, stores-then-validates-then-removes those
      * resulting in a mutated source, which is finally compacted and matched with given output
      */
-    @Test (dataProvider = "storeTestCases")
+    @Test(dataProvider = "storeTestCases")
     public void testStoreRemoveCompact(String description, Object source, Object[] path, Object value, Object output) {
 
         Object existingValue = JoltUtils.navigateOrDefault(null, source, path);
-        Assert.assertEquals( JoltUtils.store(source, value, path), existingValue);
-        Assert.assertEquals( JoltUtils.remove( source, path ), value );
+        Assert.assertEquals(JoltUtils.store(source, value, path), existingValue);
+        Assert.assertEquals(JoltUtils.remove(source, path), value);
 
         // check the json object
         int noCompactionSize = JoltUtils.listKeyChains(source).size();

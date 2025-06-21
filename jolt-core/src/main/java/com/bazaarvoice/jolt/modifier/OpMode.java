@@ -24,61 +24,86 @@ import java.util.Map;
 
 /**
  * OpMode differentiates different flavors of Templatr
- *
+ * <p>
  * Templatr can fill in leaf values as required in spec from a specified context, self or a hardcoded
  * default value. However whether or not that 'write' operation should go through, is determined by
  * this enum.
- *
+ * <p>
  * All of these opModes validates if the if the source (map or list) and the key/index are valid,
  * i.e. not null or >= 0, etc.
- *
+ * <p>
  * OVERWRITR always writes
  * DEFAULTR only writes when the the value at the key/index is null
  * DEFINR only writes when source does not contain the key/index
- *
  */
 public enum OpMode {
 
     OVERWRITR("+") {
         @Override
-        public boolean isApplicable( final Map source, final String key ) {
+        public boolean isApplicable(final Map source, final String key) {
             return super.isApplicable(source, key);
         }
+
         @Override
-        public boolean isApplicable( final List source, final int reqIndex ,  int origSize) {
-            return super.isApplicable(source, reqIndex , origSize);
+        public boolean isApplicable(final List source, final int reqIndex, int origSize) {
+            return super.isApplicable(source, reqIndex, origSize);
         }
     },
     DEFAULTR("~") {
         @Override
-        public boolean isApplicable( final Map source, final String key ) {
-            return super.isApplicable( source, key ) && source.get( key ) == null;
+        public boolean isApplicable(final Map source, final String key) {
+            return super.isApplicable(source, key) && source.get(key) == null;
         }
+
         @Override
-        public boolean isApplicable( final List source, final int reqIndex, int origSize ) {
-            return super.isApplicable(source, reqIndex, origSize ) && source.get( reqIndex ) == null;
+        public boolean isApplicable(final List source, final int reqIndex, int origSize) {
+            return super.isApplicable(source, reqIndex, origSize) && source.get(reqIndex) == null;
         }
     },
     DEFINER("_") {
         @Override
-        public boolean isApplicable( final Map source, final String key ) {
-            return super.isApplicable(source, key) && !source.containsKey( key );
+        public boolean isApplicable(final Map source, final String key) {
+            return super.isApplicable(source, key) && !source.containsKey(key);
         }
+
         @Override
-        public boolean isApplicable( final List source, final int reqIndex, int origSize ) {
-            return super.isApplicable(source, reqIndex, origSize ) &&
+        public boolean isApplicable(final List source, final int reqIndex, int origSize) {
+            return super.isApplicable(source, reqIndex, origSize) &&
                     // only new index contains null
-                    reqIndex >= origSize && source.get( reqIndex ) == null;
+                    reqIndex >= origSize && source.get(reqIndex) == null;
         }
     };
+
+    /**
+     * Static validity checker and instance getter from given op String
+     */
+    private static Map<String, OpMode> opModeMap;
+
+    static {
+        opModeMap = new HashMap<>();
+        opModeMap.put(OVERWRITR.op, OVERWRITR);
+        opModeMap.put(DEFAULTR.op, DEFAULTR);
+        opModeMap.put(DEFINER.op, DEFINER);
+    }
 
     /**
      * Identifier OP prefix that is defined in SPEC
      */
     private String op;
 
-    private OpMode( final String op ) {
+    private OpMode(final String op) {
         this.op = op;
+    }
+
+    public static boolean isValid(String op) {
+        return opModeMap.containsKey(op);
+    }
+
+    public static OpMode from(String op) {
+        if (isValid(op)) {
+            return opModeMap.get(op);
+        }
+        throw new SpecException("OpMode " + op + " is not valid");
     }
 
     public String getOp() {
@@ -88,7 +113,6 @@ public enum OpMode {
     public String toString() {
         return op + "modify";
     }
-
 
     /**
      * Given a source map and a input key returns true if it is ok to go ahead with
@@ -104,28 +128,5 @@ public enum OpMode {
      */
     public boolean isApplicable(List source, int reqIndex, int origSize) {
         return source != null && reqIndex >= 0 && origSize >= 0;
-    }
-
-    /**
-     * Static validity checker and instance getter from given op String
-     */
-    private static Map<String, OpMode> opModeMap;
-
-    static {
-        opModeMap = new HashMap<>(  );
-        opModeMap.put( OVERWRITR.op, OVERWRITR );
-        opModeMap.put( DEFAULTR.op, DEFAULTR );
-        opModeMap.put( DEFINER.op, DEFINER );
-    }
-
-    public static boolean isValid(String op) {
-        return opModeMap.containsKey( op );
-    }
-
-    public static OpMode from(String op) {
-        if ( isValid( op ) ) {
-            return opModeMap.get( op );
-        }
-        throw new SpecException( "OpMode " + op + " is not valid" );
     }
 }

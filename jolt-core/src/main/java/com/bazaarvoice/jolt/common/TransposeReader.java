@@ -22,19 +22,19 @@ import java.util.List;
 
 /**
  * The TransposeReader uses a PathEvaluatingTraversal with a SimpleTraversr.
- *
+ * <p>
  * This means that as it walks a path in a tree structure (PathEvaluatingTraversal),
  * it uses the behavior of the SimpleTraversr for tree traversal operations like
  * get, set, and final set.
  */
 public class TransposeReader extends PathEvaluatingTraversal {
 
-    public TransposeReader( String dotNotation ) {
-        super( dotNotation );
+    public TransposeReader(String dotNotation) {
+        super(dotNotation);
     }
 
     @Override
-    protected Traversr createTraversr( List<String> paths ) {
-        return new SimpleTraversr( paths );
+    protected Traversr createTraversr(List<String> paths) {
+        return new SimpleTraversr(paths);
     }
 }

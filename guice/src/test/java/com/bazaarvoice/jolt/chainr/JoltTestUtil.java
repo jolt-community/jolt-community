@@ -23,11 +23,11 @@ public class JoltTestUtil {
 
     private static final Diffy diffy = new Diffy();
 
-    public static void runDiffy( String failureMessage, Object expected, Object actual ) {
+    public static void runDiffy(String failureMessage, Object expected, Object actual) {
 
-        Diffy.Result result = diffy.diff( expected, actual );
+        Diffy.Result result = diffy.diff(expected, actual);
         if (!result.isEmpty()) {
-            Assert.fail( failureMessage + ".\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
+            Assert.fail(failureMessage + ".\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 }

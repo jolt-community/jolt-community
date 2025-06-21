@@ -17,36 +17,35 @@ package com.bazaarvoice.jolt.chainr.transforms;
 
 import com.bazaarvoice.jolt.SpecDriven;
 import com.bazaarvoice.jolt.Transform;
-
 import jakarta.inject.Inject;
+
 import java.util.Map;
 
 public class GuiceSpecDrivenTransform implements SpecDriven, Transform {
 
     private static final String SPEC_DRIVEN_KEY = "KEY_TO_ADD";
-
-    public static class GuiceConfig {
-        private final String value;
-
-        public GuiceConfig( String value ) {
-            this.value = value;
-        }
-    }
-
     private final GuiceConfig guiceConfig;
     private final String specKeyValue;
 
     @Inject
-    public GuiceSpecDrivenTransform( GuiceConfig guiceConfig, Object spec ) {
+    public GuiceSpecDrivenTransform(GuiceConfig guiceConfig, Object spec) {
         this.guiceConfig = guiceConfig;
 
-        specKeyValue = (String) ((Map<?, ?>) spec).get( SPEC_DRIVEN_KEY );
+        specKeyValue = (String) ((Map<?, ?>) spec).get(SPEC_DRIVEN_KEY);
     }
 
     @Override
-    public Object transform( Object input ) {
+    public Object transform(Object input) {
 
-        ((Map) input).put( specKeyValue, guiceConfig.value );
+        ((Map) input).put(specKeyValue, guiceConfig.value);
         return input;
+    }
+
+    public static class GuiceConfig {
+        private final String value;
+
+        public GuiceConfig(String value) {
+            this.value = value;
+        }
     }
 }

@@ -40,13 +40,71 @@ public class MappingTest3 {
 
     private Diffy diffy = new Diffy();
 
+    @Test
+    public void testPolymorphicJacksonSerializationAndDeserialization() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        SimpleModule testModule = new SimpleModule("testModule", new Version(1, 0, 0, null, null, null))
+                .addDeserializer(QueryFilter.class, new QueryFilterDeserializer());
+
+        mapper.registerModule(testModule);
+
+        // Verifying that we can pass in a custom Mapper and create a new JsonUtil
+        JsonUtil jsonUtil = JsonUtils.customJsonUtil(mapper);
+
+        String testFixture = "/jsonUtils/testdomain/two/queryFilter-realAndLogical2.json";
+
+        // TEST JsonUtil and our deserialization logic
+        QueryFilter queryFilter = jsonUtil.classpathToType(testFixture, new TypeReference<>() {
+        });
+
+        // Make sure the hydrated QFilter looks right
+        Assert.assertTrue(queryFilter instanceof LogicalFilter3);
+        Assert.assertEquals(QueryParam.AND, queryFilter.queryParam());
+        Assert.assertTrue(queryFilter.isLogical());
+        Assert.assertEquals(3, queryFilter.filters().size());
+        Assert.assertNotNull(queryFilter.filters().get(QueryParam.OR));
+
+        // Make sure one of the top level RealFilters looks right
+        QueryFilter productIdFilter = queryFilter.filters().get(QueryParam.PRODUCTID);
+        Assert.assertTrue(productIdFilter.isReal());
+        Assert.assertEquals(QueryParam.PRODUCTID, productIdFilter.queryParam());
+        Assert.assertEquals("Acme-1234", productIdFilter.value());
+
+        // Make sure the nested OR looks right
+        QueryFilter orFilter = queryFilter.filters().get(QueryParam.OR);
+        Assert.assertTrue(orFilter.isLogical());
+        Assert.assertEquals(QueryParam.OR, orFilter.queryParam());
+        Assert.assertEquals(2, orFilter.filters().size());
+
+        // Make sure nested AND looks right
+        QueryFilter nestedAndFilter = orFilter.filters().get(QueryParam.AND);
+        Assert.assertTrue(nestedAndFilter.isLogical());
+        Assert.assertEquals(QueryParam.AND, nestedAndFilter.queryParam());
+        Assert.assertEquals(2, nestedAndFilter.filters().size());
+
+
+        // SERIALIZE TO STRING to test serialization logic
+        String unitTestString = jsonUtil.toJsonString(queryFilter);
+
+        // LOAD and Diffy the plain vanilla JSON versions of the documents
+        Map<String, Object> actual = JsonUtils.jsonToMap(unitTestString);
+        Map<String, Object> expected = JsonUtils.classpathToMap(testFixture);
+
+        // Diffy the vanilla versions
+        Diffy.Result result = diffy.diff(expected, actual);
+        if (!result.isEmpty()) {
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
+        }
+    }
+
     public static class QueryFilterDeserializer extends JsonDeserializer<QueryFilter> {
 
         /**
          * Demonstrates how to do recursive polymorphic JSON deserialization in Jackson 2.2.
-         *
+         * <p>
          * Aka specify a Deserializer and "catch" some input, determine what type of Class it
-         *  should be parsed too, and then reuse the Jackson infrastructure to recursively do so.
+         * should be parsed too, and then reuse the Jackson infrastructure to recursively do so.
          */
         @Override
         public QueryFilter deserialize(JsonParser jp, DeserializationContext ctxt)
@@ -55,75 +113,15 @@ public class MappingTest3 {
             ObjectNode root = jp.readValueAsTree();
 
             // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
-            JsonParser subJsonParser = root.traverse( jp.getCodec() );
+            JsonParser subJsonParser = root.traverse(jp.getCodec());
 
             // Check if it is a "RealFilter"
             JsonNode queryParam = root.get("queryParam");
-            if ( queryParam != null && queryParam.isValueNode() ) {
-                return subJsonParser.readValueAs( RealFilter.class );
+            if (queryParam != null && queryParam.isValueNode()) {
+                return subJsonParser.readValueAs(RealFilter.class);
+            } else {
+                return subJsonParser.readValueAs(LogicalFilter3.class);
             }
-            else {
-                return subJsonParser.readValueAs( LogicalFilter3.class );
-            }
-        }
-    }
-
-    @Test
-    public void testPolymorphicJacksonSerializationAndDeserialization()
-    {
-        ObjectMapper mapper = new ObjectMapper();
-
-        SimpleModule testModule = new SimpleModule("testModule", new Version(1, 0, 0, null, null, null))
-                .addDeserializer( QueryFilter.class, new QueryFilterDeserializer() );
-
-        mapper.registerModule(testModule);
-
-        // Verifying that we can pass in a custom Mapper and create a new JsonUtil
-        JsonUtil jsonUtil = JsonUtils.customJsonUtil( mapper );
-
-        String testFixture = "/jsonUtils/testdomain/two/queryFilter-realAndLogical2.json";
-
-        // TEST JsonUtil and our deserialization logic
-        QueryFilter queryFilter = jsonUtil.classpathToType( testFixture, new TypeReference<>() {
-        } );
-
-        // Make sure the hydrated QFilter looks right
-        Assert.assertTrue( queryFilter instanceof LogicalFilter3 );
-        Assert.assertEquals( QueryParam.AND, queryFilter.queryParam() );
-        Assert.assertTrue( queryFilter.isLogical() );
-        Assert.assertEquals( 3, queryFilter.filters().size() );
-        Assert.assertNotNull( queryFilter.filters().get( QueryParam.OR ) );
-
-        // Make sure one of the top level RealFilters looks right
-        QueryFilter productIdFilter = queryFilter.filters().get( QueryParam.PRODUCTID );
-        Assert.assertTrue( productIdFilter.isReal() );
-        Assert.assertEquals( QueryParam.PRODUCTID, productIdFilter.queryParam() );
-        Assert.assertEquals( "Acme-1234", productIdFilter.value() );
-
-        // Make sure the nested OR looks right
-        QueryFilter orFilter = queryFilter.filters().get( QueryParam.OR );
-        Assert.assertTrue( orFilter.isLogical() );
-        Assert.assertEquals( QueryParam.OR, orFilter.queryParam() );
-        Assert.assertEquals( 2, orFilter.filters().size() );
-
-        // Make sure nested AND looks right
-        QueryFilter nestedAndFilter = orFilter.filters().get( QueryParam.AND );
-        Assert.assertTrue( nestedAndFilter.isLogical() );
-        Assert.assertEquals( QueryParam.AND, nestedAndFilter.queryParam() );
-        Assert.assertEquals( 2, nestedAndFilter.filters().size() );
-
-
-        // SERIALIZE TO STRING to test serialization logic
-        String unitTestString = jsonUtil.toJsonString( queryFilter );
-
-        // LOAD and Diffy the plain vanilla JSON versions of the documents
-        Map<String, Object> actual   = JsonUtils.jsonToMap( unitTestString );
-        Map<String, Object> expected = JsonUtils.classpathToMap( testFixture );
-
-        // Diffy the vanilla versions
-        Diffy.Result result = diffy.diff( expected, actual );
-        if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
         }
     }
 }

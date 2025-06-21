@@ -23,7 +23,7 @@ public class HashReference extends BasePathReference {
 
     public static final Character TOKEN = '#';
 
-    public HashReference( String refStr ) {
+    public HashReference(String refStr) {
         super(refStr);
     }
 

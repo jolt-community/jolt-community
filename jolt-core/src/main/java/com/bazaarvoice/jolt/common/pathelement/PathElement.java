@@ -21,7 +21,8 @@ public interface PathElement {
 
     /**
      * Get the canonical form of this PathElement.  Really only interesting for the Reference Path element, where
-     *  it will expand "&" to "&0(0)".
+     * it will expand "&" to "&0(0)".
+     *
      * @return canonical String version of this PathElement
      */
     String getCanonicalForm();

@@ -17,7 +17,6 @@ package com.bazaarvoice.jolt;
 
 import com.bazaarvoice.jolt.chainr.instantiator.DefaultChainrInstantiator;
 import com.bazaarvoice.jolt.exception.JsonUnmarshalException;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,86 +36,86 @@ public class ChainrFactoryTest {
     @BeforeClass
     public void setup() {
         fileSystemPath = getFileSystemPath();
-        wellformedFile = new File( fileSystemPath + WELLFORMED_INPUT_FILENAME );
-        malformedFile = new File( fileSystemPath + MALFORMED_INPUT_FILENAME );
+        wellformedFile = new File(fileSystemPath + WELLFORMED_INPUT_FILENAME);
+        malformedFile = new File(fileSystemPath + MALFORMED_INPUT_FILENAME);
     }
 
     @Test
     public void testGetChainrInstanceFromClassPath_success()
             throws Exception {
-        Chainr result = ChainrFactory.fromClassPath( CLASSPATH + WELLFORMED_INPUT_FILENAME );
-        Assert.assertNotNull( result, "ChainrFactory did not return an instance of Chainr." );
+        Chainr result = ChainrFactory.fromClassPath(CLASSPATH + WELLFORMED_INPUT_FILENAME);
+        Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
-    @Test( expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load JSON.*" )
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load JSON.*")
     public void testGetChainrInstanceFromClassPath_error()
             throws Exception {
-        ChainrFactory.fromClassPath( CLASSPATH + MALFORMED_INPUT_FILENAME );
+        ChainrFactory.fromClassPath(CLASSPATH + MALFORMED_INPUT_FILENAME);
     }
 
     @Test
     public void testGetChainrInstanceFromClassPathWithInstantiator_success()
             throws Exception {
-        Chainr result = ChainrFactory.fromClassPath( CLASSPATH + WELLFORMED_INPUT_FILENAME, new DefaultChainrInstantiator() );
-        Assert.assertNotNull( result, "ChainrFactory did not return an instance of Chainr." );
+        Chainr result = ChainrFactory.fromClassPath(CLASSPATH + WELLFORMED_INPUT_FILENAME, new DefaultChainrInstantiator());
+        Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
-    @Test( expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load JSON.*" )
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load JSON.*")
     public void testGetChainrInstanceFromClassPathWithInstantiator_error()
             throws Exception {
-        ChainrFactory.fromClassPath( CLASSPATH + MALFORMED_INPUT_FILENAME, new DefaultChainrInstantiator() );
+        ChainrFactory.fromClassPath(CLASSPATH + MALFORMED_INPUT_FILENAME, new DefaultChainrInstantiator());
     }
 
     @Test
     public void testGetChainrInstanceFromFileSystem_success()
             throws Exception {
-        Chainr result = ChainrFactory.fromFileSystem( fileSystemPath + WELLFORMED_INPUT_FILENAME );
-        Assert.assertNotNull( result, "ChainrFactory did not return an instance of Chainr." );
+        Chainr result = ChainrFactory.fromFileSystem(fileSystemPath + WELLFORMED_INPUT_FILENAME);
+        Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
-    @Test( expectedExceptions = JsonUnmarshalException.class, expectedExceptionsMessageRegExp = "Unable to unmarshal JSON.*" )
+    @Test(expectedExceptions = JsonUnmarshalException.class, expectedExceptionsMessageRegExp = "Unable to unmarshal JSON.*")
     public void testGetChainrInstanceFromFileSystem_error()
             throws Exception {
-        ChainrFactory.fromFileSystem( fileSystemPath + MALFORMED_INPUT_FILENAME );
+        ChainrFactory.fromFileSystem(fileSystemPath + MALFORMED_INPUT_FILENAME);
     }
 
     @Test
     public void testGetChainrInstanceFromFileSystemWithInstantiator_success()
             throws Exception {
-        Chainr result = ChainrFactory.fromFileSystem( fileSystemPath + WELLFORMED_INPUT_FILENAME, new DefaultChainrInstantiator() );
-        Assert.assertNotNull( result, "ChainrFactory did not return an instance of Chainr." );
+        Chainr result = ChainrFactory.fromFileSystem(fileSystemPath + WELLFORMED_INPUT_FILENAME, new DefaultChainrInstantiator());
+        Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
     @Test(expectedExceptions = JsonUnmarshalException.class, expectedExceptionsMessageRegExp = "Unable to unmarshal JSON.*")
     public void testGetChainrInstanceFromFileSystemWithInstantiator_error()
             throws Exception {
-        ChainrFactory.fromFileSystem( fileSystemPath + MALFORMED_INPUT_FILENAME, new DefaultChainrInstantiator() );
+        ChainrFactory.fromFileSystem(fileSystemPath + MALFORMED_INPUT_FILENAME, new DefaultChainrInstantiator());
     }
 
     @Test
     public void testGetChainrInstanceFromFile_success()
             throws Exception {
-        Chainr result = ChainrFactory.fromFile( wellformedFile );
-        Assert.assertNotNull( result, "ChainrFactory did not return an instance of Chainr." );
+        Chainr result = ChainrFactory.fromFile(wellformedFile);
+        Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
-    @Test( expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load chainr spec file.*" )
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load chainr spec file.*")
     public void testGetChainrInstanceFromFile_error()
             throws Exception {
-        ChainrFactory.fromFile( malformedFile );
+        ChainrFactory.fromFile(malformedFile);
     }
 
     @Test
     public void testGetChainrInstanceFromFileWithInstantiator_success()
             throws Exception {
-        Chainr result = ChainrFactory.fromFile( wellformedFile, new DefaultChainrInstantiator() );
-        Assert.assertNotNull( result, "ChainrFactory did not return an instance of Chainr." );
+        Chainr result = ChainrFactory.fromFile(wellformedFile, new DefaultChainrInstantiator());
+        Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
     @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load chainr spec file.*")
     public void testGetChainrInstanceFromFileWithInstantiator_error()
             throws Exception {
-        ChainrFactory.fromFile( malformedFile, new DefaultChainrInstantiator() );
+        ChainrFactory.fromFile(malformedFile, new DefaultChainrInstantiator());
     }
 
     private String getFileSystemPath() {
@@ -126,8 +125,8 @@ public class ChainrFactoryTest {
         // chooses the path to the resource files copied by maven into the target/ directory. Obviously, this assumes
         // that you did not name $JOLT_CHECKOUT 'tools'. If that check fails then the path is chosen with the assumption
         // that the test is running in an IDE (Intellij IDEA in my case). Your mileage with other IDE's may very.
-        String path = System.getProperty( "user.dir" );
-        if ( path.endsWith( "complete" ) ) {
+        String path = System.getProperty("user.dir");
+        if (path.endsWith("complete")) {
             // This test is being run by maven
             path += "//target//test-classes//json//";
         } else {

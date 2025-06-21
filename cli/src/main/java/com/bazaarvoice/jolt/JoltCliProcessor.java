@@ -28,7 +28,7 @@ public interface JoltCliProcessor {
      *
      * @param subparsers The Subparsers object to attach the new Subparser to
      */
-    public void intializeSubCommand( Subparsers subparsers );
+    public void intializeSubCommand(Subparsers subparsers);
 
     /**
      * This method does the processing of the input which is provided via the Namespace
@@ -36,6 +36,6 @@ public interface JoltCliProcessor {
      * @param ns Namespace which contains parsed commandline arguments
      * @return true if processing was successful
      */
-    public boolean process( Namespace ns );
+    public boolean process(Namespace ns);
 
 }

@@ -20,7 +20,7 @@ public class TransformTestResult {
     public final Object input;
     public final Object spec;
 
-    TransformTestResult( Object input, Object spec ) {
+    TransformTestResult(Object input, Object spec) {
         this.input = input;
         this.spec = spec;
     }

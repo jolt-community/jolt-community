@@ -36,42 +36,41 @@ public class SortCliProcessor implements JoltCliProcessor {
      * @param subparsers The Subparsers object to attach the new Subparser to
      */
     @Override
-    public void intializeSubCommand( Subparsers subparsers ) {
-        Subparser sortParser = subparsers.addParser( "sort" )
-                .description( "Jolt CLI Sort Tool. This tool will ingest one JSON input (from a file or standard input) and " +
+    public void intializeSubCommand(Subparsers subparsers) {
+        Subparser sortParser = subparsers.addParser("sort")
+                .description("Jolt CLI Sort Tool. This tool will ingest one JSON input (from a file or standard input) and " +
                         "perform the Jolt sort operation on it. The sort order is standard alphabetical ascending, with a " +
                         "special case for \"~\" prefixed keys to be bumped to the top. The program will return an exit code " +
-                        "of 0 if the sort operation is performed successfully or a 1 if an error is encountered." )
-                .defaultHelp( true );
+                        "of 0 if the sort operation is performed successfully or a 1 if an error is encountered.")
+                .defaultHelp(true);
 
-        sortParser.addArgument( "input" ).help( "File path to the input JSON that the sort operation should be performed on. " +
-                "This file should contain valid JSON. " +
-                "If this argument is not specified then standard input will be used." )
-                .type( Arguments.fileType().verifyExists().verifyIsFile().verifyCanRead() )
-                .nargs( "?" ).setDefault( (File) null ).required( false );   // these last two method calls make input optional
+        sortParser.addArgument("input").help("File path to the input JSON that the sort operation should be performed on. " +
+                        "This file should contain valid JSON. " +
+                        "If this argument is not specified then standard input will be used.")
+                .type(Arguments.fileType().verifyExists().verifyIsFile().verifyCanRead())
+                .nargs("?").setDefault((File) null).required(false);   // these last two method calls make input optional
 
-        sortParser.addArgument( "-u" ).help( "Turns off pretty print for the output. Output will be raw json with no formatting." )
-                .action( Arguments.storeTrue() );
+        sortParser.addArgument("-u").help("Turns off pretty print for the output. Output will be raw json with no formatting.")
+                .action(Arguments.storeTrue());
     }
 
     /**
-     *
      * @param ns Namespace which contains parsed commandline arguments
      * @return true if the sort was successful, false if an error occurred
      */
     @Override
-    public boolean process( Namespace ns ) {
+    public boolean process(Namespace ns) {
 
-        File file = ns.get( "input" );
-        Object jsonObject = JoltCliUtilities.readJsonInput( file, SUPPRESS_OUTPUT );
-        if ( jsonObject == null ) {
+        File file = ns.get("input");
+        Object jsonObject = JoltCliUtilities.readJsonInput(file, SUPPRESS_OUTPUT);
+        if (jsonObject == null) {
             return false;
         }
 
         Sortr sortr = new Sortr();
-        Object output = sortr.transform( jsonObject );
-        Boolean uglyPrint = ns.getBoolean( "u" );
-        return JoltCliUtilities.printJsonObject( output, uglyPrint, SUPPRESS_OUTPUT );
+        Object output = sortr.transform(jsonObject);
+        Boolean uglyPrint = ns.getBoolean("u");
+        return JoltCliUtilities.printJsonObject(output, uglyPrint, SUPPRESS_OUTPUT);
     }
 
 }

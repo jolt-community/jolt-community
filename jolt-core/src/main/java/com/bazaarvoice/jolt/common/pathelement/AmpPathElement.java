@@ -33,7 +33,7 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
     private final List<Object> tokens;
     private final String canonicalForm;
 
-    public AmpPathElement( String key ) {
+    public AmpPathElement(String key) {
         super(key);
 
         StringBuilder literal = new StringBuilder();
@@ -41,52 +41,51 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
 
         ArrayList<Object> tok = new ArrayList<>();
         int index = 0;
-        while( index < key.length() ) {
+        while (index < key.length()) {
 
-            char c = key.charAt( index );
+            char c = key.charAt(index);
 
             // beginning of reference
-            if ( c == '&' ) {
+            if (c == '&') {
 
                 // store off any literal text captured thus far
-                if ( literal.length() > 0 ) {
-                    tok.add( literal.toString() );
-                    canonicalBuilder.append( literal );
+                if (literal.length() > 0) {
+                    tok.add(literal.toString());
+                    canonicalBuilder.append(literal);
                     literal = new StringBuilder();
                 }
 
-                int refEnd = findEndOfReference( key.substring( index + 1 ) );
-                AmpReference ref = new AmpReference(key.substring(index, index + refEnd + 1) );
-                canonicalBuilder.append( ref.getCanonicalForm() );
+                int refEnd = findEndOfReference(key.substring(index + 1));
+                AmpReference ref = new AmpReference(key.substring(index, index + refEnd + 1));
+                canonicalBuilder.append(ref.getCanonicalForm());
 
-                tok.add( ref );
+                tok.add(ref);
                 index += refEnd;
-            }
-            else {
-                literal.append( c );
+            } else {
+                literal.append(c);
             }
             index++;
         }
-        if ( literal.length() > 0 ) {
-            tok.add( literal.toString() );
-            canonicalBuilder.append( literal.toString() );
+        if (literal.length() > 0) {
+            tok.add(literal.toString());
+            canonicalBuilder.append(literal.toString());
         }
 
         tok.trimToSize();
 
-        tokens = Collections.unmodifiableList( tok );
+        tokens = Collections.unmodifiableList(tok);
         canonicalForm = canonicalBuilder.toString();
     }
 
-    private static int findEndOfReference( String key ) {
-        if( "".equals( key ) ) {
+    private static int findEndOfReference(String key) {
+        if ("".equals(key)) {
             return 0;
         }
 
-        for( int index = 0; index < key.length(); index++ ){
-            char c = key.charAt( index );
+        for (int index = 0; index < key.length(); index++) {
+            char c = key.charAt(index);
             // keep going till we see something other than a digit, parens, or comma
-            if( ! Character.isDigit( c ) && c != '(' && c != ')' && c != ',') {
+            if (!Character.isDigit(c) && c != '(' && c != ')' && c != ',') {
                 return index;
             }
         }
@@ -104,21 +103,20 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
     }
 
     @Override
-    public String evaluate( WalkedPath walkedPath ) {
+    public String evaluate(WalkedPath walkedPath) {
 
         // Walk thru our tokens and build up a string
         // Use the supplied Path to fill in our token References
         StringBuilder output = new StringBuilder();
 
-        for ( Object token : tokens ) {
-            if ( token instanceof String ) {
-                output.append( token );
-            }
-            else {
+        for (Object token : tokens) {
+            if (token instanceof String) {
+                output.append(token);
+            } else {
                 AmpReference ref = (AmpReference) token;
-                MatchedElement matchedElement = walkedPath.elementFromEnd( ref.getPathIndex() ).getMatchedElement();
-                String value = matchedElement.getSubKeyRef( ref.getKeyGroup() );
-                output.append( value );
+                MatchedElement matchedElement = walkedPath.elementFromEnd(ref.getPathIndex()).getMatchedElement();
+                String value = matchedElement.getSubKeyRef(ref.getKeyGroup());
+                output.append(value);
             }
         }
 
@@ -126,10 +124,10 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
-        String evaled = evaluate( walkedPath );
-        if ( evaled.equals( dataKey ) ) {
-            return new MatchedElement( evaled );
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
+        String evaled = evaluate(walkedPath);
+        if (evaled.equals(dataKey)) {
+            return new MatchedElement(evaled);
         }
         return null;
     }

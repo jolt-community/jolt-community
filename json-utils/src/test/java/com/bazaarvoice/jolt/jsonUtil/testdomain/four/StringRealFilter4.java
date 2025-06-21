@@ -25,7 +25,7 @@ public class StringRealFilter4 extends BaseRealFilter4<String> {
 
     @JsonCreator
     public StringRealFilter4(@JsonProperty("queryParam") QueryParam queryParam,
-                             @JsonProperty("value") String value) {
+            @JsonProperty("value") String value) {
         super(queryParam);
         this.value = value;
     }

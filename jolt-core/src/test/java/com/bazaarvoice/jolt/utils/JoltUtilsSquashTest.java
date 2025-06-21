@@ -34,45 +34,44 @@ public class JoltUtilsSquashTest {
 
         List<Serializable> expectedList = Arrays.asList("a", 1, "b", 2);
 
-        Objects.squashNulls( actual );
+        Objects.squashNulls(actual);
 
-        Diffy.Result result = diffy.diff( expectedList, actual );
+        Diffy.Result result = diffy.diff(expectedList, actual);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 
     @Test
     public void squashNullsInAMapTest() {
-        Map<String,Object> actual = new HashMap<>();
-        actual.put( "a", 1 );
-        actual.put( "b", null );
-        actual.put( "c", "C" );
+        Map<String, Object> actual = new HashMap<>();
+        actual.put("a", 1);
+        actual.put("b", null);
+        actual.put("c", "C");
 
-        Map<String,Object>  expectedMap = new HashMap<>();
-        expectedMap.put( "a",  1  );
-        expectedMap.put( "c", "C" );
+        Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put("a", 1);
+        expectedMap.put("c", "C");
 
-        Objects.squashNulls( actual );
+        Objects.squashNulls(actual);
 
-        Diffy.Result result = diffy.diff( expectedMap, actual );
+        Diffy.Result result = diffy.diff(expectedMap, actual);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 
 
     @Test
-    public void recursivelySquashNullsTest()
-    {
-        Map<String,Object> actual   = JsonUtils.javason( "{ 'a' : 1, 'b' : null, 'c' : [ null, 4, null, 5, { 'x' : 'X', 'y' : null } ] }" );
-        Map<String,Object> expected = JsonUtils.javason( "{ 'a' : 1,             'c' : [       4,       5, { 'x' : 'X'             } ] }" );
+    public void recursivelySquashNullsTest() {
+        Map<String, Object> actual = JsonUtils.javason("{ 'a' : 1, 'b' : null, 'c' : [ null, 4, null, 5, { 'x' : 'X', 'y' : null } ] }");
+        Map<String, Object> expected = JsonUtils.javason("{ 'a' : 1,             'c' : [       4,       5, { 'x' : 'X'             } ] }");
 
-        Objects.recursivelySquashNulls( actual );
+        Objects.recursivelySquashNulls(actual);
 
-        Diffy.Result result = diffy.diff( expected, actual );
+        Diffy.Result result = diffy.diff(expected, actual);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 }

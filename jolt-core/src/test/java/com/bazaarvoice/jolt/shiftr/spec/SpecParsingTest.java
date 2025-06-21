@@ -29,86 +29,86 @@ public class SpecParsingTest {
 
     @DataProvider
     public Object[][] RHSParsingTestsRemoveEscapes() throws IOException {
-        return new Object[][] {
-            {
-                "simple, no escape",
-                "a.b.c",
-                Arrays.asList( "a", "b", "c" ),
-            },
-            {
-                "ref and array, no escape",
-                "a.&(1,2).[]",
-                Arrays.asList( "a", "&(1,2)", "[]" )
-            },
-            {
-                "single transpose, no escape",
-                "a.@(l.m.n).c",
-                Arrays.asList( "a", "@(l.m.n)", "c" )
-            },
-            {
-                "non-special char escape passes thru",
-                "a\\\\bc.def",
-                Arrays.asList( "a\\bc", "def" )
-            },
-            {
-                "single escape",
-                "a\\.b.c",
-                Arrays.asList( "a.b", "c" )
-            },
-            {
-                "escaping rhs",
-                "data.\\\\$rating-&1",
-                Arrays.asList( "data", "\\$rating-&1" )
-            },
-            {
-                "@Class example",
-                "a.@Class.c",
-                Arrays.asList( "a", "@(Class)", "c" )
-            }
+        return new Object[][]{
+                {
+                        "simple, no escape",
+                        "a.b.c",
+                        Arrays.asList("a", "b", "c"),
+                },
+                {
+                        "ref and array, no escape",
+                        "a.&(1,2).[]",
+                        Arrays.asList("a", "&(1,2)", "[]")
+                },
+                {
+                        "single transpose, no escape",
+                        "a.@(l.m.n).c",
+                        Arrays.asList("a", "@(l.m.n)", "c")
+                },
+                {
+                        "non-special char escape passes thru",
+                        "a\\\\bc.def",
+                        Arrays.asList("a\\bc", "def")
+                },
+                {
+                        "single escape",
+                        "a\\.b.c",
+                        Arrays.asList("a.b", "c")
+                },
+                {
+                        "escaping rhs",
+                        "data.\\\\$rating-&1",
+                        Arrays.asList("data", "\\$rating-&1")
+                },
+                {
+                        "@Class example",
+                        "a.@Class.c",
+                        Arrays.asList("a", "@(Class)", "c")
+                }
         };
     }
 
     @Test(dataProvider = "RHSParsingTestsRemoveEscapes")
-    public void testRHSParsingRemoveEscapes( String testName, String unSweetendDotNotation, List<String> expected ) {
+    public void testRHSParsingRemoveEscapes(String testName, String unSweetendDotNotation, List<String> expected) {
 
-        List<String> actual = SpecStringParser.parseDotNotation( Lists.<String>newArrayList(), SpecStringParser.stringIterator( unSweetendDotNotation ), unSweetendDotNotation );
+        List<String> actual = SpecStringParser.parseDotNotation(Lists.<String>newArrayList(), SpecStringParser.stringIterator(unSweetendDotNotation), unSweetendDotNotation);
 
-        Assert.assertEquals( actual, expected, "Failed test name " + testName );
+        Assert.assertEquals(actual, expected, "Failed test name " + testName);
     }
 
     @DataProvider
     public Object[][] removeEscapeCharsTests() throws IOException {
 
-        return new Object[][] {
-            { "starts with escape",     "\\@pants", "@pants" },
-            { "escape in the middle",   "rating-\\&pants", "rating-&pants" },
-            { "escape the escape char", "rating\\\\pants", "rating\\pants" },
+        return new Object[][]{
+                {"starts with escape", "\\@pants", "@pants"},
+                {"escape in the middle", "rating-\\&pants", "rating-&pants"},
+                {"escape the escape char", "rating\\\\pants", "rating\\pants"},
         };
     }
 
-    @Test(dataProvider = "removeEscapeCharsTests" )
-    public void testRemoveEscapeChars( String testName, String input, String expected ) {
+    @Test(dataProvider = "removeEscapeCharsTests")
+    public void testRemoveEscapeChars(String testName, String input, String expected) {
 
-        String actual = SpecStringParser.removeEscapeChars( input );
-        Assert.assertEquals( actual, expected, "Failed test name " + testName );
+        String actual = SpecStringParser.removeEscapeChars(input);
+        Assert.assertEquals(actual, expected, "Failed test name " + testName);
     }
 
 
     @DataProvider
     public Object[][] removeEscapedValuesTest() throws IOException {
 
-        return new Object[][] {
-            { "starts with escape",     "\\@pants", "pants" },
-            { "escape in the middle",   "rating-\\&pants", "rating-pants" },
-            { "escape the escape char", "rating\\\\pants", "ratingpants" },
-            { "escape the array", "\\[\\]pants", "pants" },
+        return new Object[][]{
+                {"starts with escape", "\\@pants", "pants"},
+                {"escape in the middle", "rating-\\&pants", "rating-pants"},
+                {"escape the escape char", "rating\\\\pants", "ratingpants"},
+                {"escape the array", "\\[\\]pants", "pants"},
         };
     }
 
-    @Test(dataProvider = "removeEscapedValuesTest" )
-    public void testEscapeParsing( String testName, String input, String expected ) {
+    @Test(dataProvider = "removeEscapedValuesTest")
+    public void testEscapeParsing(String testName, String input, String expected) {
 
-        String actual = SpecStringParser.removeEscapedValues( input );
-        Assert.assertEquals( actual, expected, "Failed test name " + testName );
+        String actual = SpecStringParser.removeEscapedValues(input);
+        Assert.assertEquals(actual, expected, "Failed test name " + testName);
     }
 }

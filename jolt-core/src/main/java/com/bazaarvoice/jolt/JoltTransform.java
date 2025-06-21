@@ -17,10 +17,10 @@ package com.bazaarvoice.jolt;
 
 /**
  * Marker interface for all Jolt Transforms.
- *
+ * <p>
  * Jolt Transforms should not actually implement this interface.  Instead they should
  * implement either the Transform interface or the ContextualTransform interface.
- *
+ * <p>
  * This interface exists because the Transform and ContextualTransform interfaces do not
  * share any methods, but we need a need a way to flag a class being a JoltTransform.
  */

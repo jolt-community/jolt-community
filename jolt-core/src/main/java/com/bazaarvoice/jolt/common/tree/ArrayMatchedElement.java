@@ -20,8 +20,8 @@ public class ArrayMatchedElement extends MatchedElement {
 
     private final int origSize;
 
-    public ArrayMatchedElement( String key, int origSize) {
-        super( key );
+    public ArrayMatchedElement(String key, int origSize) {
+        super(key);
         this.origSize = origSize;
     }
 

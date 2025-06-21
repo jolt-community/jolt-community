@@ -26,11 +26,11 @@ public class GoodContextDrivenTransform implements ContextualTransform {
     private static final String STATIC_KEY = "c";
 
     @Override
-    public Object transform( Object input, Map<String, Object> context ) {
+    public Object transform(Object input, Map<String, Object> context) {
 
         String contextValue = (String) context.get(CONTEXT_KEY);
 
-        ((Map) input).put( STATIC_KEY, contextValue );
+        ((Map) input).put(STATIC_KEY, contextValue);
 
         return input;
     }

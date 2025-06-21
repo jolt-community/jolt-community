@@ -23,10 +23,10 @@ public class DollarPathElement extends BasePathElement implements MatchablePathE
 
     private final DollarReference dRef;
 
-    public DollarPathElement( String key ) {
+    public DollarPathElement(String key) {
         super(key);
 
-        dRef = new DollarReference( key );
+        dRef = new DollarReference(key);
     }
 
     @Override
@@ -35,14 +35,14 @@ public class DollarPathElement extends BasePathElement implements MatchablePathE
     }
 
     @Override
-    public String evaluate( WalkedPath walkedPath ) {
-        MatchedElement pe = walkedPath.elementFromEnd( dRef.getPathIndex() ).getMatchedElement();
-        return pe.getSubKeyRef( dRef.getKeyGroup() );
+    public String evaluate(WalkedPath walkedPath) {
+        MatchedElement pe = walkedPath.elementFromEnd(dRef.getPathIndex()).getMatchedElement();
+        return pe.getSubKeyRef(dRef.getKeyGroup());
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
-        String evaled = evaluate( walkedPath );
-        return new MatchedElement( evaled );
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
+        String evaled = evaluate(walkedPath);
+        return new MatchedElement(evaled);
     }
 }

@@ -26,38 +26,37 @@ import java.util.*;
  */
 public class RemovrLeafSpec extends RemovrSpec {
 
-    public RemovrLeafSpec( String rawKey ) {
-        super( rawKey );
+    public RemovrLeafSpec(String rawKey) {
+        super(rawKey);
     }
 
     /**
      * Build a list of keys to remove from the input map, using the pathElement
-     *  from the Spec.
+     * from the Spec.
      *
      * @param inputMap : Input map from which the spec key needs to be removed.
      */
     @Override
-    public List<String> applyToMap( Map<String, Object> inputMap ) {
-        if ( inputMap == null ) {
+    public List<String> applyToMap(Map<String, Object> inputMap) {
+        if (inputMap == null) {
             return null;
         }
 
         List<String> keysToBeRemoved = new LinkedList<>();
 
-        if ( pathElement instanceof LiteralPathElement ) {
+        if (pathElement instanceof LiteralPathElement) {
 
             // if we are a literal, check to see if we match
-            if ( inputMap.containsKey( pathElement.getRawKey() ) ) {
-                keysToBeRemoved.add( pathElement.getRawKey() );
+            if (inputMap.containsKey(pathElement.getRawKey())) {
+                keysToBeRemoved.add(pathElement.getRawKey());
             }
-        }
-        else if (pathElement instanceof StarPathElement star) {
+        } else if (pathElement instanceof StarPathElement star) {
 
             // if we are a wildcard, check each input key to see if it matches us
-            for( String key : inputMap.keySet() ) {
+            for (String key : inputMap.keySet()) {
 
-                if ( star.stringMatch( key ) ) {
-                    keysToBeRemoved.add( key );
+                if (star.stringMatch(key)) {
+                    keysToBeRemoved.add(key);
                 }
             }
         }
@@ -69,27 +68,26 @@ public class RemovrLeafSpec extends RemovrSpec {
      * @param inputList : Input List from which the spec key needs to be removed.
      */
     @Override
-    public List<Integer> applyToList( List<Object> inputList ) {
-        if ( inputList == null ) {
+    public List<Integer> applyToList(List<Object> inputList) {
+        if (inputList == null) {
             return null;
         }
 
-        if ( pathElement instanceof LiteralPathElement ) {
+        if (pathElement instanceof LiteralPathElement) {
 
             Integer pathElementInt = getNonNegativeIntegerFromLiteralPathElement();
 
-            if ( pathElementInt != null && pathElementInt < inputList.size() ) {
-                return Collections.singletonList( pathElementInt );
+            if (pathElementInt != null && pathElementInt < inputList.size()) {
+                return Collections.singletonList(pathElementInt);
             }
-        }
-        else if ( pathElement instanceof StarAllPathElement ) {
+        } else if (pathElement instanceof StarAllPathElement) {
 
             // To be clear, this is kinda silly.
             // If you just wanted to remove the whole list, you could have just
             //  directly removed it, instead of stepping into it and using the "*".
-            List<Integer> toReturn = new ArrayList<>( inputList.size() );
-            for( int index = 0; index < inputList.size(); index++ ) {
-                toReturn.add( index );
+            List<Integer> toReturn = new ArrayList<>(inputList.size());
+            for (int index = 0; index < inputList.size(); index++) {
+                toReturn.add(index);
             }
 
             return toReturn;

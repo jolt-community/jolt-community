@@ -32,18 +32,18 @@ public class StarRegexPathElement extends BasePathElement implements StarPathEle
 
     private final Pattern pattern;
 
-    public StarRegexPathElement( String key ) {
+    public StarRegexPathElement(String key) {
         super(key);
 
-        pattern = makePattern( key );
+        pattern = makePattern(key);
     }
 
 
-    private static Pattern makePattern( String key ) {
+    private static Pattern makePattern(String key) {
 
         // "rating-*-*"  ->  "^rating-(.+?)-(.+?)$"   aka the '*' must match something in a non-greedy way
         key = escapeMetacharsIfAny(key);
-        String regex = "^" + key.replace("*", "(.+?)")  + "$";
+        String regex = "^" + key.replace("*", "(.+?)") + "$";
 
         /*
             wtf does "(.+?)" mean
@@ -56,20 +56,21 @@ public class StarRegexPathElement extends BasePathElement implements StarPathEle
               Differences Among Greedy, Reluctant, and Possessive Quantifiers section
         */
 
-        return Pattern.compile( regex);
+        return Pattern.compile(regex);
     }
 
     // Metachars to escape .^$|*+?()[{\ in a regex
 
-    /** +
+    /**
+     * +
      *
      * @param key : String key that needs to be escaped before compiling into regex.
      * @return : Metachar escaped key.
-     *
+     * <p>
      * Regex has some special meaning for the metachars [ .^$|*+?()[{\ ].If any of these metachars is present in the pattern key that was passed, it needs to be escaped so that
      * it can be matched against literal.
      */
-    private static String escapeMetacharsIfAny(String key){
+    private static String escapeMetacharsIfAny(String key) {
 
         char[] keyChars = key.toCharArray();
 
@@ -79,7 +80,7 @@ public class StarRegexPathElement extends BasePathElement implements StarPathEle
 
         Set<Character> charsAlreadySeen = new HashSet<>();
 
-        for(char keychar: keyChars) {
+        for (char keychar : keyChars) {
 
             switch (keychar) {
 
@@ -95,7 +96,7 @@ public class StarRegexPathElement extends BasePathElement implements StarPathEle
                 case '+':
                 case '.':
 
-                    if(!charsAlreadySeen.contains( keychar )){
+                    if (!charsAlreadySeen.contains(keychar)) {
 
                         key = key.replace(String.valueOf(keychar), "\\" + keychar);
 
@@ -115,26 +116,26 @@ public class StarRegexPathElement extends BasePathElement implements StarPathEle
      * @return true if the provided literal will match this Element's regex
      */
     @Override
-    public boolean stringMatch( String literal ) {
+    public boolean stringMatch(String literal) {
 
-        Matcher matcher = pattern.matcher( literal );
+        Matcher matcher = pattern.matcher(literal);
 
         return matcher.find();
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
 
-        Matcher matcher = pattern.matcher( dataKey );
-        if ( ! matcher.find() ) {
+        Matcher matcher = pattern.matcher(dataKey);
+        if (!matcher.find()) {
             return null;
         }
 
         int groupCount = matcher.groupCount();
 
         List<String> subKeys = new ArrayList<>(groupCount);
-        for ( int index = 1; index <= groupCount; index++) {
-            subKeys.add( matcher.group( index ) );
+        for (int index = 1; index <= groupCount; index++) {
+            subKeys.add(matcher.group(index));
         }
 
         return new MatchedElement(dataKey, subKeys);

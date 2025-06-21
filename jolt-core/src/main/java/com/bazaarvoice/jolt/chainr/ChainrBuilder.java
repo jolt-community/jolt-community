@@ -37,7 +37,7 @@ public class ChainrBuilder {
      *
      * @param chainrSpecObj List of transforms to run
      */
-    public ChainrBuilder( Object chainrSpecObj ) {
+    public ChainrBuilder(Object chainrSpecObj) {
         this.chainrSpecObj = chainrSpecObj;
     }
 
@@ -47,33 +47,33 @@ public class ChainrBuilder {
      *
      * @param loader ChainrInstantiator to use load Transforms
      */
-    public ChainrBuilder loader( ChainrInstantiator loader ) {
+    public ChainrBuilder loader(ChainrInstantiator loader) {
 
-        if ( loader == null ) {
-            throw new IllegalArgumentException( "ChainrBuilder requires a non-null loader." );
+        if (loader == null) {
+            throw new IllegalArgumentException("ChainrBuilder requires a non-null loader.");
         }
 
         this.chainrInstantiator = loader;
         return this;
     }
 
-    public ChainrBuilder withClassLoader( ClassLoader classLoader ) {
-        if ( classLoader == null ) {
-            throw new IllegalArgumentException( "ChainrBuilder requires a non-null classLoader." );
+    public ChainrBuilder withClassLoader(ClassLoader classLoader) {
+        if (classLoader == null) {
+            throw new IllegalArgumentException("ChainrBuilder requires a non-null classLoader.");
         }
         this.classLoader = classLoader;
         return this;
     }
 
     public Chainr build() {
-        ChainrSpec chainrSpec = new ChainrSpec( chainrSpecObj, classLoader );
-        List<JoltTransform> transforms = new ArrayList<>( chainrSpec.getChainrEntries().size() );
-        for ( ChainrEntry entry : chainrSpec.getChainrEntries() ) {
+        ChainrSpec chainrSpec = new ChainrSpec(chainrSpecObj, classLoader);
+        List<JoltTransform> transforms = new ArrayList<>(chainrSpec.getChainrEntries().size());
+        for (ChainrEntry entry : chainrSpec.getChainrEntries()) {
 
-            JoltTransform transform = chainrInstantiator.hydrateTransform( entry );
-            transforms.add( transform );
+            JoltTransform transform = chainrInstantiator.hydrateTransform(entry);
+            transforms.add(transform);
         }
 
-        return new Chainr( transforms );
+        return new Chainr(transforms);
     }
 }

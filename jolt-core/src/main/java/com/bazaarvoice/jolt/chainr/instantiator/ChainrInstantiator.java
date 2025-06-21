@@ -21,12 +21,12 @@ import com.bazaarvoice.jolt.chainr.spec.ChainrEntry;
 /**
  * Interface to allow the guts of the Transform class loading logic to be swapped out.
  * This primarily exists to allow clients of Jolt to load their own custom Java Transforms
- *  via Guice or other dependency injection systems.
+ * via Guice or other dependency injection systems.
  */
 public interface ChainrInstantiator {
 
     /**
      * Instantiate the Transform class specified by the ChainrEntry.
      */
-    public JoltTransform hydrateTransform( ChainrEntry entry );
+    public JoltTransform hydrateTransform(ChainrEntry entry);
 }

@@ -26,18 +26,18 @@ public class RemovrTest {
 
     @DataProvider
     public Object[][] getTestCaseNames() {
-        return new Object[][] {
-            {"firstSample"},
-            {"boundaryConditions"},
-            {"removrWithWildcardSupport"},
-            {"multiStarSupport"},
-            {"starDoublePathElementBoundaryConditions"},
-            // Array tests
-            {"array_canPassThruNestedArrays"},
-            {"array_canHandleTopLevelArray"},
-            {"array_nonStarInArrayDoesNotDie"},
-            {"array_removeAnArrayIndex"},
-            {"array_removeJsonArrayFields"}
+        return new Object[][]{
+                {"firstSample"},
+                {"boundaryConditions"},
+                {"removrWithWildcardSupport"},
+                {"multiStarSupport"},
+                {"starDoublePathElementBoundaryConditions"},
+                // Array tests
+                {"array_canPassThruNestedArrays"},
+                {"array_canHandleTopLevelArray"},
+                {"array_nonStarInArrayDoesNotDie"},
+                {"array_removeAnArrayIndex"},
+                {"array_removeJsonArrayFields"}
         };
     }
 
@@ -45,21 +45,21 @@ public class RemovrTest {
     public void runTestCases(String testCaseName) throws IOException {
 
         String testPath = "/json/removr/" + testCaseName;
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath + ".json" );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
 
-        Object input = testUnit.get( "input" );
-        Object spec = testUnit.get( "spec" );
-        Object expected = testUnit.get( "expected" );
+        Object input = testUnit.get("input");
+        Object spec = testUnit.get("spec");
+        Object expected = testUnit.get("expected");
 
-        Removr removr = new Removr( spec );
-        Object actual = removr.transform( input );
+        Removr removr = new Removr(spec);
+        Object actual = removr.transform(input);
 
-        JoltTestUtil.runDiffy( "failed case " + testPath, expected, actual );
+        JoltTestUtil.runDiffy("failed case " + testPath, expected, actual);
     }
 
     @DataProvider
     public Object[][] getNegativeTestCaseNames() {
-        return new Object[][] {
+        return new Object[][]{
                 {"negativeTestCases"}
         };
     }
@@ -68,10 +68,10 @@ public class RemovrTest {
     public void runNegativeTestCases(String testCaseName) throws IOException {
 
         String testPath = "/json/removr/" + testCaseName;
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath + ".json" );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
 
-        Object spec = testUnit.get( "spec" );
-        new Removr( spec );
+        Object spec = testUnit.get("spec");
+        new Removr(spec);
     }
 
 }

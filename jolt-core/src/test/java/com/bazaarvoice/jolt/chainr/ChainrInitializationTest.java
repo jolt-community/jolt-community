@@ -32,74 +32,75 @@ public class ChainrInitializationTest {
 
     @DataProvider
     public Object[][] badTransforms() {
-        return new Object[][] {
-            {JsonUtils.classpathToObject(  "/json/chainr/transforms/bad_transform_loadsExplodingTransform.json" )}
+        return new Object[][]{
+                {JsonUtils.classpathToObject("/json/chainr/transforms/bad_transform_loadsExplodingTransform.json")}
         };
     }
 
-    @Test(dataProvider = "badTransforms", expectedExceptions = TransformException.class )
+    @Test(dataProvider = "badTransforms", expectedExceptions = TransformException.class)
     public void testBadTransforms(Object chainrSpec) {
-        Chainr unit = Chainr.fromSpec( chainrSpec );
-        unit.transform( new HashMap<>(), null );// should fail here
-        Assert.fail( "Should not have gotten here" );
+        Chainr unit = Chainr.fromSpec(chainrSpec);
+        unit.transform(new HashMap<>(), null);// should fail here
+        Assert.fail("Should not have gotten here");
     }
 
     @DataProvider
     public Object[][] passingTestCases() {
-        return new Object[][] {
-            {new Object(), JsonUtils.classpathToObject( "/json/chainr/transforms/loadsGoodTransform.json" )}
+        return new Object[][]{
+                {new Object(), JsonUtils.classpathToObject("/json/chainr/transforms/loadsGoodTransform.json")}
         };
     }
 
-    @Test(dataProvider = "passingTestCases" )
+    @Test(dataProvider = "passingTestCases")
     public void testPassing(Object input, Object spec) {
-        Chainr unit = Chainr.fromSpec( spec );
-        TransformTestResult actual = (TransformTestResult) unit.transform( input, null );
+        Chainr unit = Chainr.fromSpec(spec);
+        TransformTestResult actual = (TransformTestResult) unit.transform(input, null);
 
-        Assert.assertEquals( input, actual.input );
-        Assert.assertNotNull( actual.spec );
+        Assert.assertEquals(input, actual.input);
+        Assert.assertNotNull(actual.spec);
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void chainrBuilderFailsOnNullLoader() {
 
-        Object validSpec = JsonUtils.classpathToObject( "/json/chainr/transforms/loadsGoodTransform.json" );
-        new ChainrBuilder( validSpec ).loader( null );
+        Object validSpec = JsonUtils.classpathToObject("/json/chainr/transforms/loadsGoodTransform.json");
+        new ChainrBuilder(validSpec).loader(null);
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void failsOnNullListOfJoltTransforms() {
-        new Chainr( null );
+        new Chainr(null);
     }
 
-    @Test( expectedExceptions = SpecException.class )
+    @Test(expectedExceptions = SpecException.class)
     public void failsOnStupidTransform() {
         List<JoltTransform> badSpec = Lists.newArrayList();
 
         // Stupid JoltTransform that implements the base interface, and not one of the useful ones
-        badSpec.add( new JoltTransform() {} );
+        badSpec.add(new JoltTransform() {
+        });
 
-        new Chainr( badSpec );
+        new Chainr(badSpec);
     }
 
-    @Test( expectedExceptions = SpecException.class )
+    @Test(expectedExceptions = SpecException.class)
     public void failsOnOverEagerTransform() {
         List<JoltTransform> badSpec = Lists.newArrayList();
 
         // Stupid JoltTransform that implements both "real" interfaces
-        badSpec.add( new OverEagerTransform() );
+        badSpec.add(new OverEagerTransform());
 
-        new Chainr( badSpec );
+        new Chainr(badSpec);
     }
 
     private static class OverEagerTransform implements Transform, ContextualTransform {
         @Override
-        public Object transform( Object input, Map<String, Object> context ) {
+        public Object transform(Object input, Map<String, Object> context) {
             return null;
         }
 
         @Override
-        public Object transform( Object input ) {
+        public Object transform(Object input) {
             return null;
         }
     }

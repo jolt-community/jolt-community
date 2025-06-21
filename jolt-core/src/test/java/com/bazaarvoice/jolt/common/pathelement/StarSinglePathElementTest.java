@@ -24,54 +24,54 @@ public class StarSinglePathElementTest {
     @Test
     public void testStarAtFront() {
 
-        StarPathElement star = new StarSinglePathElement( "*-tuna" );
-        Assert.assertTrue( star.stringMatch( "tuna-tuna" )  );
-        Assert.assertTrue( star.stringMatch( "bob-tuna" )  );
-        Assert.assertFalse( star.stringMatch( "-tuna" ) );   // * has to catch something
-        Assert.assertFalse( star.stringMatch( "tuna" ) );
-        Assert.assertFalse( star.stringMatch( "tuna-bob" ) );
+        StarPathElement star = new StarSinglePathElement("*-tuna");
+        Assert.assertTrue(star.stringMatch("tuna-tuna"));
+        Assert.assertTrue(star.stringMatch("bob-tuna"));
+        Assert.assertFalse(star.stringMatch("-tuna"));   // * has to catch something
+        Assert.assertFalse(star.stringMatch("tuna"));
+        Assert.assertFalse(star.stringMatch("tuna-bob"));
 
-        MatchedElement lpe = star.match( "bob-tuna", null );
-        Assert.assertEquals( "bob-tuna", lpe.getSubKeyRef( 0 ) );
-        Assert.assertEquals( "bob", lpe.getSubKeyRef( 1 ) );
-        Assert.assertEquals( 2, lpe.getSubKeyCount() );
+        MatchedElement lpe = star.match("bob-tuna", null);
+        Assert.assertEquals("bob-tuna", lpe.getSubKeyRef(0));
+        Assert.assertEquals("bob", lpe.getSubKeyRef(1));
+        Assert.assertEquals(2, lpe.getSubKeyCount());
 
-        Assert.assertNull( star.match( "-tuna", null ) );
+        Assert.assertNull(star.match("-tuna", null));
     }
 
     @Test
     public void testStarAtEnd() {
 
-        StarPathElement star = new StarSinglePathElement( "tuna-*" );
-        Assert.assertTrue( star.stringMatch( "tuna-tuna" )  );
-        Assert.assertTrue( star.stringMatch( "tuna-bob" )  );
-        Assert.assertFalse( star.stringMatch( "tuna-" ) );
-        Assert.assertFalse( star.stringMatch( "tuna" ) );
-        Assert.assertFalse( star.stringMatch( "bob-tuna" ) );
+        StarPathElement star = new StarSinglePathElement("tuna-*");
+        Assert.assertTrue(star.stringMatch("tuna-tuna"));
+        Assert.assertTrue(star.stringMatch("tuna-bob"));
+        Assert.assertFalse(star.stringMatch("tuna-"));
+        Assert.assertFalse(star.stringMatch("tuna"));
+        Assert.assertFalse(star.stringMatch("bob-tuna"));
 
-        MatchedElement lpe = star.match( "tuna-bob", null );
-        Assert.assertEquals( "tuna-bob", lpe.getSubKeyRef( 0 ) );
-        Assert.assertEquals( "bob", lpe.getSubKeyRef( 1 ) );
-        Assert.assertEquals( 2, lpe.getSubKeyCount() );
+        MatchedElement lpe = star.match("tuna-bob", null);
+        Assert.assertEquals("tuna-bob", lpe.getSubKeyRef(0));
+        Assert.assertEquals("bob", lpe.getSubKeyRef(1));
+        Assert.assertEquals(2, lpe.getSubKeyCount());
 
-        Assert.assertNull( star.match( "tuna-", null ) );
+        Assert.assertNull(star.match("tuna-", null));
     }
 
     @Test
     public void testStarInMiddle() {
 
-        StarPathElement star = new StarSinglePathElement( "tuna-*-marlin" );
-        Assert.assertTrue( star.stringMatch( "tuna-tuna-marlin" )  );
-        Assert.assertTrue( star.stringMatch( "tuna-bob-marlin" )  );
-        Assert.assertFalse( star.stringMatch( "tuna--marlin" ) );
-        Assert.assertFalse( star.stringMatch( "tunamarlin" ) );
-        Assert.assertFalse( star.stringMatch( "marlin-bob-tuna" ) );
+        StarPathElement star = new StarSinglePathElement("tuna-*-marlin");
+        Assert.assertTrue(star.stringMatch("tuna-tuna-marlin"));
+        Assert.assertTrue(star.stringMatch("tuna-bob-marlin"));
+        Assert.assertFalse(star.stringMatch("tuna--marlin"));
+        Assert.assertFalse(star.stringMatch("tunamarlin"));
+        Assert.assertFalse(star.stringMatch("marlin-bob-tuna"));
 
-        MatchedElement lpe = star.match( "tuna-bob-marlin", null );
-        Assert.assertEquals( "tuna-bob-marlin", lpe.getSubKeyRef( 0 ) );
-        Assert.assertEquals( "bob", lpe.getSubKeyRef( 1 ) );
-        Assert.assertEquals( 2, lpe.getSubKeyCount() );
+        MatchedElement lpe = star.match("tuna-bob-marlin", null);
+        Assert.assertEquals("tuna-bob-marlin", lpe.getSubKeyRef(0));
+        Assert.assertEquals("bob", lpe.getSubKeyRef(1));
+        Assert.assertEquals(2, lpe.getSubKeyCount());
 
-        Assert.assertNull( star.match( "bob", null ) );
+        Assert.assertNull(star.match("bob", null));
     }
 }

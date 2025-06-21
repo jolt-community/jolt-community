@@ -26,8 +26,14 @@ import java.util.List;
  */
 public class ArrayTraversalStep<DataType> extends BaseTraversalStep<List<Object>, DataType> {
 
-    public ArrayTraversalStep( Traversr traversr, TraversalStep child ) {
-        super( traversr, child );
+    public ArrayTraversalStep(Traversr traversr, TraversalStep child) {
+        super(traversr, child);
+    }
+
+    private static void ensureArraySize(List<Object> list, Integer upperIndex) {
+        for (int sizing = list.size(); sizing <= upperIndex; sizing++) {
+            list.add(null);
+        }
     }
 
     public Class getStepType() {
@@ -39,39 +45,33 @@ public class ArrayTraversalStep<DataType> extends BaseTraversalStep<List<Object>
     }
 
     @Override
-    public Optional<DataType> get( List<Object> list, String key ) {
+    public Optional<DataType> get(List<Object> list, String key) {
 
-        int arrayIndex = Integer.parseInt( key );
-        if ( arrayIndex < list.size() ) {
-            return Optional.of( (DataType) list.get( arrayIndex ) );
+        int arrayIndex = Integer.parseInt(key);
+        if (arrayIndex < list.size()) {
+            return Optional.of((DataType) list.get(arrayIndex));
         }
 
         return Optional.empty();
     }
 
     @Override
-    public Optional<DataType> remove( List<Object> list, String key ) {
+    public Optional<DataType> remove(List<Object> list, String key) {
 
-        int arrayIndex = Integer.parseInt( key );
-        if ( arrayIndex < list.size() ) {
-            return Optional.of( (DataType) list.remove( arrayIndex ) );
+        int arrayIndex = Integer.parseInt(key);
+        if (arrayIndex < list.size()) {
+            return Optional.of((DataType) list.remove(arrayIndex));
         }
 
         return Optional.empty();
     }
 
     @Override
-    public Optional<DataType> overwriteSet( List<Object> list, String key, DataType data ) {
+    public Optional<DataType> overwriteSet(List<Object> list, String key, DataType data) {
 
-        int arrayIndex = Integer.parseInt( key );
-        ensureArraySize( list, arrayIndex );            // make sure it is big enough
-        list.set( arrayIndex, data );
-        return Optional.of( data );
-    }
-
-    private static void ensureArraySize( List<Object> list, Integer upperIndex ) {
-        for ( int sizing = list.size(); sizing <= upperIndex; sizing++ ) {
-            list.add( null );
-        }
+        int arrayIndex = Integer.parseInt(key);
+        ensureArraySize(list, arrayIndex);            // make sure it is big enough
+        list.set(arrayIndex, data);
+        return Optional.of(data);
     }
 }

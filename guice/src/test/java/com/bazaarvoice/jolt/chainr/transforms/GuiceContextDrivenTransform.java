@@ -16,8 +16,8 @@
 package com.bazaarvoice.jolt.chainr.transforms;
 
 import com.bazaarvoice.jolt.ContextualTransform;
-
 import jakarta.inject.Inject;
+
 import java.util.Map;
 
 public class GuiceContextDrivenTransform implements ContextualTransform {
@@ -26,27 +26,27 @@ public class GuiceContextDrivenTransform implements ContextualTransform {
 
     private final GuiceConfig guiceConfig;   // Value we get form Guice
 
-    public static class GuiceConfig {
-        private final String key, value;
-
-        public GuiceConfig( String key, String value ) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
     @Inject
-    public GuiceContextDrivenTransform( GuiceConfig guiceConfig ) {
+    public GuiceContextDrivenTransform(GuiceConfig guiceConfig) {
         this.guiceConfig = guiceConfig;
     }
 
     @Override
-    public Object transform( Object input, Map<String, Object> context ) {
+    public Object transform(Object input, Map<String, Object> context) {
 
-        String suffix = (String) context.get( CONTEXT_KEY );
+        String suffix = (String) context.get(CONTEXT_KEY);
 
-        ( (Map) input ).put( guiceConfig.key, guiceConfig.value + suffix );
+        ((Map) input).put(guiceConfig.key, guiceConfig.value + suffix);
 
         return input;
+    }
+
+    public static class GuiceConfig {
+        private final String key, value;
+
+        public GuiceConfig(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
     }
 }

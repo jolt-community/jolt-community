@@ -31,26 +31,25 @@ public class JoltCliTest {
         // chooses the path to the resource files copied by maven into the target/ directory. Obviously, this assumes
         // that you did not name $JOLT_CHECKOUT 'cli'. If that check fails then the path is chosen with the assumption
         // that the test is running in an IDE (Intellij IDEA in my case). Your mileage with other IDE's may very.
-        String path = System.getProperty( "user.dir" );
-        if ( path.endsWith( "cli" ) ) {
+        String path = System.getProperty("user.dir");
+        if (path.endsWith("cli")) {
             // This test is being run by maven
             path += "//target//test-classes//json//";
-        }
-        else {
+        } else {
             // This test is being run in an IDE (IntelliJ IDEA)
-          path += "//cli//src//test//resources//json//";
+            path += "//cli//src//test//resources//json//";
         }
 
         // diffy: Input with no differences should return true
-        Assert.assertTrue( JoltCli.runJolt( new String[] {"diffy", path + "input1.json", path + "input1.json", "-s"} ) );
+        Assert.assertTrue(JoltCli.runJolt(new String[]{"diffy", path + "input1.json", path + "input1.json", "-s"}));
 
         // diffy: Input with differences should return false
-        Assert.assertFalse( JoltCli.runJolt( new String[] {"diffy", path + "input1.json", path + "input2.json", "-s"} ) );
+        Assert.assertFalse(JoltCli.runJolt(new String[]{"diffy", path + "input1.json", path + "input2.json", "-s"}));
 
         // sort: well formed input should return true
-        Assert.assertTrue( JoltCli.runJolt( new String[] {"sort", path + "input1.json"} ) );
+        Assert.assertTrue(JoltCli.runJolt(new String[]{"sort", path + "input1.json"}));
 
         // transform: well formed input should return true
-        Assert.assertTrue( JoltCli.runJolt( new String[] {"transform", path + "spec.json", path + "transformInput.json"} ) );
+        Assert.assertTrue(JoltCli.runJolt(new String[]{"transform", path + "spec.json", path + "transformInput.json"}));
     }
 }

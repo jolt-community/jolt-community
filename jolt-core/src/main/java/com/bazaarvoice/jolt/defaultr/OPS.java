@@ -24,16 +24,16 @@ public enum OPS {
 
     STAR, OR, LITERAL;
 
-    public static OPS parse( String key ) {
-        if ( key.contains( Defaultr.WildCards.STAR ) ){
+    public static OPS parse(String key) {
+        if (key.contains(Defaultr.WildCards.STAR)) {
 
-            if ( ! Defaultr.WildCards.STAR.equals( key ) ) {
-                throw new SpecException("Defaultr key " + key + " is invalid.  * keys can only contain *, and no other characters." );
+            if (!Defaultr.WildCards.STAR.equals(key)) {
+                throw new SpecException("Defaultr key " + key + " is invalid.  * keys can only contain *, and no other characters.");
             }
 
             return STAR;
         }
-        if ( key.contains( Defaultr.WildCards.OR ) ) {
+        if (key.contains(Defaultr.WildCards.OR)) {
             return OR;
         }
         return LITERAL;
@@ -52,27 +52,27 @@ public enum OPS {
             // s = s1 -> 0
             // s > s1 -> 1
 
-            if ( ops == ops1 ) {
+            if (ops == ops1) {
                 return 0;
             }
 
-            if ( STAR == ops ) {
+            if (STAR == ops) {
                 return 1;
             }
-            if ( LITERAL == ops ) {
+            if (LITERAL == ops) {
                 return -1;
             }
 
             // if we get here, "ops" has to equal OR
-            if ( STAR == ops1) {
+            if (STAR == ops1) {
                 return -1;
             }
-            if ( LITERAL == ops1 ) {
+            if (LITERAL == ops1) {
                 return 1;
             }
 
             // both are ORs, should never get here
-            throw new IllegalStateException( "Someone has added an op type without changing this method." );
+            throw new IllegalStateException("Someone has added an op type without changing this method.");
         }
     }
 }

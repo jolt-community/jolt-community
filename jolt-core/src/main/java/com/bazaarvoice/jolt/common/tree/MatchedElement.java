@@ -24,11 +24,11 @@ import java.util.List;
 
 /**
  * MatchedElement is the result of a "match" between a spec PathElement and some input data.
- *
+ * <p>
  * MatchedElements are not thread safe, and should instead be stack / single Thread/Transform specific.
- *
+ * <p>
  * This mutability was specifically added for the the HashCount functionality, which allows Shiftr
- *  to transform data form maps to lists.
+ * to transform data form maps to lists.
  */
 public class MatchedElement extends BasePathElement implements EvaluatablePathElement {
 
@@ -36,31 +36,31 @@ public class MatchedElement extends BasePathElement implements EvaluatablePathEl
 
     private int hashCount = 0;
 
-    public MatchedElement( String key ) {
+    public MatchedElement(String key) {
         super(key);
 
         List<String> keys = new ArrayList<>(1);
-        keys.add( key ); // always add the full key to index 0
+        keys.add(key); // always add the full key to index 0
 
-        this.subKeys = Collections.unmodifiableList( keys );
+        this.subKeys = Collections.unmodifiableList(keys);
     }
 
-    public MatchedElement( String key, List<String> subKeys ) {
+    public MatchedElement(String key, List<String> subKeys) {
         super(key);
 
-        if ( subKeys == null ) {
-            throw new IllegalArgumentException( "MatchedElement for key:" + key + " got null list of subKeys" );
+        if (subKeys == null) {
+            throw new IllegalArgumentException("MatchedElement for key:" + key + " got null list of subKeys");
         }
 
-        List<String> keys = new ArrayList<>( 1 + subKeys.size() );
-        keys.add( key ); // always add the full key to index 0
-        keys.addAll( subKeys );
+        List<String> keys = new ArrayList<>(1 + subKeys.size());
+        keys.add(key); // always add the full key to index 0
+        keys.addAll(subKeys);
 
-        this.subKeys = Collections.unmodifiableList( keys );
+        this.subKeys = Collections.unmodifiableList(keys);
     }
 
     @Override
-    public String evaluate( WalkedPath walkedPath ) {
+    public String evaluate(WalkedPath walkedPath) {
         return getRawKey();
     }
 
@@ -69,14 +69,14 @@ public class MatchedElement extends BasePathElement implements EvaluatablePathEl
         return getRawKey();
     }
 
-    public String getSubKeyRef( int index ) {
+    public String getSubKeyRef(int index) {
         if ((index < 0) || (index >= this.subKeys.size())) {
-            throw new IndexOutOfBoundsException( "MatchedElement "+ this.subKeys +" cannot be indexed with index "+index );
+            throw new IndexOutOfBoundsException("MatchedElement " + this.subKeys + " cannot be indexed with index " + index);
         }
-        return subKeys.get( index );
+        return subKeys.get(index);
     }
 
-    public int getSubKeyCount(){
+    public int getSubKeyCount() {
         return subKeys.size();
     }
 

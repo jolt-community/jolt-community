@@ -24,33 +24,29 @@ import java.util.List;
 
 /**
  * PathElement for the a single "*" wildcard such as tag-*.   In this case we can avoid doing any
- *  regex work by doing String begins and ends with comparisons.
+ * regex work by doing String begins and ends with comparisons.
  */
 public class StarSinglePathElement extends BasePathElement implements StarPathElement {
 
-    private final String prefix,suffix;
+    private final String prefix, suffix;
 
-    public StarSinglePathElement( String key ) {
+    public StarSinglePathElement(String key) {
         super(key);
 
-        if ( StringTools.countMatches(key, "*") != 1 ) {
-            throw new IllegalArgumentException( "StarSinglePathElement should only have one '*' in its key. Was: " + key );
-        }
-        else if ( "*".equals( key ) ) {
-            throw new IllegalArgumentException( "StarSinglePathElement should have a key that is just '*'. Was: " + key );
+        if (StringTools.countMatches(key, "*") != 1) {
+            throw new IllegalArgumentException("StarSinglePathElement should only have one '*' in its key. Was: " + key);
+        } else if ("*".equals(key)) {
+            throw new IllegalArgumentException("StarSinglePathElement should have a key that is just '*'. Was: " + key);
         }
 
-        if ( key.startsWith( "*" ) ) {
+        if (key.startsWith("*")) {
             prefix = "";
-            suffix = key.substring( 1 );
-        }
-        else if ( key.endsWith( "*" ) ) {
-            prefix = key.substring( 0, key.length() -1 );
+            suffix = key.substring(1);
+        } else if (key.endsWith("*")) {
+            prefix = key.substring(0, key.length() - 1);
             suffix = "";
-        }
-        else
-        {
-            String[] split = key.split( "\\*" );
+        } else {
+            String[] split = key.split("\\*");
             prefix = split[0];
             suffix = split[1];
         }
@@ -61,19 +57,19 @@ public class StarSinglePathElement extends BasePathElement implements StarPathEl
      * @return true if the provided literal will match this Element's regex
      */
     @Override
-    public boolean stringMatch( String literal ) {
-        return literal.startsWith( prefix ) && literal.endsWith( suffix )  // the ends match
+    public boolean stringMatch(String literal) {
+        return literal.startsWith(prefix) && literal.endsWith(suffix)  // the ends match
                 && literal.length() > prefix.length() + suffix.length();   // and the * captures something
     }
 
     @Override
-    public MatchedElement match( String dataKey, WalkedPath walkedPath ) {
+    public MatchedElement match(String dataKey, WalkedPath walkedPath) {
 
-        if ( stringMatch( dataKey ) )  {
+        if (stringMatch(dataKey)) {
             List<String> subKeys = new ArrayList<>(1);
 
-            String starPart = dataKey.substring( prefix.length(), dataKey.length() - suffix.length() );
-            subKeys.add( starPart );
+            String starPart = dataKey.substring(prefix.length(), dataKey.length() - suffix.length());
+            subKeys.add(starPart);
 
             return new MatchedElement(dataKey, subKeys);
         }

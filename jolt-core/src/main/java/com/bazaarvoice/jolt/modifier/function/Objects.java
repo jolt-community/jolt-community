@@ -29,37 +29,34 @@ public class Objects {
     /**
      * Given any object, returns, if possible. its Java number equivalent wrapped in Optional
      * Interprets String as Number
-     *
+     * <p>
      * toNumber("123") == Optional.of(123)
      * toNumber("-123") == Optional.of(-123)
      * toNumber("12.3") == Optional.of(12.3)
-     *
+     * <p>
      * toNumber("abc") == Optional.empty()
      * toNumber(null) == Optional.empty()
-     *
+     * <p>
      * also, see: MathTest#testNitPicks
-     *
      */
     public static Optional<? extends Number> toNumber(Object arg) {
-        if ( arg instanceof Number ) {
-            return Optional.of( ( (Number) arg ));
-        }
-        else if(arg instanceof String) {
+        if (arg instanceof Number) {
+            return Optional.of(((Number) arg));
+        } else if (arg instanceof String) {
             try {
-                return Optional.of( (Number) Integer.parseInt( (String) arg ) );
+                return Optional.of((Number) Integer.parseInt((String) arg));
+            } catch (Exception ignored) {
             }
-            catch(Exception ignored) {}
             try {
-                return Optional.of( (Number) Long.parseLong( (String) arg ) );
+                return Optional.of((Number) Long.parseLong((String) arg));
+            } catch (Exception ignored) {
             }
-            catch(Exception ignored) {}
             try {
-                return Optional.of( (Number) Double.parseDouble( (String) arg ) );
+                return Optional.of((Number) Double.parseDouble((String) arg));
+            } catch (Exception ignored) {
             }
-            catch(Exception ignored) {}
             return Optional.empty();
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -69,19 +66,16 @@ public class Objects {
      * Interprets String as Number
      */
     public static Optional<Integer> toInteger(Object arg) {
-        if ( arg instanceof Number ) {
-            return Optional.of( ( (Number) arg ).intValue() );
-        }
-        else if(arg instanceof String) {
-            Optional<? extends Number> optional = toNumber( arg );
-            if ( optional.isPresent() ) {
-                return Optional.of( optional.get().intValue() );
-            }
-            else {
+        if (arg instanceof Number) {
+            return Optional.of(((Number) arg).intValue());
+        } else if (arg instanceof String) {
+            Optional<? extends Number> optional = toNumber(arg);
+            if (optional.isPresent()) {
+                return Optional.of(optional.get().intValue());
+            } else {
                 return Optional.empty();
             }
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -91,19 +85,16 @@ public class Objects {
      * Interprets String as Number
      */
     public static Optional<Long> toLong(Object arg) {
-        if ( arg instanceof Number ) {
-            return Optional.of( ( (Number) arg ).longValue() );
-        }
-        else if(arg instanceof String) {
-            Optional<? extends Number> optional = toNumber( arg );
-            if ( optional.isPresent() ) {
-                return Optional.of( optional.get().longValue() );
-            }
-            else {
+        if (arg instanceof Number) {
+            return Optional.of(((Number) arg).longValue());
+        } else if (arg instanceof String) {
+            Optional<? extends Number> optional = toNumber(arg);
+            if (optional.isPresent()) {
+                return Optional.of(optional.get().longValue());
+            } else {
                 return Optional.empty();
             }
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -113,19 +104,16 @@ public class Objects {
      * Interprets String as Number
      */
     public static Optional<Double> toDouble(Object arg) {
-        if ( arg instanceof Number ) {
-            return Optional.of( ( (Number) arg ).doubleValue() );
-        }
-        else if(arg instanceof String) {
-            Optional<? extends Number> optional = toNumber( arg );
-            if ( optional.isPresent() ) {
-                return Optional.of( optional.get().doubleValue() );
-            }
-            else {
+        if (arg instanceof Number) {
+            return Optional.of(((Number) arg).doubleValue());
+        } else if (arg instanceof String) {
+            Optional<? extends Number> optional = toNumber(arg);
+            if (optional.isPresent()) {
+                return Optional.of(optional.get().doubleValue());
+            } else {
                 return Optional.empty();
             }
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -135,15 +123,13 @@ public class Objects {
      * Interprets Strings "true" & "false" as boolean
      */
     public static Optional<Boolean> toBoolean(Object arg) {
-        if ( arg instanceof Boolean ) {
-            return Optional.of( (Boolean) arg );
-        }
-        else if(arg instanceof String) {
-            if("true".equalsIgnoreCase( (String)arg )) {
-                return Optional.of( Boolean.TRUE );
-            }
-            else if("false".equalsIgnoreCase( (String)arg )) {
-                return Optional.of( Boolean.FALSE );
+        if (arg instanceof Boolean) {
+            return Optional.of((Boolean) arg);
+        } else if (arg instanceof String) {
+            if ("true".equalsIgnoreCase((String) arg)) {
+                return Optional.of(Boolean.TRUE);
+            } else if ("false".equalsIgnoreCase((String) arg)) {
+                return Optional.of(Boolean.FALSE);
             }
         }
         return Optional.empty();
@@ -151,75 +137,71 @@ public class Objects {
 
     /**
      * Returns String representation of argument, wrapped in Optional
-     *
+     * <p>
      * for array argument, returns Arrays.toString()
      * for others, returns Objects.toString()
-     *
+     * <p>
      * Note: this method does not return Optional.empty()
      */
     public static Optional<String> toString(Object arg) {
-        if ( arg instanceof String ) {
-            return Optional.of( (String) arg );
-        }
-        else if ( arg instanceof Object[] ) {
-            return Optional.of( Arrays.toString( (Object[] )arg ) );
-        }
-        else {
-            return Optional.of( java.util.Objects.toString( arg ) );
+        if (arg instanceof String) {
+            return Optional.of((String) arg);
+        } else if (arg instanceof Object[]) {
+            return Optional.of(Arrays.toString((Object[]) arg));
+        } else {
+            return Optional.of(java.util.Objects.toString(arg));
         }
     }
 
     /**
      * Squashes nulls in a list or map.
-     *
+     * <p>
      * Modifies the data.
      */
-    public static void squashNulls( Object input ) {
+    public static void squashNulls(Object input) {
         if (input instanceof List inputList) {
-            inputList.removeIf( java.util.Objects::isNull );
-        }
-        else if ( input instanceof Map ) {
-            Map<String,Object> inputMap = (Map<String,Object>) input;
+            inputList.removeIf(java.util.Objects::isNull);
+        } else if (input instanceof Map) {
+            Map<String, Object> inputMap = (Map<String, Object>) input;
 
             List<String> keysToNuke = new ArrayList<>();
-            for (Map.Entry<String,Object> entry : inputMap.entrySet()) {
-                if ( entry.getValue() == null ) {
-                    keysToNuke.add( entry.getKey() );
+            for (Map.Entry<String, Object> entry : inputMap.entrySet()) {
+                if (entry.getValue() == null) {
+                    keysToNuke.add(entry.getKey());
                 }
             }
 
-            inputMap.keySet().removeAll( keysToNuke );
+            inputMap.keySet().removeAll(keysToNuke);
         }
     }
 
     /**
      * Recursively squash nulls in maps and lists.
-     *
+     * <p>
      * Modifies the data.
      */
     public static void recursivelySquashNulls(Object input) {
 
         // Makes two passes thru the data.
-        Objects.squashNulls( input );
+        Objects.squashNulls(input);
 
         if (input instanceof List inputList) {
             inputList.forEach(Objects::recursivelySquashNulls);
-        }
-        else if ( input instanceof Map ) {
-            Map<String,Object> inputMap = (Map<String,Object>) input;
+        } else if (input instanceof Map) {
+            Map<String, Object> inputMap = (Map<String, Object>) input;
 
-            for (Map.Entry<String,Object> entry : inputMap.entrySet()) {
-                recursivelySquashNulls( entry.getValue() );
+            for (Map.Entry<String, Object> entry : inputMap.entrySet()) {
+                recursivelySquashNulls(entry.getValue());
             }
         }
     }
 
     /**
      * Squashes/Deletes duplicates in lists.
-     *
+     * <p>
      * Modifies the data.
      */
-    public static Optional<Object> squashDuplicates( Object input ) {
+    public static Optional<Object> squashDuplicates(Object input) {
         if (input instanceof List inputList) {
             return Optional.of(inputList.stream().distinct().collect(Collectors.toList()));
         }
@@ -228,59 +210,59 @@ public class Objects {
 
     public static final class toInteger extends Function.SingleFunction<Integer> {
         @Override
-        protected Optional<Integer> applySingle( final Object arg ) {
-            return toInteger( arg );
+        protected Optional<Integer> applySingle(final Object arg) {
+            return toInteger(arg);
         }
     }
 
     public static final class toLong extends Function.SingleFunction<Long> {
         @Override
-        protected Optional<Long> applySingle( final Object arg ) {
-            return toLong( arg );
+        protected Optional<Long> applySingle(final Object arg) {
+            return toLong(arg);
         }
     }
 
     public static final class toDouble extends Function.SingleFunction<Double> {
         @Override
-        protected Optional<Double> applySingle( final Object arg ) {
-            return toDouble( arg );
+        protected Optional<Double> applySingle(final Object arg) {
+            return toDouble(arg);
         }
     }
 
     public static final class toBoolean extends Function.SingleFunction<Boolean> {
         @Override
-        protected Optional<Boolean> applySingle( final Object arg ) {
-            return toBoolean( arg );
+        protected Optional<Boolean> applySingle(final Object arg) {
+            return toBoolean(arg);
         }
     }
 
     public static final class toString extends Function.SingleFunction<String> {
         @Override
-        protected Optional<String> applySingle( final Object arg ) {
-            return Objects.toString( arg );
+        protected Optional<String> applySingle(final Object arg) {
+            return Objects.toString(arg);
         }
     }
 
     public static final class squashNulls extends Function.SquashFunction<Object> {
         @Override
-        protected Optional<Object> applySingle( final Object arg ) {
-            Objects.squashNulls( arg );
-            return Optional.of( arg );
+        protected Optional<Object> applySingle(final Object arg) {
+            Objects.squashNulls(arg);
+            return Optional.of(arg);
         }
     }
 
     public static final class recursivelySquashNulls extends Function.SquashFunction<Object> {
         @Override
-        protected Optional<Object> applySingle( final Object arg ) {
-            Objects.recursivelySquashNulls( arg );
-            return Optional.of( arg );
+        protected Optional<Object> applySingle(final Object arg) {
+            Objects.recursivelySquashNulls(arg);
+            return Optional.of(arg);
         }
     }
 
     public static final class squashDuplicates extends Function.SquashFunction<Object> {
         @Override
-        protected Optional<Object> applySingle( final Object arg ) {
-            return Objects.squashDuplicates( arg );
+        protected Optional<Object> applySingle(final Object arg) {
+            return Objects.squashDuplicates(arg);
         }
     }
 
@@ -291,27 +273,21 @@ public class Objects {
 
         @Override
         public Optional<Object> apply(Object... args) {
-            if(args.length == 0) {
+            if (args.length == 0) {
                 return Optional.empty();
-            }
-            else if(args.length == 1) {
-                if(args[0] == null) {
+            } else if (args.length == 1) {
+                if (args[0] == null) {
                     return Optional.empty();
-                }
-                else if(args[0] instanceof List ) {
+                } else if (args[0] instanceof List) {
                     return Optional.of(((List<?>) args[0]).size());
-                }
-                else if(args[0] instanceof String) {
-                    return Optional.of( ((String) args[0]).length() );
-                }
-                else if(args[0] instanceof Map) {
-                    return Optional.of( ((Map<?, ?>) args[0]).size() );
-                }
-                else {
+                } else if (args[0] instanceof String) {
+                    return Optional.of(((String) args[0]).length());
+                } else if (args[0] instanceof Map) {
+                    return Optional.of(((Map<?, ?>) args[0]).size());
+                } else {
                     return Optional.empty();
                 }
-            }
-            else {
+            } else {
                 return Optional.of(args.length);
             }
         }

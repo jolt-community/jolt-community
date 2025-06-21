@@ -30,22 +30,23 @@ import java.util.NoSuchElementException;
 public class SpecStringParser {
 
 
-    private SpecStringParser() {}
+    private SpecStringParser() {
+    }
 
     /**
      * Method that recursively parses a dotNotation String based on an iterator.
-     *
+     * <p>
      * This method will call out to parseAtPathElement
      *
-     * @param pathStrings List to store parsed Strings that each represent a PathElement
-     * @param iter the iterator to pull characters from
+     * @param pathStrings    List to store parsed Strings that each represent a PathElement
+     * @param iter           the iterator to pull characters from
      * @param dotNotationRef the original dotNotation string used for error messages
      * @return evaluated List<String> from dot notation string spec
      */
-    public static List<String> parseDotNotation( List<String> pathStrings, Iterator<Character> iter,
-                                                 String dotNotationRef ) {
+    public static List<String> parseDotNotation(List<String> pathStrings, Iterator<Character> iter,
+            String dotNotationRef) {
 
-        if ( ! iter.hasNext() ) {
+        if (!iter.hasNext()) {
             return pathStrings;
         }
 
@@ -57,53 +58,49 @@ public class SpecStringParser {
         StringBuilder sb = new StringBuilder();
 
         char c;
-        while( iter.hasNext() ) {
+        while (iter.hasNext()) {
 
             c = iter.next();
 
             currIsEscape = false;
-            if ( c == '\\' && ! prevIsEscape ) {
+            if (c == '\\' && !prevIsEscape) {
                 // current is Escape only if the char is escape, or
                 //  it is an Escape and the prior char was, then don't consider this one an escape
                 currIsEscape = true;
             }
 
-            if ( prevIsEscape && c != '.' && c != '\\') {
-                sb.append( '\\' );
-                sb.append( c );
-            }
-            else if( c == '@' ) {
-                sb.append( '@' );
-                sb.append( parseAtPathElement( iter, dotNotationRef ) );
+            if (prevIsEscape && c != '.' && c != '\\') {
+                sb.append('\\');
+                sb.append(c);
+            } else if (c == '@') {
+                sb.append('@');
+                sb.append(parseAtPathElement(iter, dotNotationRef));
 
                 //                      there was a "[" seen       but no "]"
-                boolean isPartOfArray = sb.indexOf( "[" ) != -1 && sb.indexOf( "]" ) == -1;
-                if ( ! isPartOfArray ) {
-                    pathStrings.add( sb.toString() );
+                boolean isPartOfArray = sb.indexOf("[") != -1 && sb.indexOf("]") == -1;
+                if (!isPartOfArray) {
+                    pathStrings.add(sb.toString());
                     sb = new StringBuilder();
                 }
-            }
-            else if ( c == '.' ) {
+            } else if (c == '.') {
 
-                if ( prevIsEscape ) {
-                    sb.append( '.' );
-                }
-                else {
-                    if ( sb.length() != 0 ) {
-                        pathStrings.add( sb.toString() );
+                if (prevIsEscape) {
+                    sb.append('.');
+                } else {
+                    if (sb.length() != 0) {
+                        pathStrings.add(sb.toString());
                     }
-                    return parseDotNotation( pathStrings, iter, dotNotationRef );
+                    return parseDotNotation(pathStrings, iter, dotNotationRef);
                 }
-            }
-            else if ( ! currIsEscape ) {
-                sb.append( c );
+            } else if (!currIsEscape) {
+                sb.append(c);
             }
 
             prevIsEscape = currIsEscape;
         }
 
-        if ( sb.length() != 0 ) {
-            pathStrings.add( sb.toString() );
+        if (sb.length() != 0) {
+            pathStrings.add(sb.toString());
         }
         return pathStrings;
     }
@@ -141,7 +138,7 @@ public class SpecStringParser {
     /**
      * Given a dotNotation style outputPath like "data[2].&(1,1)", this method fixes the syntactic sugar
      * of "data[2]" --> "data.[2]"
-     *
+     * <p>
      * This makes all the rest of the String processing easier once we know that we can always
      * split on the '.' character.
      *
@@ -149,29 +146,28 @@ public class SpecStringParser {
      * @return
      */
     // TODO Unit Test this
-    public static String fixLeadingBracketSugar( String dotNotaton ) {
+    public static String fixLeadingBracketSugar(String dotNotaton) {
 
-        if ( dotNotaton == null || dotNotaton.length() == 0 ) {
+        if (dotNotaton == null || dotNotaton.length() == 0) {
             return "";
         }
 
-        char prev = dotNotaton.charAt( 0 );
+        char prev = dotNotaton.charAt(0);
         StringBuilder sb = new StringBuilder();
-        sb.append( prev );
+        sb.append(prev);
 
-        for ( int index = 1; index < dotNotaton.length(); index++ ) {
-            char curr =  dotNotaton.charAt( index );
+        for (int index = 1; index < dotNotaton.length(); index++) {
+            char curr = dotNotaton.charAt(index);
 
-            if ( curr == '[' && prev != '\\') {
-                if ( prev == '@' || prev == '.' ) {
+            if (curr == '[' && prev != '\\') {
+                if (prev == '@' || prev == '.') {
                     // no need to add an extra '.'
-                }
-                else {
-                    sb.append( '.' );
+                } else {
+                    sb.append('.');
                 }
             }
 
-            sb.append( curr );
+            sb.append(curr);
             prev = curr;
         }
 
@@ -182,16 +178,16 @@ public class SpecStringParser {
      * Parse RHS Transpose @ logic.
      * "@(a.b)"  --> pulls "(a.b)" off the iterator
      * "@a.b"    --> pulls just "a" off the iterator
-     *
+     * <p>
      * This method expects that the the '@' character has already been seen.
      *
-     * @param iter iterator to pull data from
+     * @param iter           iterator to pull data from
      * @param dotNotationRef the original dotNotation string used for error messages
      */
     // TODO Unit Test this
-    public static String parseAtPathElement( Iterator<Character> iter, String dotNotationRef ) {
+    public static String parseAtPathElement(Iterator<Character> iter, String dotNotationRef) {
 
-        if ( ! iter.hasNext() ) {
+        if (!iter.hasNext()) {
             return "";
         }
 
@@ -204,45 +200,42 @@ public class SpecStringParser {
         int atParensCount = 0;
 
         char c = iter.next();
-        if ( c == '(' ) {
+        if (c == '(') {
             isParensAt = true;
             atParensCount++;
-        }
-        else if ( c == '.' ) {
-            throw new SpecException( "Unable to parse dotNotation, invalid TransposePathElement : " + dotNotationRef );
+        } else if (c == '.') {
+            throw new SpecException("Unable to parse dotNotation, invalid TransposePathElement : " + dotNotationRef);
         }
 
-        sb.append( c );
+        sb.append(c);
 
-        while( iter.hasNext() ) {
+        while (iter.hasNext()) {
             c = iter.next();
-            sb.append( c );
+            sb.append(c);
 
             // Parsing "@(a.b.[&2])"
-            if ( isParensAt ) {
-                if ( c == '(' ) {
-                    throw new SpecException( "Unable to parse dotNotation, too many open parens '(' : " + dotNotationRef );
-                }
-                else if ( c == ')' ) {
+            if (isParensAt) {
+                if (c == '(') {
+                    throw new SpecException("Unable to parse dotNotation, too many open parens '(' : " + dotNotationRef);
+                } else if (c == ')') {
                     atParensCount--;
                 }
 
-                if ( atParensCount == 0 ) {
+                if (atParensCount == 0) {
                     return sb.toString();
-                }
-                else if ( atParensCount < 0 ) {
-                    throw new SpecException( "Unable to parse dotNotation, specifically the '@()' part : " + dotNotationRef );
+                } else if (atParensCount < 0) {
+                    throw new SpecException("Unable to parse dotNotation, specifically the '@()' part : " + dotNotationRef);
                 }
             }
             // Parsing "@abc.def, return a canonical form of "@(abc)" and leave the "def" in the iterator
-            else if ( c == '.' ) {
-                return "(" + sb.toString().substring( 0, sb.length() - 1 ) + ")";
+            else if (c == '.') {
+                return "(" + sb.toString().substring(0, sb.length() - 1) + ")";
             }
         }
 
         // if we got to the end of the String and we have mismatched parenthesis throw an exception.
-        if ( isParensAt && atParensCount != 0 ) {
-            throw new SpecException( "Invalid @() pathElement from : " + dotNotationRef );
+        if (isParensAt && atParensCount != 0) {
+            throw new SpecException("Invalid @() pathElement from : " + dotNotationRef);
         }
         // Parsing "@abc"
         return sb.toString();
@@ -256,18 +249,16 @@ public class SpecStringParser {
         StringBuilder sb = new StringBuilder();
 
         boolean prevWasEscape = false;
-        for ( char c : origKey.toCharArray() ) {
-            if ( '\\' == c ) {
-                if ( prevWasEscape ) {
+        for (char c : origKey.toCharArray()) {
+            if ('\\' == c) {
+                if (prevWasEscape) {
                     prevWasEscape = false;
-                }
-                else {
+                } else {
                     prevWasEscape = true;
                 }
-            }
-            else {
-                if ( ! prevWasEscape ) {
-                    sb.append( c );
+            } else {
+                if (!prevWasEscape) {
+                    sb.append(c);
                 }
                 prevWasEscape = false;
             }
@@ -280,22 +271,20 @@ public class SpecStringParser {
     // given "\@pants" -> "@pants"                 starts with escape
     // given "rating-\&pants" -> "rating-&pants"   escape in the middle
     // given "rating\\pants" -> "rating\pants"     escape the escape char
-    public static String removeEscapeChars( String origKey ) {
+    public static String removeEscapeChars(String origKey) {
         StringBuilder sb = new StringBuilder();
 
         boolean prevWasEscape = false;
-        for ( char c : origKey.toCharArray() ) {
-            if ( '\\' == c ) {
-                if ( prevWasEscape ) {
-                    sb.append( c );
+        for (char c : origKey.toCharArray()) {
+            if ('\\' == c) {
+                if (prevWasEscape) {
+                    sb.append(c);
                     prevWasEscape = false;
-                }
-                else {
+                } else {
                     prevWasEscape = true;
                 }
-            }
-            else {
-                sb.append( c );
+            } else {
+                sb.append(c);
                 prevWasEscape = false;
             }
         }
@@ -304,50 +293,50 @@ public class SpecStringParser {
     }
 
     public static List<String> parseFunctionArgs(String argString) {
-        List<String> argsList = new LinkedList<>(  );
-        int firstBracket = argString.indexOf( '(' );
+        List<String> argsList = new LinkedList<>();
+        int firstBracket = argString.indexOf('(');
 
-        String className = argString.substring( 0, firstBracket );
-        argsList.add( className );
+        String className = argString.substring(0, firstBracket);
+        argsList.add(className);
 
         // drop the first and last ( )
-        argString = argString.substring( firstBracket + 1, argString.length() - 1 );
+        argString = argString.substring(firstBracket + 1, argString.length() - 1);
 
-        StringBuilder sb = new StringBuilder( );
+        StringBuilder sb = new StringBuilder();
         boolean inBetweenBrackets = false;
         boolean inBetweenQuotes = false;
-        for (int i = 0; i < argString.length(); i++){
+        for (int i = 0; i < argString.length(); i++) {
             char c = argString.charAt(i);
-            switch ( c ) {
+            switch (c) {
                 case '(':
                     if (!inBetweenQuotes) {
                         inBetweenBrackets = true;
                     }
-                    sb.append( c );
+                    sb.append(c);
                     break;
                 case ')':
                     if (!inBetweenQuotes) {
                         inBetweenBrackets = false;
                     }
-                    sb.append( c );
+                    sb.append(c);
                     break;
                 case '\'':
                     inBetweenQuotes = !inBetweenQuotes;
-                    sb.append( c );
+                    sb.append(c);
                     break;
                 case ',':
-                    if ( !inBetweenBrackets && !inBetweenQuotes ) {
-                        argsList.add( sb.toString().trim() );
+                    if (!inBetweenBrackets && !inBetweenQuotes) {
+                        argsList.add(sb.toString().trim());
                         sb = new StringBuilder();
                         break;
                     }
                 default:
-                    sb.append( c );
+                    sb.append(c);
                     break;
             }
         }
 
-        argsList.add( sb.toString().trim() );
+        argsList.add(sb.toString().trim());
         return argsList;
     }
 }

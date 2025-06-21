@@ -24,15 +24,16 @@ import java.util.Map;
 
 /**
  * In comparison to the other implementations of LogicalFilter, this one is "simpler" from a Jackson perspective, aka
- *  no custom Serializer and Deserializer.
- *
+ * no custom Serializer and Deserializer.
+ * <p>
  * However that simplicity comes at the "complexity" of being a Map ( extends LinkedHashMap ).
  * A) it feels odd, and
  * B) it is less memory efficient in the main line case.  Aka, we don't always convert to and from JSON, but now
- *   we are paying the computing cost of that all the time.
- *
+ * we are paying the computing cost of that all the time.
+ * <p>
  * In the end, I think this is an interesting take on the LogicalFilter, but I would use the
- *  @JsonSerialize and @JsonDeserialize approach in practice.
+ *
+ * @JsonSerialize and @JsonDeserialize approach in practice.
  */
 public class LogicalFilter5 extends LinkedHashMap<Operator, List<QueryFilter5>> implements QueryFilter5<QueryFilter5> {
 
@@ -43,24 +44,24 @@ public class LogicalFilter5 extends LinkedHashMap<Operator, List<QueryFilter5>> 
      * Jackson side constructor.
      */
     @JsonCreator
-    public LogicalFilter5(Map<Operator, List<QueryFilter5>> map ) {
+    public LogicalFilter5(Map<Operator, List<QueryFilter5>> map) {
         super(2);
-        if ( map.size() != 1 ) {
-            throw new IllegalArgumentException( "Map to build a LogicalFilter5 should be size 1.  Was " + map.size() );
+        if (map.size() != 1) {
+            throw new IllegalArgumentException("Map to build a LogicalFilter5 should be size 1.  Was " + map.size());
         }
 
         Operator op = map.keySet().iterator().next();
         List<QueryFilter5> filters = map.values().iterator().next();
 
-        if ( filters == null  ) {
-            throw new IllegalArgumentException( "LogicalFilter5 List<QueryFilter5>> was null." );
+        if (filters == null) {
+            throw new IllegalArgumentException("LogicalFilter5 List<QueryFilter5>> was null.");
         }
 
         this.operator = op;
         this.filters = filters;
 
         // populate the map that we are for Serialization
-        super.put( operator, filters );
+        super.put(operator, filters);
     }
 
     /**
@@ -72,7 +73,7 @@ public class LogicalFilter5 extends LinkedHashMap<Operator, List<QueryFilter5>> 
         this.filters = filters;
 
         // populate the map that we are for Serialization
-        super.put( operator, filters );
+        super.put(operator, filters);
     }
 
     @JsonIgnore

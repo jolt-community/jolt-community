@@ -39,68 +39,11 @@ public class GuicedChainrTest {
     public void successTestCase() throws IOException {
 
         String testPath = "/json/chainr/guice_spec.json";
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath );
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath);
 
-        Object input = testUnit.get( "input" );
-        Object spec = testUnit.get( "spec" );
-        Object expected = testUnit.get( "expected" );
-
-        Module parentModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-            }
-
-            @Provides
-            public GuiceTransform.GuiceConfig getConfigC() {
-                return new GuiceTransform.GuiceConfig( "c", "cc" );
-            }
-
-            @Provides
-            public GuiceSpecDrivenTransform.GuiceConfig getConfigD() {
-                return new GuiceSpecDrivenTransform.GuiceConfig( "dd" );
-            }
-        };
-
-        Chainr unit = Chainr.fromSpec( spec, new GuiceChainrInstantiator( parentModule ) );
-
-        Assert.assertFalse( unit.hasContextualTransforms() );
-        Assert.assertEquals( unit.getContextualTransforms().size(), 0 );
-
-        Object actual = unit.transform( input, null );
-
-        JoltTestUtil.runDiffy( "failed case " + testPath, expected, actual );
-    }
-
-
-    @Test( expectedExceptions = SpecException.class )
-    public void itBlowsUpForMissingProviderStockTransform() throws IOException
-    {
-        String testPath = "/json/chainr/guice_spec.json";
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath );
-
-        Object spec = testUnit.get( "spec" );
-
-        Module parentModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-            }
-
-            @Provides
-            public GuiceSpecDrivenTransform.GuiceConfig getConfigD() {
-                return new GuiceSpecDrivenTransform.GuiceConfig( "dd" );
-            }
-        };
-
-        Chainr.fromSpec( spec, new GuiceChainrInstantiator( parentModule ) );
-    }
-
-    @Test( expectedExceptions = SpecException.class )
-    public void itBlowsUpForMissingProviderSpecTransform() throws IOException
-    {
-        String testPath = "/json/chainr/guice_spec.json";
-        Map<String, Object> testUnit = JsonUtils.classpathToMap( testPath );
-
-        Object spec = testUnit.get( "spec" );
+        Object input = testUnit.get("input");
+        Object spec = testUnit.get("spec");
+        Object expected = testUnit.get("expected");
 
         Module parentModule = new AbstractModule() {
             @Override
@@ -109,25 +52,80 @@ public class GuicedChainrTest {
 
             @Provides
             public GuiceTransform.GuiceConfig getConfigC() {
-                return new GuiceTransform.GuiceConfig( "c", "cc" );
+                return new GuiceTransform.GuiceConfig("c", "cc");
+            }
+
+            @Provides
+            public GuiceSpecDrivenTransform.GuiceConfig getConfigD() {
+                return new GuiceSpecDrivenTransform.GuiceConfig("dd");
             }
         };
 
-        Chainr.fromSpec( spec, new GuiceChainrInstantiator( parentModule ) );
+        Chainr unit = Chainr.fromSpec(spec, new GuiceChainrInstantiator(parentModule));
+
+        Assert.assertFalse(unit.hasContextualTransforms());
+        Assert.assertEquals(unit.getContextualTransforms().size(), 0);
+
+        Object actual = unit.transform(input, null);
+
+        JoltTestUtil.runDiffy("failed case " + testPath, expected, actual);
     }
 
-    @Test( expectedExceptions = SpecException.class )
+
+    @Test(expectedExceptions = SpecException.class)
+    public void itBlowsUpForMissingProviderStockTransform() throws IOException {
+        String testPath = "/json/chainr/guice_spec.json";
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath);
+
+        Object spec = testUnit.get("spec");
+
+        Module parentModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+            }
+
+            @Provides
+            public GuiceSpecDrivenTransform.GuiceConfig getConfigD() {
+                return new GuiceSpecDrivenTransform.GuiceConfig("dd");
+            }
+        };
+
+        Chainr.fromSpec(spec, new GuiceChainrInstantiator(parentModule));
+    }
+
+    @Test(expectedExceptions = SpecException.class)
+    public void itBlowsUpForMissingProviderSpecTransform() throws IOException {
+        String testPath = "/json/chainr/guice_spec.json";
+        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath);
+
+        Object spec = testUnit.get("spec");
+
+        Module parentModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+            }
+
+            @Provides
+            public GuiceTransform.GuiceConfig getConfigC() {
+                return new GuiceTransform.GuiceConfig("c", "cc");
+            }
+        };
+
+        Chainr.fromSpec(spec, new GuiceChainrInstantiator(parentModule));
+    }
+
+    @Test(expectedExceptions = SpecException.class)
     public void itBlowsUpForBadGuiceTransform() {
-        Chainr.fromSpec( ImmutableList.of( ImmutableMap.of( "operator", "com.bazaarvoice.jolt.chainr.transforms.GuiceTransformMissingInjectAnnotation" ) ),
-                new GuiceChainrInstantiator( new AbstractModule() {
+        Chainr.fromSpec(ImmutableList.of(ImmutableMap.of("operator", "com.bazaarvoice.jolt.chainr.transforms.GuiceTransformMissingInjectAnnotation")),
+                new GuiceChainrInstantiator(new AbstractModule() {
                     @Override
                     protected void configure() {
                     }
 
                     @Provides
                     public GuiceTransformMissingInjectAnnotation.BadGuiceConfig getConfigC() {
-                        return new GuiceTransformMissingInjectAnnotation.BadGuiceConfig( "b:", "bad" );
+                        return new GuiceTransformMissingInjectAnnotation.BadGuiceConfig("b:", "bad");
                     }
-                } ) );
+                }));
     }
 }

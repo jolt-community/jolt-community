@@ -25,7 +25,7 @@ public class BooleanRealFilter4 extends BaseRealFilter4<Boolean> {
 
     @JsonCreator
     public BooleanRealFilter4(@JsonProperty("queryParam") QueryParam queryParam,
-                              @JsonProperty("value") Boolean value) {
+            @JsonProperty("value") Boolean value) {
         super(queryParam);
         this.value = value;
     }

@@ -33,21 +33,21 @@ public abstract class SpecBuilder<T extends BaseSpec> {
         List<T> result = new ArrayList<>();
         Set<String> actualKeys = new HashSet<>();
 
-        for ( String rawLhsStr : rawSpec.keySet() ) {
+        for (String rawLhsStr : rawSpec.keySet()) {
 
-            Object rawRhs = rawSpec.get( rawLhsStr );
-            String[] keyStrings = rawLhsStr.split( "\\|" ); // unwrap the syntactic sugar of the OR
-            for ( String keyString : keyStrings ) {
+            Object rawRhs = rawSpec.get(rawLhsStr);
+            String[] keyStrings = rawLhsStr.split("\\|"); // unwrap the syntactic sugar of the OR
+            for (String keyString : keyStrings) {
 
-                T childSpec = createSpec( keyString, rawRhs );
+                T childSpec = createSpec(keyString, rawRhs);
 
                 String childCanonicalString = childSpec.getPathElement().getCanonicalForm();
 
-                if ( actualKeys.contains( childCanonicalString ) ) {
-                    throw new IllegalArgumentException( "Duplicate canonical key found : " + childCanonicalString );
+                if (actualKeys.contains(childCanonicalString)) {
+                    throw new IllegalArgumentException("Duplicate canonical key found : " + childCanonicalString);
                 }
 
-                actualKeys.add( childCanonicalString );
+                actualKeys.add(childCanonicalString);
 
                 result.add(childSpec);
             }
@@ -58,9 +58,10 @@ public abstract class SpecBuilder<T extends BaseSpec> {
 
     /**
      * Given a lhs key and rhs spec object, determine, create and return appropriate spec
-     * @param lhsKey lhs key
+     *
+     * @param lhsKey  lhs key
      * @param rhsSpec rhs Spec
      * @return Spec object
      */
-    public abstract T createSpec( String lhsKey, Object rhsSpec );
+    public abstract T createSpec(String lhsKey, Object rhsSpec);
 }

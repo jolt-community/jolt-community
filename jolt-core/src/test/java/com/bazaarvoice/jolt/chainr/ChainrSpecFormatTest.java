@@ -28,21 +28,21 @@ public class ChainrSpecFormatTest {
 
     @DataProvider
     public Object[][] badFormatSpecs() throws IOException {
-        return new Object[][] {
-                {JsonUtils.classpathToObject( "/json/chainr/specformat/bad_spec_arrayClassName.json" )},
-                {JsonUtils.classpathToObject( "/json/chainr/specformat/bad_spec_ClassName.json" )},
-                {JsonUtils.classpathToObject( "/json/chainr/specformat/bad_spec_NonTransformClass.json" )},
-                {JsonUtils.classpathToObject( "/json/chainr/specformat/bad_spec_empty.json" )}
+        return new Object[][]{
+                {JsonUtils.classpathToObject("/json/chainr/specformat/bad_spec_arrayClassName.json")},
+                {JsonUtils.classpathToObject("/json/chainr/specformat/bad_spec_ClassName.json")},
+                {JsonUtils.classpathToObject("/json/chainr/specformat/bad_spec_NonTransformClass.json")},
+                {JsonUtils.classpathToObject("/json/chainr/specformat/bad_spec_empty.json")}
         };
     }
 
-    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class )
+    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class)
     public void testBadSpecs(Object chainrSpec) {
-        new ChainrSpec( chainrSpec );
+        new ChainrSpec(chainrSpec);
     }
 
-    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class )
+    @Test(dataProvider = "badFormatSpecs", expectedExceptions = SpecException.class)
     public void staticChainrMethod(Object chainrSpec) {
-        Chainr.fromSpec( chainrSpec ); // should fail when parsing spec
+        Chainr.fromSpec(chainrSpec); // should fail when parsing spec
     }
 }

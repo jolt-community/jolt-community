@@ -1,5 +1,5 @@
 [
     {
-        "operation" : "com.bazaarvoice.jolt.ThisShouldNeverResolveToAClass"
+        "operation": "com.bazaarvoice.jolt.ThisShouldNeverResolveToAClass"
     }
 ]

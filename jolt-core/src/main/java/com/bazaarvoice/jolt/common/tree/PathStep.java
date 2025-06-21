@@ -19,8 +19,8 @@ import com.bazaarvoice.jolt.common.Optional;
 
 /**
  * A tuple class that contains the data for one level of a
- *  tree walk, aka a reference to the input for that level, and
- *  the LiteralPathElement that was matched at that level.
+ * tree walk, aka a reference to the input for that level, and
+ * the LiteralPathElement that was matched at that level.
  */
 public final class PathStep {
 
@@ -28,13 +28,12 @@ public final class PathStep {
     private final MatchedElement matchedElement;
     private final Optional<Integer> origSize;
 
-    public PathStep(Object treeRef, MatchedElement matchedElement ) {
+    public PathStep(Object treeRef, MatchedElement matchedElement) {
         this.treeRef = treeRef;
         this.matchedElement = matchedElement;
         if (matchedElement instanceof ArrayMatchedElement) {
-            origSize = Optional.of( ( (ArrayMatchedElement) matchedElement ).getOrigSize() );
-        }
-        else {
+            origSize = Optional.of(((ArrayMatchedElement) matchedElement).getOrigSize());
+        } else {
             origSize = Optional.empty();
         }
     }

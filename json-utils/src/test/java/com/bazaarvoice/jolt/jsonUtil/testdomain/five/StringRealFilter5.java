@@ -27,8 +27,8 @@ public class StringRealFilter5 extends RealFilter5<String> {
 
     @JsonCreator
     public StringRealFilter5(@JsonProperty("field") Field field,
-                             @JsonProperty("operator") Operator op,
-                             @JsonProperty("values") List<String> values) {
+            @JsonProperty("operator") Operator op,
+            @JsonProperty("values") List<String> values) {
         super(field, op);
         this.values = values;
     }

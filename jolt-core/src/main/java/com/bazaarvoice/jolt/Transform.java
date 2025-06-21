@@ -24,5 +24,5 @@ public interface Transform extends JoltTransform {
      * @return the results of the transformation
      * @throws com.bazaarvoice.jolt.exception.TransformException if there are issues with the transform
      */
-    Object transform( Object input );
+    Object transform(Object input);
 }

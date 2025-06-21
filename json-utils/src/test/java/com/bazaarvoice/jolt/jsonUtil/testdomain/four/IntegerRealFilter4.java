@@ -25,7 +25,7 @@ public class IntegerRealFilter4 extends BaseRealFilter4<Integer> {
 
     @JsonCreator
     public IntegerRealFilter4(@JsonProperty("queryParam") QueryParam queryParam,
-                              @JsonProperty("value") Integer value) {
+            @JsonProperty("value") Integer value) {
         super(queryParam);
         this.value = value;
     }

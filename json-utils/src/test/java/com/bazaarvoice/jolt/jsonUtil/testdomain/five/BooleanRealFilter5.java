@@ -26,8 +26,8 @@ public class BooleanRealFilter5 extends RealFilter5<Boolean> {
 
     @JsonCreator
     public BooleanRealFilter5(@JsonProperty("field") Field field,
-                              @JsonProperty("operator") Operator op,
-                              @JsonProperty("values") List<Boolean> values) {
+            @JsonProperty("operator") Operator op,
+            @JsonProperty("values") List<Boolean> values) {
         super(field, op);
         this.values = values;
     }

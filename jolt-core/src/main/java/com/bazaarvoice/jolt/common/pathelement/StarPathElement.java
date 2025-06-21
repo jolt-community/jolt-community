@@ -17,7 +17,7 @@ package com.bazaarvoice.jolt.common.pathelement;
 
 /**
  * Marker interface for PathElements that contain the "*" wildcard.
- *
+ * <p>
  * Three subclasses were created for performance reasons.
  */
 public interface StarPathElement extends MatchablePathElement {
@@ -27,5 +27,5 @@ public interface StarPathElement extends MatchablePathElement {
      *
      * @return true if the provided literal will match this Element's regex
      */
-    public boolean stringMatch( String literal );
+    public boolean stringMatch(String literal);
 }
