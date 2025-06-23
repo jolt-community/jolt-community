@@ -1,9 +1,9 @@
 JOLT (Community Edition)
 ========
+[![CI](https://github.com/jolt-community/jolt-community/actions/workflows/ci.yml/badge.svg)](https://github.com/jolt-community/jolt-community/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/emmansun/jolt-community/graph/badge.svg?token=huhxcPfvTz)](https://codecov.io/gh/emmansun/jolt-community)
 
 JSON to JSON transformation library written in Java where the "specification" for the transform is itself a JSON document.
-
-[![CI](https://github.com/jolt-community/jolt-community/actions/workflows/ci.yml/badge.svg)](https://github.com/jolt-community/jolt-community/actions/workflows/ci.yml)
 
 ### Community Edition
 This repository is a community-maintained fork of JOLT. For the original version, please visit the [bazaarvoice/jolt](https://github.com/bazaarvoice/jolt) repository.
