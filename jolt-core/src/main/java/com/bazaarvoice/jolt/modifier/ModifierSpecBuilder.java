@@ -24,7 +24,7 @@ import com.bazaarvoice.jolt.modifier.spec.ModifierSpec;
 
 import java.util.Map;
 
-public class TemplatrSpecBuilder extends SpecBuilder<ModifierSpec> {
+public class ModifierSpecBuilder extends SpecBuilder<ModifierSpec> {
 
     public static final String CARET = "^";
     public static final String AT = "@";
@@ -34,7 +34,7 @@ public class TemplatrSpecBuilder extends SpecBuilder<ModifierSpec> {
     private final Map<String, Function> functionsMap;
 
 
-    public TemplatrSpecBuilder(OpMode opMode, Map<String, Function> functionsMap) {
+    public ModifierSpecBuilder(OpMode opMode, Map<String, Function> functionsMap) {
         this.opMode = opMode;
         this.functionsMap = functionsMap;
     }

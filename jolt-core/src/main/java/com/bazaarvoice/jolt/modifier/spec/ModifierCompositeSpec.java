@@ -28,7 +28,7 @@ import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.modifier.DataType;
 import com.bazaarvoice.jolt.modifier.OpMode;
-import com.bazaarvoice.jolt.modifier.TemplatrSpecBuilder;
+import com.bazaarvoice.jolt.modifier.ModifierSpecBuilder;
 
 import java.util.*;
 
@@ -55,7 +55,7 @@ public class ModifierCompositeSpec extends ModifierSpec implements OrderedCompos
     private final ExecutionStrategy executionStrategy;
     private final DataType specDataType;
 
-    public ModifierCompositeSpec(final String key, final Map<String, Object> spec, final OpMode opMode, TemplatrSpecBuilder specBuilder) {
+    public ModifierCompositeSpec(final String key, final Map<String, Object> spec, final OpMode opMode, ModifierSpecBuilder specBuilder) {
         super(key, opMode);
 
         Map<String, ModifierSpec> literals = new LinkedHashMap<>();
