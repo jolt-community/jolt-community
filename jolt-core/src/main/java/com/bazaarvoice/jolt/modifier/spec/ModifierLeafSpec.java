@@ -21,7 +21,7 @@ import com.bazaarvoice.jolt.common.SpecStringParser;
 import com.bazaarvoice.jolt.common.tree.MatchedElement;
 import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.modifier.OpMode;
-import com.bazaarvoice.jolt.modifier.TemplatrSpecBuilder;
+import com.bazaarvoice.jolt.modifier.ModifierSpecBuilder;
 import com.bazaarvoice.jolt.modifier.function.Function;
 import com.bazaarvoice.jolt.modifier.function.FunctionArg;
 import com.bazaarvoice.jolt.modifier.function.FunctionEvaluator;
@@ -69,19 +69,19 @@ public class ModifierLeafSpec extends ModifierSpec {
     private static FunctionEvaluator buildFunctionEvaluator(final String rhs, final Map<String, Function> functionsMap) {
         final FunctionEvaluator functionEvaluator;
         // "key": "@0" --- evaluate expression then set
-        if (!rhs.startsWith(TemplatrSpecBuilder.FUNCTION)) {
+        if (!rhs.startsWith(ModifierSpecBuilder.FUNCTION)) {
             return FunctionEvaluator.forArgEvaluation(constructSingleArg(rhs, false));
         } else {
             String functionName;
             // "key": "=abs" --- call function with current value then set output if present
             if (!rhs.contains("(") && !rhs.endsWith(")")) {
-                functionName = rhs.substring(TemplatrSpecBuilder.FUNCTION.length());
+                functionName = rhs.substring(ModifierSpecBuilder.FUNCTION.length());
                 return FunctionEvaluator.forFunctionEvaluation(functionsMap.get(functionName));
             }
             // "key": "=abs(@(1,&0))" --- evaluate expression then call function with
             //                            expression-output, then set output if present
             else {
-                String fnString = rhs.substring(TemplatrSpecBuilder.FUNCTION.length());
+                String fnString = rhs.substring(ModifierSpecBuilder.FUNCTION.length());
                 List<String> fnArgs = SpecStringParser.parseFunctionArgs(fnString);
                 functionName = fnArgs.remove(0);
                 functionEvaluator = FunctionEvaluator.forFunctionEvaluation(functionsMap.get(functionName), constructArgs(fnArgs));
@@ -114,9 +114,9 @@ public class ModifierLeafSpec extends ModifierSpec {
     }
 
     private static FunctionArg constructSingleArg(String arg, boolean forFunction) {
-        if (arg.startsWith(TemplatrSpecBuilder.CARET)) {
+        if (arg.startsWith(ModifierSpecBuilder.CARET)) {
             return FunctionArg.forContext(TRAVERSAL_BUILDER.build(arg.substring(1)));
-        } else if (arg.startsWith(TemplatrSpecBuilder.AT)) {
+        } else if (arg.startsWith(ModifierSpecBuilder.AT)) {
             return FunctionArg.forSelf(TRAVERSAL_BUILDER.build(arg));
         } else {
             return FunctionArg.forLiteral(arg, forFunction);

@@ -21,7 +21,7 @@ import com.bazaarvoice.jolt.common.tree.MatchedElement;
 import com.bazaarvoice.jolt.common.tree.WalkedPath;
 import com.bazaarvoice.jolt.exception.SpecException;
 import com.bazaarvoice.jolt.modifier.OpMode;
-import com.bazaarvoice.jolt.modifier.TemplatrSpecBuilder;
+import com.bazaarvoice.jolt.modifier.ModifierSpecBuilder;
 import com.bazaarvoice.jolt.modifier.function.*;
 import com.bazaarvoice.jolt.modifier.function.Math;
 import com.bazaarvoice.jolt.modifier.spec.ModifierCompositeSpec;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Base Templatr transform that to behave differently based on provided opMode
+ * Base Modifier transform that to behave differently based on provided opMode
  */
 public abstract class Modifier implements SpecDriven, ContextualTransform {
 
@@ -101,8 +101,8 @@ public abstract class Modifier implements SpecDriven, ContextualTransform {
         }
 
         functionsMap = Collections.unmodifiableMap(functionsMap);
-        TemplatrSpecBuilder templatrSpecBuilder = new TemplatrSpecBuilder(opMode, functionsMap);
-        rootSpec = new ModifierCompositeSpec(ROOT_KEY, (Map<String, Object>) spec, opMode, templatrSpecBuilder);
+        ModifierSpecBuilder modifierSpecBuilder = new ModifierSpecBuilder(opMode, functionsMap);
+        rootSpec = new ModifierCompositeSpec(ROOT_KEY, (Map<String, Object>) spec, opMode, modifierSpecBuilder);
     }
 
     @Override
