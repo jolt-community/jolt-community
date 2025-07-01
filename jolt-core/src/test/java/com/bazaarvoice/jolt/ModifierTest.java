@@ -90,20 +90,20 @@ public class ModifierTest {
 
     @Test(dataProvider = "getTestCases")
     public void testOverwritrTransform(String testFile) throws Exception {
-        doTest(testFile, TemplatrTestCase.OVERWRITR);
+        doTest(testFile, ModifierTestCase.OVERWRITR);
     }
 
     @Test(dataProvider = "getTestCases")
     public void testDefaultrTransform(String testFile) throws Exception {
-        doTest(testFile, TemplatrTestCase.DEFAULTR);
+        doTest(testFile, ModifierTestCase.DEFAULTR);
     }
 
     @Test(dataProvider = "getTestCases")
     public void testDefinrTransform(String testFile) throws Exception {
-        doTest(testFile, TemplatrTestCase.DEFINR);
+        doTest(testFile, ModifierTestCase.DEFINR);
     }
 
-    public void doTest(String testFile, TemplatrTestCase testCase) throws Exception {
+    public void doTest(String testFile, ModifierTestCase testCase) throws Exception {
         Map<String, Object> testUnit = JsonUtils.classpathToMap(testFile);
         Object input = testUnit.get("input");
         Object spec = testUnit.get("spec");
@@ -121,7 +121,7 @@ public class ModifierTest {
         List<Object[]> testCases = Lists.newLinkedList();
         List<Object> testObjects = JsonUtils.classpathToList("/json/modifier/validation/specThatShouldFail.json");
 
-        for (TemplatrTestCase testCase : TemplatrTestCase.values()) {
+        for (ModifierTestCase testCase : ModifierTestCase.values()) {
             for (Object specObj : testObjects) {
                 testCases.add(new Object[]{testCase, specObj});
             }
@@ -131,7 +131,7 @@ public class ModifierTest {
     }
 
     @Test(expectedExceptions = SpecException.class, dataProvider = "getSpecValidationTestCases")
-    public void testInvalidSpecs(TemplatrTestCase testCase, Object spec) {
+    public void testInvalidSpecs(ModifierTestCase testCase, Object spec) {
         testCase.getTemplatr(spec);
     }
 
@@ -139,20 +139,20 @@ public class ModifierTest {
     public Iterator<Object[]> getFunctionTests() {
         List<Object[]> testCases = Lists.newLinkedList();
 
-        testCases.add(new Object[]{"/json/modifier/functions/stringsSplitTest.json", TemplatrTestCase.OVERWRITR});
-        testCases.add(new Object[]{"/json/modifier/functions/padStringsTest.json", TemplatrTestCase.OVERWRITR});
-        testCases.add(new Object[]{"/json/modifier/functions/stringsTests.json", TemplatrTestCase.OVERWRITR});
-        testCases.add(new Object[]{"/json/modifier/functions/mathTests.json", TemplatrTestCase.OVERWRITR});
-        testCases.add(new Object[]{"/json/modifier/functions/arrayTests.json", TemplatrTestCase.OVERWRITR});
-        testCases.add(new Object[]{"/json/modifier/functions/sizeTests.json", TemplatrTestCase.OVERWRITR});
-        testCases.add(new Object[]{"/json/modifier/functions/labelsLookupTest.json", TemplatrTestCase.DEFAULTR});
-        testCases.add(new Object[]{"/json/modifier/functions/valueTests.json", TemplatrTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/stringsSplitTest.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/padStringsTest.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/stringsTests.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/mathTests.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/arrayTests.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/sizeTests.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/labelsLookupTest.json", ModifierTestCase.DEFAULTR});
+        testCases.add(new Object[]{"/json/modifier/functions/valueTests.json", ModifierTestCase.OVERWRITR});
 
         return testCases.iterator();
     }
 
     @Test(dataProvider = "getFunctionTests")
-    public void testFunctions(String testFile, TemplatrTestCase testCase) throws Exception {
+    public void testFunctions(String testFile, ModifierTestCase testCase) throws Exception {
         doTest(testFile, testCase);
     }
 
@@ -168,7 +168,7 @@ public class ModifierTest {
 
     @Test(dataProvider = "getSquashTests")
     public void doSquashNullsTest(String testFile) throws Exception {
-        TemplatrTestCase testCase = TemplatrTestCase.OVERWRITR;
+        ModifierTestCase testCase = ModifierTestCase.OVERWRITR;
         Map<String, Object> testUnit = JsonUtils.classpathToMap(testFile);
         Object input = testUnit.get("input");
         Object spec = testUnit.get("spec");
@@ -221,7 +221,7 @@ public class ModifierTest {
         JoltTestUtil.runArrayOrderObliviousDiffy("failed modifierFirstElementArray", expected, actual);
     }
 
-    enum TemplatrTestCase {
+    enum ModifierTestCase {
         OVERWRITR {
             @Override
             Modifier getTemplatr(final Object spec) {
