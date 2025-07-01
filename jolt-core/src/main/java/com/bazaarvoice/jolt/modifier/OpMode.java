@@ -23,18 +23,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpMode differentiates different flavors of Templatr
+ * OpMode differentiates different flavors of Modifier
  * <p>
- * Templatr can fill in leaf values as required in spec from a specified context, self or a hardcoded
+ * Modifier can fill in leaf values as required in spec from a specified context, self or a hardcoded
  * default value. However whether or not that 'write' operation should go through, is determined by
  * this enum.
  * <p>
- * All of these opModes validates if the if the source (map or list) and the key/index are valid,
+ * All of these opModes validates if the source (map or list) and the key/index are valid,
  * i.e. not null or >= 0, etc.
- * <p>
+ * <pre>
  * OVERWRITR always writes
  * DEFAULTR only writes when the the value at the key/index is null
  * DEFINR only writes when source does not contain the key/index
+ * </pre>
  */
 public enum OpMode {
 
@@ -77,7 +78,7 @@ public enum OpMode {
     /**
      * Static validity checker and instance getter from given op String
      */
-    private static Map<String, OpMode> opModeMap;
+    private static final Map<String, OpMode> opModeMap;
 
     static {
         opModeMap = new HashMap<>();
@@ -89,7 +90,7 @@ public enum OpMode {
     /**
      * Identifier OP prefix that is defined in SPEC
      */
-    private String op;
+    private final String op;
 
     private OpMode(final String op) {
         this.op = op;
