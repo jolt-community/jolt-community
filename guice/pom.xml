@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.bazaarvoice.jolt</groupId>
+        <groupId>io.joltcommunity.jolt</groupId>
         <artifactId>jolt-parent</artifactId>
         <version>0.2.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
@@ -29,13 +29,13 @@
         </dependency>
 
         <dependency>
-            <groupId>com.bazaarvoice.jolt</groupId>
+            <groupId>io.joltcommunity.jolt</groupId>
             <artifactId>json-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.bazaarvoice.jolt</groupId>
+            <groupId>io.joltcommunity.jolt</groupId>
             <artifactId>jolt-core</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bazaarvoice.jolt.chainr;
+package io.joltcommunity.jolt.chainr;
 
-import com.bazaarvoice.jolt.Chainr;
-import com.bazaarvoice.jolt.JsonUtils;
-import com.bazaarvoice.jolt.chainr.instantiator.GuiceChainrInstantiator;
-import com.bazaarvoice.jolt.chainr.transforms.GuiceContextDrivenTransform;
-import com.bazaarvoice.jolt.chainr.transforms.GuiceSpecAndContextDrivenTransform;
+import io.joltcommunity.jolt.Chainr;
+import io.joltcommunity.jolt.JsonUtils;
+import io.joltcommunity.jolt.chainr.instantiator.GuiceChainrInstantiator;
+import io.joltcommunity.jolt.chainr.transforms.GuiceContextDrivenTransform;
+import io.joltcommunity.jolt.chainr.transforms.GuiceSpecAndContextDrivenTransform;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;

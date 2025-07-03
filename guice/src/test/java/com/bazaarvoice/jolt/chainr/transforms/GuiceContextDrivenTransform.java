@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bazaarvoice.jolt.chainr.transforms;
+package io.joltcommunity.jolt.chainr.transforms;
 
-import com.bazaarvoice.jolt.ContextualTransform;
+import io.joltcommunity.jolt.ContextualTransform;
 import jakarta.inject.Inject;
 
 import java.util.Map;

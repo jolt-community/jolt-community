@@ -1,6 +1,6 @@
 [
     {
-        "operation": "com.bazaarvoice.jolt.chainr.transforms.GoodTestTransform",
+        "operation": "io.joltcommunity.jolt.chainr.transforms.GoodTestTransform",
         "spec": {
             "a": "b"
         }

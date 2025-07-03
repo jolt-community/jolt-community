@@ -12,14 +12,14 @@
             //  "c" is hardcoded
             //  "cc" comes from guice injection
             //  suffix comes from context
-            "operation": "com.bazaarvoice.jolt.chainr.transforms.GuiceContextDrivenTransform"
+            "operation": "io.joltcommunity.jolt.chainr.transforms.GuiceContextDrivenTransform"
         },
         {
             // This guy will add  "d" : "dd" + suffix
             //  "d" is from the spec KEY_TO_ADD
             //  "dd" comes from guice injection
             //  suffix comes from context
-            "operation": "com.bazaarvoice.jolt.chainr.transforms.GuiceSpecAndContextDrivenTransform",
+            "operation": "io.joltcommunity.jolt.chainr.transforms.GuiceSpecAndContextDrivenTransform",
             "spec": {
                 "KEY_TO_ADD": "d"
             }

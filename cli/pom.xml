@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.bazaarvoice.jolt</groupId>
+        <groupId>io.joltcommunity.jolt</groupId>
         <artifactId>jolt-parent</artifactId>
         <version>0.2.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
@@ -23,7 +23,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.bazaarvoice.jolt</groupId>
+            <groupId>io.joltcommunity.jolt</groupId>
             <artifactId>jolt-complete</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -68,7 +68,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.bazaarvoice.jolt.JoltCli</mainClass>
+                                    <mainClass>io.joltcommunity.jolt.JoltCli</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
