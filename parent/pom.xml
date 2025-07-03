@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.bazaarvoice.jolt</groupId>
+    <groupId>io.joltcommunity.jolt</groupId>
     <artifactId>jolt-parent</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>

@@ -13,11 +13,11 @@
         },
         {
             // This guy will add  ("c" : "cc"), where the Guice config tells it to output ("c" : "cc")
-            "operation": "com.bazaarvoice.jolt.chainr.transforms.GuiceTransform"
+            "operation": "io.joltcommunity.jolt.chainr.transforms.GuiceTransform"
         },
         {
             // This guy will add  "d" : "dd", where the "d" comes from the spec, and the "dd" comes from Guice
-            "operation": "com.bazaarvoice.jolt.chainr.transforms.GuiceSpecDrivenTransform",
+            "operation": "io.joltcommunity.jolt.chainr.transforms.GuiceSpecDrivenTransform",
             "spec": {
                 "KEY_TO_ADD": "d"
             }

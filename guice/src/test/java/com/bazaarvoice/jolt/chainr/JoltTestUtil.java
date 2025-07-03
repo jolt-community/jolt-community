@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bazaarvoice.jolt.chainr;
+package io.joltcommunity.jolt.chainr;
 
-import com.bazaarvoice.jolt.Diffy;
-import com.bazaarvoice.jolt.JsonUtils;
+import io.joltcommunity.jolt.Diffy;
+import io.joltcommunity.jolt.JsonUtils;
 import org.testng.Assert;
 
 public class JoltTestUtil {
