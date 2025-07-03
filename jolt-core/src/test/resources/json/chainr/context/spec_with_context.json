@@ -18,10 +18,10 @@
             }
         },
         {
-            "operation": "com.bazaarvoice.jolt.chainr.transforms.GoodContextDrivenTransform"
+            "operation": "io.joltcommunity.jolt.chainr.transforms.GoodContextDrivenTransform"
         },
         {
-            "operation": "com.bazaarvoice.jolt.chainr.transforms.GoodSpecAndContextDrivenTransform",
+            "operation": "io.joltcommunity.jolt.chainr.transforms.GoodSpecAndContextDrivenTransform",
             "spec": {
                 "KEY_TO_ADD": "d"
             }

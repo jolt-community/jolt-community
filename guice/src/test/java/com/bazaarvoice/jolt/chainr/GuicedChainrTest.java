@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bazaarvoice.jolt.chainr;
+package io.joltcommunity.jolt.chainr;
 
-import com.bazaarvoice.jolt.Chainr;
-import com.bazaarvoice.jolt.JsonUtils;
-import com.bazaarvoice.jolt.chainr.instantiator.GuiceChainrInstantiator;
-import com.bazaarvoice.jolt.chainr.transforms.GuiceSpecDrivenTransform;
-import com.bazaarvoice.jolt.chainr.transforms.GuiceTransform;
-import com.bazaarvoice.jolt.chainr.transforms.GuiceTransformMissingInjectAnnotation;
-import com.bazaarvoice.jolt.exception.SpecException;
+import io.joltcommunity.jolt.Chainr;
+import io.joltcommunity.jolt.JsonUtils;
+import io.joltcommunity.jolt.chainr.instantiator.GuiceChainrInstantiator;
+import io.joltcommunity.jolt.chainr.transforms.GuiceSpecDrivenTransform;
+import io.joltcommunity.jolt.chainr.transforms.GuiceTransform;
+import io.joltcommunity.jolt.chainr.transforms.GuiceTransformMissingInjectAnnotation;
+import io.joltcommunity.jolt.exception.SpecException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.AbstractModule;
@@ -116,7 +116,7 @@ public class GuicedChainrTest {
 
     @Test(expectedExceptions = SpecException.class)
     public void itBlowsUpForBadGuiceTransform() {
-        Chainr.fromSpec(ImmutableList.of(ImmutableMap.of("operator", "com.bazaarvoice.jolt.chainr.transforms.GuiceTransformMissingInjectAnnotation")),
+        Chainr.fromSpec(ImmutableList.of(ImmutableMap.of("operator", "io.joltcommunity.jolt.chainr.transforms.GuiceTransformMissingInjectAnnotation")),
                 new GuiceChainrInstantiator(new AbstractModule() {
                     @Override
                     protected void configure() {

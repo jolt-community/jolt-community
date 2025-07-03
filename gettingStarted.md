@@ -5,18 +5,18 @@
 Maven Dependency to Add to your pom file
 ``` xml
 <dependency>
-    <groupId>com.bazaarvoice.jolt</groupId>
+    <groupId>io.joltcommunity.jolt</groupId>
     <artifactId>jolt-core</artifactId>
     <version>${latest.jolt.version}</version>
 </dependency>
 <dependency>
-    <groupId>com.bazaarvoice.jolt</groupId>
+    <groupId>io.joltcommunity.jolt</groupId>
     <artifactId>json-utils</artifactId>
     <version>${latest.jolt.version}</version>
 </dependency>
 ```
 
-Where `latest.jolt.version` looks like `0.0.16`, and can be found by looking at the [project's releases](https://github.com/bazaarvoice/jolt/releases).
+Where `latest.jolt.version` looks like `0.0.16`, and can be found by looking at the [project's releases](https://github.com/jolt-community/jolt-community/releases).
 
 The two maven artifacts are:
 
@@ -34,13 +34,13 @@ The two maven artifacts are:
 
 ### JoltSample.java
 
-Available [here](https://github.com/bazaarvoice/jolt/tree/master/jolt-core/src/test/java/com/bazaarvoice/jolt/sample/JoltSample.java).
+Available [here](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/java/io/joltcommunity/jolt/sample/JoltSample.java).
 
 ``` java
-package com.bazaarvoice.jolt.sample;
+package io.joltcommunity.jolt.sample;
 
-import com.bazaarvoice.jolt.Chainr;
-import com.bazaarvoice.jolt.JsonUtils;
+import io.joltcommunity.jolt.Chainr;
+import io.joltcommunity.jolt.JsonUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -65,7 +65,7 @@ public class JoltSample {
 ```
 
 ### /json/sample/input.json
-Available [here](https://github.com/bazaarvoice/jolt/tree/master/jolt-core/src/test/resources/json/sample/input.json).
+Available [here](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/resources/json/sample/input.json).
 
 ``` json
 {
@@ -81,7 +81,7 @@ Available [here](https://github.com/bazaarvoice/jolt/tree/master/jolt-core/src/t
 ```
 
 ### /json/sample/spec.json
-Available [here](https://github.com/bazaarvoice/jolt/tree/master/jolt-core/src/test/resources/json/sample/spec.json).
+Available [here](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/resources/json/sample/spec.json).
 
 ``` json
 [

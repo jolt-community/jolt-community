@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bazaarvoice.jolt.chainr.instantiator;
+package io.joltcommunity.jolt.chainr.instantiator;
 
-import com.bazaarvoice.jolt.JoltTransform;
-import com.bazaarvoice.jolt.chainr.spec.ChainrEntry;
-import com.bazaarvoice.jolt.exception.SpecException;
+import io.joltcommunity.jolt.JoltTransform;
+import io.joltcommunity.jolt.chainr.spec.ChainrEntry;
+import io.joltcommunity.jolt.exception.SpecException;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
