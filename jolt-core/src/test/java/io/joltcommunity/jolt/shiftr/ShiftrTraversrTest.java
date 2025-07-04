@@ -34,7 +34,7 @@ public class ShiftrTraversrTest {
         return new Object[][]{
                 {
                         "simple place",
-                        Arrays.asList("tuna"),
+                        List.of("tuna"),
                         "tuna",
                         "a.b",
                         Arrays.asList("a", "b"),
@@ -42,7 +42,7 @@ public class ShiftrTraversrTest {
                 },
                 {
                         "simple explicit array place",
-                        Arrays.asList("tuna"),
+                        List.of("tuna"),
                         null,
                         "a.b[]",
                         Arrays.asList("a", "b", "[]"),
@@ -50,7 +50,7 @@ public class ShiftrTraversrTest {
                 },
                 {
                         "simple explicit array place with sub",
-                        Arrays.asList("tuna"),
+                        List.of("tuna"),
                         null,
                         "a.b[].c",
                         Arrays.asList("a", "b", "[]", "c"),
@@ -58,7 +58,7 @@ public class ShiftrTraversrTest {
                 },
                 {
                         "simple array place",
-                        Arrays.asList("tuna"),
+                        List.of("tuna"),
                         "tuna",
                         "a.b.[1]",
                         Arrays.asList("a", "b", "1"),
@@ -66,7 +66,7 @@ public class ShiftrTraversrTest {
                 },
                 {
                         "nested array place",
-                        Arrays.asList("tuna"),
+                        List.of("tuna"),
                         "tuna",
                         "a.b[1].c",
                         Arrays.asList("a", "b", "1", "c"),

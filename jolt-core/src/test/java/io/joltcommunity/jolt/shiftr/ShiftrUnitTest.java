@@ -39,15 +39,49 @@ public class ShiftrUnitTest {
         return new Object[][]{
                 {
                         "Simple * and Reference",
-                        JsonUtils.jsonToMap("{ \"tuna-*-marlin-*\" : { \"rating-*\" : \"&(1,2).&.value\" } }"),
-                        JsonUtils.jsonToMap("{ \"tuna-A-marlin-AAA\" : { \"rating-BBB\" : \"bar\" } }"),
-                        JsonUtils.jsonToMap("{ \"AAA\" : { \"rating-BBB\" : { \"value\" : \"bar\" } } }")
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna-*-marlin-*" : {
+                                     "rating-*" : "&(1,2).&.value"
+                                  }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna-A-marlin-AAA" : {
+                                     "rating-BBB" : "bar"
+                                  }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "AAA" : {
+                                     "rating-BBB" : {
+                                        "value" : "bar"
+                                     }
+                                   }
+                                }""")
                 },
                 {
                         "Shift to two places",
-                        JsonUtils.jsonToMap("{ \"tuna-*-marlin-*\" : { \"rating-*\" : [ \"&(1,2).&.value\", \"foo\"] } }"),
-                        JsonUtils.jsonToMap("{ \"tuna-A-marlin-AAA\" : { \"rating-BBB\" : \"bar\" } }"),
-                        JsonUtils.jsonToMap("{ \"foo\" : \"bar\", \"AAA\" : { \"rating-BBB\" : { \"value\" : \"bar\" } } }")
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna-*-marlin-*" : {
+                                    "rating-*" : [ "&(1,2).&.value", "foo"]
+                                   }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna-A-marlin-AAA" : {
+                                    "rating-BBB" : "bar"
+                                   }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "foo" : "bar", "AAA" : {
+                                    "rating-BBB" : {
+                                      "value" : "bar"
+                                    }
+                                  }
+                                }""")
                 },
                 {
                         "Or",
@@ -57,21 +91,62 @@ public class ShiftrUnitTest {
                 },
                 {
                         "KeyRef",
-                        JsonUtils.jsonToMap("{ \"rating-*\" : { \"&(0,1)\" : { \"match\" : \"&\" } } }"),
-                        JsonUtils.jsonToMap("{ \"rating-a\" : { \"a\" : { \"match\": \"a-match\" }, \"random\" : { \"match\" : \"noise\" } }," +
-                                "              \"rating-c\" : { \"c\" : { \"match\": \"c-match\" }, \"random\" : { \"match\" : \"noise\" } } }"),
-                        JsonUtils.jsonToMap("{ \"match\" : [ \"a-match\", \"c-match\" ] }")
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "rating-*" : {
+                                    "&(0,1)" : {
+                                      "match" : "&"
+                                    }
+                                  }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                  {
+                                    "rating-a" : {
+                                      "a" : {
+                                        "match": "a-match"
+                                      },
+                                      "random" : {
+                                        "match" : "noise"
+                                      }
+                                    },
+                                    "rating-c" : {
+                                      "c" : {
+                                        "match": "c-match"
+                                      },
+                                    "random" : {
+                                      "match" : "noise"
+                                    }
+                                  }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "match" : [
+                                    "a-match",
+                                    "c-match"
+                                  ]
+                                }""")
                 },
                 {
                         "Complex array write",
-                        JsonUtils.jsonToMap("{ \"tuna-*-marlin-*\" : { \"rating-*\" : \"tuna[&(1,1)].marlin[&(1,2)].&(0,1)\" } }"),
-                        JsonUtils.jsonToMap("{ \"tuna-2-marlin-3\" : { \"rating-BBB\" : \"bar\" }," +
-                                "\"tuna-1-marlin-0\" : { \"rating-AAA\" : \"mahi\" } }"),
-                        JsonUtils.jsonToMap("{ \"tuna\" : [ null, " +
-                                "                           { \"marlin\" : [ { \"AAA\" : \"mahi\" } ] }, " +
-                                "                           { \"marlin\" : [ null, null, null, { \"BBB\" : \"bar\" } ] } " +
-                                "                         ] " +
-                                "            }")
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna-*-marlin-*" : {
+                                    "rating-*" : "tuna[&(1,1)].marlin[&(1,2)].&(0,1)"
+                                  }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna-2-marlin-3" : { "rating-BBB" : "bar" },
+                                  "tuna-1-marlin-0" : { "rating-AAA" : "mahi" }
+                                }"""),
+                        JsonUtils.jsonToMap("""
+                                {
+                                  "tuna": [
+                                    null,
+                                    { "marlin" : [ { "AAA" : "mahi" } ] },
+                                    { "marlin" : [ null, null, null, { "BBB" : "bar" } ] }
+                                  ]
+                                }""")
                 }
         };
     }
