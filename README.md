@@ -179,19 +179,6 @@ Two things to be aware of :
 
 Jolt Transforms and tools can be run from the command line. Command line interface doc [here](cli/README.md).
 
-## <a name="Code_Coverage"></a> Code Coverage
-
-[![Build Status](https://secure.travis-ci.org/bazaarvoice/jolt.png)](http://travis-ci.org/bazaarvoice/jolt)
-
-For the moment we have Cobertura configured in our poms.
-
-``` sh
-mvn cobertura:cobertura
-open jolt-core/target/site/cobertura/index.html
-```
-
-Currently, for the jolt-core artifact, code coverage is at 89% line, and 83% branch.
-
 ## <a name="Release_Notes"></a> Release Notes
 
 [Versions and Release Notes available here](https://github.com/jolt-community/jolt-community/releases).
