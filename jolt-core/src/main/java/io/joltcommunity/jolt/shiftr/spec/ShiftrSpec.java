@@ -31,15 +31,17 @@ import io.joltcommunity.jolt.common.spec.BaseSpec;
  * CompositeSpec : where the RHS is a map of children Specs
  * <p>
  * Mapping of JSON Shiftr Spec to Spec objects :
+ * <pre>
  * {
- * rating-*" : {      // CompositeSpec with one child and a Star PathElement
- * "&(1)" : {       // CompositeSpec with one child and a Reference PathElement
- * "foo: {        // CompositeSpec with one child and a Literal PathElement
- * "value" : "Rating-&1.value"  // OutputtingSpec with a Literal PathElement and one write path
+ *   rating-*" : {      // CompositeSpec with one child and a Star PathElement
+ *     "&(1)" : {       // CompositeSpec with one child and a Reference PathElement
+ *       "foo: {        // CompositeSpec with one child and a Literal PathElement
+ *         "value" : "Rating-&1.value"  // OutputtingSpec with a Literal PathElement and one write path
+ *       }
+ *     }
+ *   }
  * }
- * }
- * }
- * }
+ * </pre>
  * <p>
  * The tree structure of formed by the CompositeSpecs is what is used during Shiftr transforms
  * to do the parallel tree walk with the input data tree.

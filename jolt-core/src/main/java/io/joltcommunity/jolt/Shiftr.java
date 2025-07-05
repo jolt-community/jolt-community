@@ -205,7 +205,7 @@ import java.util.Map;
  *    </pre>
  * <p>
  * '&' Subkey lookup
- * '&' subkey lookup allows us to referece the values captured by the '*' wildcard.
+ * '&' subkey lookup allows us to reference the values captured by the '*' wildcard.
  * Example, "tag-*-*" would match "tag-Foo-Bar", making
  * &(0,0) = "tag-Foo-Bar"
  * &(0,1) = "Foo"
@@ -259,9 +259,9 @@ import java.util.Map;
  * <p>
  * '#' Wildcard
  * Valid both on the LHS and RHS, but has different behavior / format on either side.
- * The way to think of it, is that it allows you to specify a "synthentic" value, aka a value not found in the input data.
+ * The way to think of it, is that it allows you to specify a "synthetic" value, aka a value not found in the input data.
  * <p>
- * On the RHS of the spec, # is only valid in the the context of an array, like "[#2]".
+ * On the RHS of the spec, # is only valid in the context of an array, like "[#2]".
  * What "[#2]" means is, go up the three levels and ask that node how many matches it has had, and then use that as an index
  * in the arrays.
  * This means that, while Shiftr is doing its parallel tree walk of the input data and the spec, it tracks how many matches it
@@ -286,13 +286,13 @@ import java.util.Map;
  * <p>
  * '|' Wildcard
  * Valid only on the LHS of the spec.
- * This 'or' wildcard allows you to match multiple input keys.   Useful if you don't always know exactly what your input data will be.
+ * This 'or' wildcard allows you to match multiple input keys. Useful if you don't always know exactly what your input data will be.
  * Example Spec :
  * <pre>
  *   {
  *     "rating|Rating" : "rating-primary"   // match "rating" or "Rating" copy the data to "rating-primary"
  *   }
- *   </pre>
+ * </pre>
  * This is really just syntactic sugar, as the implementation really just treats the key "rating|Rating" as two keys when processing.
  * <p>
  * <p>
@@ -321,7 +321,7 @@ import java.util.Map;
  * Thus the '@' wildcard is the mean "copy the value of the data at this level in the tree, to the output".
  * <p>
  * Advanced '@' sign wildcard.
- * The format is lools like "@(3,title)", where
+ * The format is looks like "@(3,title)", where
  * "3" means go up the tree 3 levels and then lookup the key
  * "title" and use the value at that key.
  * <p>
@@ -439,18 +439,18 @@ import java.util.Map;
  * Algorithm High Level
  * Walk the input data, and Shiftr spec simultaneously, and execute the Shiftr command/mapping each time
  * there is a match.
- * <p>
+ * <pre>
  * Algorithm Low Level
  * - Simultaneously walk of the spec and input JSon, and maintain a walked "input" path data structure.
  * - Determine a match between input JSON key and LHS spec, by matching LHS spec keys in the following order :
  * -- Note that '|' keys are are split into their subkeys, eg "literal", '*', or '&' LHS keys
- * <p>
  * 1) Try to match the input key with "literal" spec key values
  * 2) If no literal match is found, try to match against LHS '&' computed values.
  * 2.1) For deterministic behavior, if there is more than one '&' LHS key, they are applied/matched in alphabetical order,
  * after the '&' syntactic sugar is replaced with its canonical form.
  * 3) If no match is found, try to match against LHS keys with '*' wildcard values.
  * 3.1) For deterministic behavior, '*' wildcard keys are sorted and applied/matched in alphabetical order.
+ * </pre>
  * <p>
  * Note, processing of the '@' and '$' LHS keys always occur if their parent's match, and do not block any other matching.
  * <p>

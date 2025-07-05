@@ -72,7 +72,7 @@ public class SimpleTraversalTest {
 
         Optional actual = simpleTraversal.get(tree);
 
-        Assert.assertEquals(expected, actual.get());
+        Assert.assertEquals(actual.get(), expected);
         JoltTestUtil.runDiffy("Get should not have modified the input", original, tree);
     }
 
@@ -83,7 +83,7 @@ public class SimpleTraversalTest {
 
         Assert.assertEquals(toSet, simpleTraversal.set(actual, toSet).get()); // set should be successful
 
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(actual, expected);
     }
 
     @Test
@@ -95,11 +95,11 @@ public class SimpleTraversalTest {
         Object actual = new HashMap<>();
 
         Assert.assertFalse(traversal.get(actual).isPresent());
-        Assert.assertEquals(0, ((HashMap<?, ?>) actual).size()); // get didn't add anything
+        Assert.assertEquals(((HashMap<?, ?>) actual).size(), 0); // get didn't add anything
 
         // Add two things and validate the Auto Expand array
-        Assert.assertEquals("one", traversal.set(actual, "one").get());
-        Assert.assertEquals("two", traversal.set(actual, "two").get());
+        Assert.assertEquals(traversal.set(actual, "one").get(), "one");
+        Assert.assertEquals(traversal.set(actual, "two").get(), "two");
 
         JoltTestUtil.runDiffy(expected, actual);
     }
@@ -112,13 +112,13 @@ public class SimpleTraversalTest {
         Object expectedOne = JsonUtils.jsonToMap("{ \"a\" : { \"b\" : \"one\" } }");
         Object expectedTwo = JsonUtils.jsonToMap("{ \"a\" : { \"b\" : \"two\" } }");
 
-        Assert.assertEquals("tuna", traversal.get(actual).get());
+        Assert.assertEquals(traversal.get(actual).get(), "tuna");
 
         // Set twice and verify that the sets did in fact overwrite
-        Assert.assertEquals("one", traversal.set(actual, "one").get());
+        Assert.assertEquals(traversal.set(actual, "one").get(), "one");
         JoltTestUtil.runDiffy(expectedOne, actual);
 
-        Assert.assertEquals("two", traversal.set(actual, "two").get());
+        Assert.assertEquals(traversal.set(actual, "two").get(), "two");
         JoltTestUtil.runDiffy(expectedTwo, actual);
     }
 

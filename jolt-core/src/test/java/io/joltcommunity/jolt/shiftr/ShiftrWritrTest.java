@@ -34,22 +34,22 @@ public class ShiftrWritrTest {
 
         ShiftrWriter path = new ShiftrWriter("SecondaryRatings.tuna-&(0,1)-marlin.Value");
 
-        Assert.assertEquals("SecondaryRatings", path.get(0).getRawKey());
-        Assert.assertEquals("SecondaryRatings", path.get(0).toString());
-        Assert.assertEquals("Value", path.get(2).getRawKey());
-        Assert.assertEquals("Value", path.get(2).toString());
-        Assert.assertEquals("Value", path.get(2).toString());
+        Assert.assertEquals(path.get(0).getRawKey(), "SecondaryRatings");
+        Assert.assertEquals(path.get(0).toString(), "SecondaryRatings");
+        Assert.assertEquals(path.get(2).getRawKey(), "Value");
+        Assert.assertEquals(path.get(2).toString(), "Value");
+        Assert.assertEquals(path.get(2).toString(), "Value");
 
         AmpPathElement refElement = (AmpPathElement) path.get(1);
 
-        Assert.assertEquals(3, refElement.getTokens().size());
-        Assert.assertEquals("tuna-", (String) refElement.getTokens().get(0));
-        Assert.assertEquals("-marlin", (String) refElement.getTokens().get(2));
+        Assert.assertEquals(refElement.getTokens().size(), 3);
+        Assert.assertEquals((String) refElement.getTokens().get(0), "tuna-");
+        Assert.assertEquals((String) refElement.getTokens().get(2), "-marlin");
 
         Assert.assertTrue(refElement.getTokens().get(1) instanceof AmpReference);
         AmpReference ref = (AmpReference) refElement.getTokens().get(1);
-        Assert.assertEquals(0, ref.getPathIndex());
-        Assert.assertEquals(1, ref.getKeyGroup());
+        Assert.assertEquals(ref.getPathIndex(), 0);
+        Assert.assertEquals(ref.getKeyGroup(), 1);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ShiftrWritrTest {
 
         ShiftrWriter path = new ShiftrWriter("ugc.photos-&1-bob[&2]");
 
-        Assert.assertEquals(3, path.size());
+        Assert.assertEquals(path.size(), 3);
         {  // 0
             PathElement pe = path.get(0);
             Assert.assertTrue(pe instanceof LiteralPathElement, "First pathElement should be a literal one.");
@@ -69,22 +69,22 @@ public class ShiftrWritrTest {
 
             AmpPathElement refElement = (AmpPathElement) pe;
 
-            Assert.assertEquals(3, refElement.getTokens().size());
+            Assert.assertEquals(refElement.getTokens().size(), 3);
 
             {
                 Assert.assertTrue(refElement.getTokens().get(0) instanceof String);
-                Assert.assertEquals("photos-", (String) refElement.getTokens().get(0));
+                Assert.assertEquals((String) refElement.getTokens().get(0), "photos-");
             }
             {
                 Assert.assertTrue(refElement.getTokens().get(1) instanceof AmpReference);
                 AmpReference ref = (AmpReference) refElement.getTokens().get(1);
-                Assert.assertEquals("&(1,0)", ref.getCanonicalForm());
-                Assert.assertEquals(1, ref.getPathIndex());
-                Assert.assertEquals(0, ref.getKeyGroup());
+                Assert.assertEquals(ref.getCanonicalForm(), "&(1,0)");
+                Assert.assertEquals(ref.getPathIndex(), 1);
+                Assert.assertEquals(ref.getKeyGroup(), 0);
             }
             {
                 Assert.assertTrue(refElement.getTokens().get(2) instanceof String);
-                Assert.assertEquals("-bob", (String) refElement.getTokens().get(2));
+                Assert.assertEquals((String) refElement.getTokens().get(2), "-bob");
             }
         }
 
@@ -93,7 +93,7 @@ public class ShiftrWritrTest {
             Assert.assertTrue(pe instanceof ArrayPathElement, "Third pathElement should be a literal one.");
 
             ArrayPathElement arrayElement = (ArrayPathElement) pe;
-            Assert.assertEquals("[&(2,0)]", arrayElement.getCanonicalForm());
+            Assert.assertEquals(arrayElement.getCanonicalForm(), "[&(2,0)]");
         }
     }
 
@@ -107,17 +107,17 @@ public class ShiftrWritrTest {
         Assert.assertNull(lpe);
 
         lpe = pe1.match("tuna-A-marlin-AAA", new WalkedPath());
-        Assert.assertEquals("tuna-A-marlin-AAA", lpe.getRawKey());
-        Assert.assertEquals("tuna-A-marlin-AAA", lpe.getSubKeyRef(0));
-        Assert.assertEquals(3, lpe.getSubKeyCount());
-        Assert.assertEquals("A", lpe.getSubKeyRef(1));
-        Assert.assertEquals("AAA", lpe.getSubKeyRef(2));
+        Assert.assertEquals(lpe.getRawKey(), "tuna-A-marlin-AAA");
+        Assert.assertEquals(lpe.getSubKeyRef(0), "tuna-A-marlin-AAA");
+        Assert.assertEquals(lpe.getSubKeyCount(), 3);
+        Assert.assertEquals(lpe.getSubKeyRef(1), "A");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "AAA");
 
         MatchedElement lpe2 = pe2.match("rating-BBB", new WalkedPath(null, lpe));
-        Assert.assertEquals("rating-BBB", lpe2.getRawKey());
-        Assert.assertEquals("rating-BBB", lpe2.getSubKeyRef(0));
-        Assert.assertEquals(2, lpe2.getSubKeyCount());
-        Assert.assertEquals("BBB", lpe2.getSubKeyRef(1));
+        Assert.assertEquals(lpe2.getRawKey(), "rating-BBB");
+        Assert.assertEquals(lpe2.getSubKeyRef(0), "rating-BBB");
+        Assert.assertEquals(lpe2.getSubKeyCount(), 2);
+        Assert.assertEquals(lpe2.getSubKeyRef(1), "BBB");
 
         ShiftrWriter outputPath = new ShiftrWriter("&(1,2).&.value");
         WalkedPath twoSteps = new WalkedPath(null, lpe);
@@ -125,17 +125,17 @@ public class ShiftrWritrTest {
         {
             EvaluatablePathElement outputElement = (EvaluatablePathElement) outputPath.get(0);
             String evaledLeafOutput = outputElement.evaluate(twoSteps);
-            Assert.assertEquals("AAA", evaledLeafOutput);
+            Assert.assertEquals(evaledLeafOutput, "AAA");
         }
         {
             EvaluatablePathElement outputElement = (EvaluatablePathElement) outputPath.get(1);
             String evaledLeafOutput = outputElement.evaluate(twoSteps);
-            Assert.assertEquals("rating-BBB", evaledLeafOutput);
+            Assert.assertEquals(evaledLeafOutput, "rating-BBB");
         }
         {
             EvaluatablePathElement outputElement = (EvaluatablePathElement) outputPath.get(2);
             String evaledLeafOutput = outputElement.evaluate(twoSteps);
-            Assert.assertEquals("value", evaledLeafOutput);
+            Assert.assertEquals(evaledLeafOutput, "value");
         }
     }
 
@@ -148,28 +148,28 @@ public class ShiftrWritrTest {
 
         // match them against some data to get LiteralPathElements with captured values
         MatchedElement lpe = pe1.match("tuna-2-marlin-3", new WalkedPath());
-        Assert.assertEquals("2", lpe.getSubKeyRef(1));
-        Assert.assertEquals("3", lpe.getSubKeyRef(2));
+        Assert.assertEquals(lpe.getSubKeyRef(1), "2");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "3");
 
         MatchedElement lpe2 = pe2.match("rating-BBB", new WalkedPath(null, lpe));
-        Assert.assertEquals(2, lpe2.getSubKeyCount());
-        Assert.assertEquals("BBB", lpe2.getSubKeyRef(1));
+        Assert.assertEquals(lpe2.getSubKeyCount(), 2);
+        Assert.assertEquals(lpe2.getSubKeyRef(1), "BBB");
 
         // Build an write path path
         ShiftrWriter shiftrWriter = new ShiftrWriter("tuna[&(1,1)].marlin[&(1,2)].&(0,1)");
 
-        Assert.assertEquals(5, shiftrWriter.size());
-        Assert.assertEquals("tuna.[&(1,1)].marlin.[&(1,2)].&(0,1)", shiftrWriter.getCanonicalForm());
+        Assert.assertEquals(shiftrWriter.size(), 5);
+        Assert.assertEquals(shiftrWriter.getCanonicalForm(), "tuna.[&(1,1)].marlin.[&(1,2)].&(0,1)");
 
         // Evaluate the write path against the LiteralPath elements we build above ( like Shiftr does )
         WalkedPath twoSteps = new WalkedPath(null, lpe);
         twoSteps.add(null, lpe2);
         List<String> stringPath = shiftrWriter.evaluate(twoSteps);
 
-        Assert.assertEquals("tuna", stringPath.get(0));
-        Assert.assertEquals("2", stringPath.get(1));
-        Assert.assertEquals("marlin", stringPath.get(2));
-        Assert.assertEquals("3", stringPath.get(3));
-        Assert.assertEquals("BBB", stringPath.get(4));
+        Assert.assertEquals(stringPath.get(0), "tuna");
+        Assert.assertEquals(stringPath.get(1), "2");
+        Assert.assertEquals(stringPath.get(2), "marlin");
+        Assert.assertEquals(stringPath.get(3), "3");
+        Assert.assertEquals(stringPath.get(4), "BBB");
     }
 }
