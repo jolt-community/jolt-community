@@ -150,7 +150,7 @@ import java.util.Map;
  * added if they are not already present in the input document (either naturally or having been defaulted
  * in from literal spec keys).
  * <p>
- * <p>
+ * <pre>
  * Algorithm :
  * 1) Walk the spec
  * 2) for each literal key in the spec (specKey)
@@ -161,6 +161,7 @@ import java.util.Map;
  * 3) for each wildcard in the spec
  * 3.1) find all keys from the defaultee that match the wildcard
  * 3.2) treat each key as a literal speckey
+ * </pre>
  * <p>
  * Corner Cases :
  * <p>
@@ -238,9 +239,13 @@ public class Defaultr implements SpecDriven, Transform {
         return input;
     }
 
-    public interface WildCards {
-        String STAR = "*";
-        String OR = "|";
-        String ARRAY = "[]";
+    public static final class WildCards {
+        public static final String STAR = "*";
+        public static final String OR = "|";
+        public static final String ARRAY = "[]";
+
+        private WildCards() {
+            // Prevent instantiation
+        }
     }
 }
