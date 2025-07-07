@@ -28,17 +28,11 @@ public abstract class RemovrSpec {
     protected final MatchablePathElement pathElement;
 
     protected RemovrSpec(String rawJsonKey) {
-        PathElement pathElement = parse(rawJsonKey);
-
-        if (!(pathElement instanceof MatchablePathElement)) {
-            throw new SpecException("Spec LHS key=" + rawJsonKey + " is not a valid LHS key.");
-        }
-
-        this.pathElement = (MatchablePathElement) pathElement;
+        this.pathElement = parse(rawJsonKey);
     }
 
     // Ex Keys :  *, cdv-*, *-$de
-    public static PathElement parse(String key) {
+    public static MatchablePathElement parse(String key) {
         if ("*".equals(key)) {
             return new StarAllPathElement(key);
         }
