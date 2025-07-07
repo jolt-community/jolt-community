@@ -55,7 +55,7 @@ public abstract class ShiftrSpec implements BaseSpec {
     // The processed key from the JSON config
     protected final MatchablePathElement pathElement;
 
-    public ShiftrSpec(String rawJsonKey) {
+    protected ShiftrSpec(String rawJsonKey) {
         this.pathElement = PathElementBuilder.buildMatchablePathElement(rawJsonKey);
     }
 

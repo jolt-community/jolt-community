@@ -27,7 +27,7 @@ public abstract class RemovrSpec {
 
     protected final MatchablePathElement pathElement;
 
-    public RemovrSpec(String rawJsonKey) {
+    protected RemovrSpec(String rawJsonKey) {
         PathElement pathElement = parse(rawJsonKey);
 
         if (!(pathElement instanceof MatchablePathElement)) {
