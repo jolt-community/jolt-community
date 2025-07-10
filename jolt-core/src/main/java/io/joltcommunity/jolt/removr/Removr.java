@@ -116,8 +116,8 @@ import java.util.Map;
  *    }
  *    </pre>
  * In this example, "Set1" and "Set2" under rating both have the same structure, and thus we can use the '*'
- * to allow use to write more compact rules to remove "b" from all children under ratings. This is especially useful when we don't know
- * how many children will  be under ratings, but we would like to nuke certain part of it across.
+ * to allow us to write more compact rules to remove "b" from all children under ratings. This is especially useful when we don't know
+ * how many children will be under ratings, but we would like to remove certain parts of it altogether.
  * <p>
  * '*' wildcard as part of a key :
  * This is useful for working with input JSON with keys that are "prefixed".
@@ -166,7 +166,7 @@ import java.util.Map;
  * <p>
  * It can walk thru all the elements of an array with the "*" wildcard.
  * <p>
- * Additionally, it can remove individual array indicies.  To do this the LHS key
+ * Additionally, it can remove individual array indices. To do this the LHS key
  * must be a number but in String format.
  * <p>
  * Example

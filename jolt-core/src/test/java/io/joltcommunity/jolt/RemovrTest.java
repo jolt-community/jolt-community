@@ -22,6 +22,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class RemovrTest {
@@ -76,4 +77,34 @@ public class RemovrTest {
         new Removr(spec);
     }
 
+    @DataProvider
+    public Object[][] badSpecs() throws IOException {
+        return new Object[][]{
+                {
+                        "Null Spec",
+                        null,
+                },
+                {
+                        "List Spec",
+                        new ArrayList<>(),
+                },
+                {
+                        "Invalid rhs string",
+                        JsonUtils.javason("{ 'tuna' : 'marlin[-1]' }"),
+                },
+                {
+                        "Invalid rhs type - not a Map (number)",
+                        JsonUtils.javason("{ 'tuna' : 123 }"),
+                },
+                {
+                        "Invalid rhs type - not a Map (array)",
+                        JsonUtils.javason("{ 'tuna' : [] }"),
+                }
+        };
+    }
+
+    @Test(dataProvider = "badSpecs", expectedExceptions = SpecException.class)
+    public void failureUnitTest(String testName, Object spec) {
+        new Removr(spec);
+    }
 }

@@ -23,28 +23,28 @@ import io.joltcommunity.jolt.exception.SpecException;
 
 import java.util.*;
 
-/*
-    Sample Spec
-    "spec": {
-        "ineedtoberemoved":"" //literal leaf element
-        "TAG-*$*": "",       //Leaf Computed element
-        "TAG-*#*": "",
-
-        "*pants*" : "",
-
-         "buckets": {     //composite literal Path element
-            "a$*": ""    //Computed Leaf element
-         },
-         "rating*":{    //composite computed path element
-            "*":{       //composite computed path element
-                "a":""  //literal leaf element
-            }
-        }
-    }
-*/
-
 /**
  * Removr Spec that has children. In a removr spec, whenever the RHS is a Map, we build a RemovrCompositeSpec
+ * <pre>
+ * Sample Spec:
+ *
+ *     "spec": {
+ *         "ineedtoberemoved":"" //literal leaf element
+ *         "TAG-*$*": "",       //Leaf Computed element
+ *         "TAG-*#*": "",
+ *
+ *         "*pants*" : "",
+ *
+ *          "buckets": {     //composite literal Path element
+ *             "a$*": ""    //Computed Leaf element
+ *          },
+ *          "rating*":{    //composite computed path element
+ *             "*":{       //composite computed path element
+ *                 "a":""  //literal leaf element
+ *             }
+ *         }
+ *     }
+ *  </pre>
  */
 public class RemovrCompositeSpec extends RemovrSpec {
 
@@ -61,7 +61,7 @@ public class RemovrCompositeSpec extends RemovrSpec {
                 RemovrSpec childSpec;
                 if (rawRhs instanceof Map) {
                     childSpec = new RemovrCompositeSpec(keyString, (Map<String, Object>) rawRhs);
-                } else if (rawRhs instanceof String && ((String) rawRhs).trim().length() == 0) {
+                } else if (rawRhs instanceof String && ((String) rawRhs).trim().isEmpty()) {
                     childSpec = new RemovrLeafSpec(keyString);
                 } else {
                     throw new SpecException("Invalid Removr spec RHS. Should be an empty string or Map");
@@ -127,21 +127,21 @@ public class RemovrCompositeSpec extends RemovrSpec {
             if (subInput instanceof List) {
 
                 List<Object> subList = (List<Object>) subInput;
-                Set<Integer> indiciesToRemove = new HashSet<>();
+                Set<Integer> indicesToRemove = new HashSet<>();
 
-                // build a list of all indicies to remove
+                // build a list of all indices to remove
                 for (RemovrSpec childSpec : children) {
-                    indiciesToRemove.addAll(childSpec.applyToList(subList));
+                    indicesToRemove.addAll(childSpec.applyToList(subList));
                 }
 
-                List<Integer> uniqueIndiciesToRemove = new ArrayList<>(indiciesToRemove);
+                List<Integer> uniqueIndicesToRemove = new ArrayList<>(indicesToRemove);
                 // Sort the list from Biggest to Smallest, so that when we remove items from the input
                 //  list we don't muck up the order.
                 // Aka removing 0 _then_ 3 would be bad, because we would have actually removed
                 //  0 and 4 from the "original" list.
-                uniqueIndiciesToRemove.sort(Comparator.reverseOrder());
+                uniqueIndicesToRemove.sort(Comparator.reverseOrder());
 
-                for (int index : uniqueIndiciesToRemove) {
+                for (int index : uniqueIndicesToRemove) {
                     subList.remove(index);
                 }
             } else if (subInput instanceof Map) {
@@ -154,7 +154,7 @@ public class RemovrCompositeSpec extends RemovrSpec {
                     keysToRemove.addAll(childSpec.applyToMap(subInputMap));
                 }
 
-                subInputMap.keySet().removeAll(keysToRemove);
+                keysToRemove.forEach(subInputMap.keySet()::remove);
             }
         }
     }
