@@ -20,10 +20,19 @@ import io.joltcommunity.jolt.Defaultr;
 import io.joltcommunity.jolt.exception.SpecException;
 
 import java.util.Comparator;
+import java.util.EnumMap;
 
 public enum OPS {
 
     STAR, OR, LITERAL;
+
+    private static final EnumMap<OPS, Integer> precedenceMap = new EnumMap<>(OPS.class);
+
+    static {
+        precedenceMap.put(LITERAL, 1);
+        precedenceMap.put(OR, 2);
+        precedenceMap.put(STAR, 3);
+    }
 
     public static OPS parse(String key) {
         if (key.contains(Defaultr.WildCards.STAR)) {
@@ -41,39 +50,9 @@ public enum OPS {
     }
 
     public static class OpsPrecedenceComparator implements Comparator<OPS> {
-        /**
-         * The order we want to apply Defaultr logic is Literals, Or, and then Star.
-         * Since we walk the sorted data from 0 to n, that means Literals need to low, and Star should be high.
-         */
         @Override
-        public int compare(OPS ops, OPS ops1) {
-
-            // a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
-            // s < s1 -> -1
-            // s = s1 -> 0
-            // s > s1 -> 1
-
-            if (ops == ops1) {
-                return 0;
-            }
-
-            if (STAR == ops) {
-                return 1;
-            }
-            if (LITERAL == ops) {
-                return -1;
-            }
-
-            // if we get here, "ops" has to equal OR
-            if (STAR == ops1) {
-                return -1;
-            }
-            if (LITERAL == ops1) {
-                return 1;
-            }
-
-            // both are ORs, should never get here
-            throw new IllegalStateException("Someone has added an op type without changing this method.");
+        public int compare(OPS ops1, OPS ops2) {
+            return Integer.compare(precedenceMap.get(ops1), precedenceMap.get(ops2));
         }
     }
 }

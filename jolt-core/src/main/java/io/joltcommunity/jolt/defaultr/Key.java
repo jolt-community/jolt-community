@@ -39,8 +39,7 @@ public abstract class Key {
     private int orCount = 0;
     private int outputArraySize = -1;
 
-    public Key(String rawJsonKey, Object spec) {
-
+    protected Key(String rawJsonKey, Object spec) {
         rawKey = rawJsonKey;
         if (rawJsonKey.endsWith(Defaultr.WildCards.ARRAY)) {
             isArrayOutput = true;
@@ -55,7 +54,7 @@ public abstract class Key {
                 orCount = keyStrings.size();
                 break;
             case LITERAL:
-                keyStrings = Arrays.asList(rawKey);
+                keyStrings = List.of(rawKey);
                 break;
             case STAR:
                 keyStrings = Collections.emptyList();
@@ -141,8 +140,7 @@ public abstract class Key {
         }
 
         // Find and sort the children DefaultrKeys by precedence: literals, |, then *
-        ArrayList<Key> sortedChildren = new ArrayList<>();
-        sortedChildren.addAll(children);
+        List<Key> sortedChildren = new ArrayList<>(children);
         sortedChildren.sort(keyComparator);
 
         for (Key childKey : sortedChildren) {
@@ -159,23 +157,23 @@ public abstract class Key {
      */
     protected abstract void applyChild(Object container);
 
-    public int getOrCount() {
+    private int getOrCount() {
         return orCount;
     }
 
-    public boolean isArrayOutput() {
+    private boolean isArrayOutput() {
         return isArrayOutput;
     }
 
-    public OPS getOp() {
-        return op;
-    }
-
-    public int getOutputArraySize() {
+    private int getOutputArraySize() {
         return outputArraySize;
     }
 
-    public Object createOutputContainerObject() {
+    protected OPS getOp() {
+        return op;
+    }
+
+    protected Object createOutputContainerObject() {
         if (isArrayOutput()) {
             return new ArrayList<>();
         } else {
@@ -202,5 +200,4 @@ public abstract class Key {
             return opsEqual;
         }
     }
-
 }

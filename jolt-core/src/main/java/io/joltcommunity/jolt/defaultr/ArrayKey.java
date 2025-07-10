@@ -22,7 +22,7 @@ import java.util.*;
 
 public class ArrayKey extends Key {
 
-    private Collection<Integer> keyInts;
+    private final Collection<Integer> keyInts;
     private int keyInt = -1;
 
     public ArrayKey(String jsonKey, Object spec) {
@@ -39,7 +39,7 @@ public class ArrayKey extends Key {
                 break;
             case LITERAL:
                 keyInt = Integer.parseInt(rawKey);
-                keyInts = Arrays.asList(keyInt);
+                keyInts = List.of(keyInt);
                 break;
             case STAR:
                 keyInts = Collections.emptyList();
