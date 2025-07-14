@@ -117,7 +117,7 @@ public enum OpMode {
     }
 
     /**
-     * Given a source map and a input key returns true if it is ok to go ahead with
+     * Given a source map and an input key returns true if it is ok to go ahead with
      * write operation given a specific opMode
      */
     public boolean isApplicable(Map source, String key) {

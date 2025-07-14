@@ -29,7 +29,7 @@ import java.util.Map;
  * The impetus for the CardinalityTransform, was to deal with data sources that are inconsistent with
  * respect to the cardinality of their returned data.
  * <p>
- * For example, say you know that there will be a "photos" element in a document.  If your underlying data
+ * For example, say you know that there will be a "photos" element in a document. If your underlying data
  * source is trying to be nice, it may adjust the "type" of the photos element, depending on how many
  * photos there actually are.
  * <p>
@@ -197,7 +197,6 @@ import java.util.Map;
  */
 public class CardinalityTransform implements SpecDriven, Transform {
 
-    protected static final String ROOT_KEY = "root";
     private final CardinalityCompositeSpec rootSpec;
 
     /**

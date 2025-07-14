@@ -52,36 +52,23 @@ public abstract class CardinalitySpec implements BaseSpec {
     // The processed key from the JSON config
     protected final MatchablePathElement pathElement;
 
-    public CardinalitySpec(String rawJsonKey) {
-        List<PathElement> pathElements = parse(rawJsonKey);
-
-        if (pathElements.size() != 1) {
-            throw new SpecException("CardinalityTransform invalid LHS:" + rawJsonKey + " can not contain '.'");
-        }
-
-        PathElement pe = pathElements.get(0);
-        if (!(pe instanceof MatchablePathElement)) {
-            throw new SpecException("Spec LHS key=" + rawJsonKey + " is not a valid LHS key.");
-        }
-
-        this.pathElement = (MatchablePathElement) pe;
+    protected CardinalitySpec(String rawJsonKey) {
+        this.pathElement = parse(rawJsonKey);
     }
 
-    // once all the cardinalitytransform specific logic is extracted.
-    public static List<PathElement> parse(String key) {
-
+    private static MatchablePathElement parse(String key) {
         if (key.contains(AT)) {
-            return Arrays.<PathElement>asList(new AtPathElement(key));
+            return new AtPathElement(key);
         } else if (STAR.equals(key)) {
-            return Arrays.<PathElement>asList(new StarAllPathElement(key));
+            return new StarAllPathElement(key);
         } else if (key.contains(STAR)) {
             if (StringTools.countMatches(key, STAR) == 1) {
-                return Arrays.<PathElement>asList(new StarSinglePathElement(key));
+                return new StarSinglePathElement(key);
             } else {
-                return Arrays.<PathElement>asList(new StarRegexPathElement(key));
+                return new StarRegexPathElement(key);
             }
         } else {
-            return Arrays.<PathElement>asList(new LiteralPathElement(key));
+            return new LiteralPathElement(key);
         }
     }
 
@@ -96,7 +83,7 @@ public abstract class CardinalitySpec implements BaseSpec {
      *
      * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
      */
-    public abstract boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer);
+    protected abstract boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer);
 
     @Override
     public boolean apply(final String inputKey, final Optional<Object> inputOptional, final WalkedPath walkedPath, final Map<String, Object> output, final Map<String, Object> context) {

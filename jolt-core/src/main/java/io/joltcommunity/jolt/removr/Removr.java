@@ -185,7 +185,6 @@ import java.util.Map;
  */
 public class Removr implements SpecDriven, Transform {
 
-    private static final String ROOT_KEY = "root";
     private final RemovrCompositeSpec rootSpec;
 
     @Inject

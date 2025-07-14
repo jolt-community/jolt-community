@@ -55,7 +55,7 @@ public class ComputedKeysComparator implements Comparator<BaseSpec> {
         int aa = orderMap.get(ape.getClass());
         int bb = orderMap.get(bpe.getClass());
 
-        int elementsEqual = aa < bb ? -1 : aa == bb ? 0 : 1;
+        int elementsEqual = Integer.compare(aa, bb);
 
         if (elementsEqual != 0) {
             return elementsEqual;
