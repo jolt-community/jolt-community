@@ -58,6 +58,7 @@ public class CardinalityTransformTest {
                 {"starRegexTestData"},
                 {"thisLevelIsNull"},
                 {"scalarInputData"},
+                {"nullScalarInputData"},
                 {"atTestData"}
         };
     }
