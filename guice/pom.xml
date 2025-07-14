@@ -6,11 +6,11 @@
     <parent>
         <groupId>io.joltcommunity.jolt</groupId>
         <artifactId>jolt-parent</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>jolt-guice</artifactId>
+    <artifactId>jolt-community-guice</artifactId>
     <name>Jolt Guice Integration</name>
     <packaging>jar</packaging>
 
@@ -30,13 +30,13 @@
 
         <dependency>
             <groupId>io.joltcommunity.jolt</groupId>
-            <artifactId>json-utils</artifactId>
+            <artifactId>json-community-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.joltcommunity.jolt</groupId>
-            <artifactId>jolt-core</artifactId>
+            <artifactId>jolt-community-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
