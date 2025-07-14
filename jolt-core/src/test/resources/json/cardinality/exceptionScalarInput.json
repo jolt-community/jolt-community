@@ -4,8 +4,7 @@
   },
   "spec": {
     "photos": {
-      "url": "ONE",
-      "caption": "MANY"
+      "scalar": "MANY"
     }
   },
   "expected": {

@@ -57,6 +57,7 @@ public class CardinalityTransformTest {
                 {"starTestData"},
                 {"starRegexTestData"},
                 {"thisLevelIsNull"},
+                {"scalarInputData"},
                 {"atTestData"}
         };
     }
@@ -90,7 +91,7 @@ public class CardinalityTransformTest {
 
     @Test(expectedExceptions = ClassCastException.class)
     public void shouldThrowClassCastException() {
-        String testPath = "/json/cardinality/scalarInputData";
+        String testPath = "/json/cardinality/exceptionScalarInput";
         Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
 
         Object input = testUnit.get("input");
