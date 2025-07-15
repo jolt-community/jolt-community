@@ -10,6 +10,13 @@
 
     <name>Jolt Parent</name>
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <scm>
         <url>https://github.com/jolt-community/jolt-community</url>
         <connection>scm:git:git@github.com:jolt-community/jolt-community.git</connection>
