@@ -202,10 +202,6 @@ public class CardinalityCompositeSpec extends CardinalitySpec {
 
                 applyKeyToLiteralAndComputed(this, subKeyStr, subInput, walkedPath, input);
             }
-        } else if (input != null) { // TODO: for cardinality, we should not handle scalar inputs, otherwise we will got ClassCastException sometimes
-            // if not a map or list, must be a scalar
-            String scalarInput = input.toString();
-            applyKeyToLiteralAndComputed(this, scalarInput, null, walkedPath, scalarInput);
         }
     }
 }

@@ -57,6 +57,7 @@ public class CardinalityTransformTest {
                 {"starTestData"},
                 {"starRegexTestData"},
                 {"thisLevelIsNull"},
+                {"exceptionScalarInput"},
                 {"scalarInputData"},
                 {"nullScalarInputData"},
                 {"atTestData"}
@@ -88,19 +89,6 @@ public class CardinalityTransformTest {
 
         // Should throw exception
         new CardinalityTransform(spec);
-    }
-
-    @Test(expectedExceptions = ClassCastException.class)
-    public void shouldThrowClassCastException() {
-        String testPath = "/json/cardinality/exceptionScalarInput";
-        Map<String, Object> testUnit = JsonUtils.classpathToMap(testPath + ".json");
-
-        Object input = testUnit.get("input");
-        Object spec = testUnit.get("spec");
-
-        CardinalityTransform cardinalityTransform = new CardinalityTransform(spec);
-        // should throw ClassCastException because input is a String and spec expects a Map
-        Object actual = cardinalityTransform.transform(input);
     }
 
     @Test
