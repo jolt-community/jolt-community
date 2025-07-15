@@ -67,8 +67,6 @@ public class CardinalityCompositeSpec extends CardinalitySpec {
         }
 
         for (CardinalitySpec child : children) {
-            literals.put(child.pathElement.getRawKey(), child);
-
             if (child.pathElement instanceof LiteralPathElement) {
                 literals.put(child.pathElement.getRawKey(), child);
             }
@@ -162,10 +160,10 @@ public class CardinalityCompositeSpec extends CardinalitySpec {
      * Step one level down the Spec tree by carefully and efficiently applying our children to the
      * "one level down" data.
      *
-     * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
+     * @return true if this spec "handles" the inputkey such that no sibling specs need to see it
      */
     @Override
-    public boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer) {
+    protected boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer) {
         MatchedElement thisLevel = pathElement.match(inputKey, walkedPath);
         if (thisLevel == null) {
             return false;
@@ -204,11 +202,6 @@ public class CardinalityCompositeSpec extends CardinalitySpec {
 
                 applyKeyToLiteralAndComputed(this, subKeyStr, subInput, walkedPath, input);
             }
-        } else if (input != null) {
-
-            // if not a map or list, must be a scalar
-            String scalarInput = input.toString();
-            applyKeyToLiteralAndComputed(this, scalarInput, null, walkedPath, scalarInput);
         }
     }
 }

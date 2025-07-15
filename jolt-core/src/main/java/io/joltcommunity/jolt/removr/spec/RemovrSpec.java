@@ -32,7 +32,7 @@ public abstract class RemovrSpec {
     }
 
     // Ex Keys :  *, cdv-*, *-$de
-    public static MatchablePathElement parse(String key) {
+    private static MatchablePathElement parse(String key) {
         if ("*".equals(key)) {
             return new StarAllPathElement(key);
         }

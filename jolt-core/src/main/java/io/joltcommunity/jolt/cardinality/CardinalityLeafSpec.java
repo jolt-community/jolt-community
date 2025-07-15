@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class CardinalityLeafSpec extends CardinalitySpec {
 
-    private CardinalityRelationship cardinalityRelationship;
+    private final CardinalityRelationship cardinalityRelationship;
 
     public CardinalityLeafSpec(String rawKey, Object rhs) {
         super(rawKey);
@@ -48,7 +48,7 @@ public class CardinalityLeafSpec extends CardinalitySpec {
      * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
      */
     @Override
-    public boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer) {
+    protected boolean applyCardinality(String inputKey, Object input, WalkedPath walkedPath, Object parentContainer) {
 
         MatchedElement thisLevel = getMatch(inputKey, walkedPath);
         if (thisLevel == null) {

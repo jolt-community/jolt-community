@@ -17,6 +17,7 @@
 package io.joltcommunity.jolt;
 
 import io.joltcommunity.jolt.exception.SpecException;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -25,6 +26,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CardinalityTransformTest {
+    @DataProvider
+    public Object[][] invalidSpecs() {
+        return new Object[][]{
+                {null},
+                {"InvalidSpecType"},
+                {new HashMap<>()}
+        };
+    }
+
+    @Test(dataProvider = "invalidSpecs", expectedExceptions = SpecException.class)
+    public void throwsSpecExceptionForInvalidSpecs(Object invalidSpec) {
+        new CardinalityTransform(invalidSpec);
+    }
+
+    @Test
+    public void initializesSuccessfullyWithValidSpec() {
+        Map<String, Object> validSpec = new HashMap<>() {{
+            put("key", "ONE");
+        }};
+        CardinalityTransform transform = new CardinalityTransform(validSpec);
+        Assert.assertNotNull(transform);
+    }
 
     @DataProvider
     public Object[][] getTestCaseUnits() {
@@ -32,6 +55,11 @@ public class CardinalityTransformTest {
                 {"oneLiteralTestData"},
                 {"manyLiteralTestData"},
                 {"starTestData"},
+                {"starRegexTestData"},
+                {"thisLevelIsNull"},
+                {"exceptionScalarInput"},
+                {"scalarInputData"},
+                {"nullScalarInputData"},
                 {"atTestData"}
         };
     }
