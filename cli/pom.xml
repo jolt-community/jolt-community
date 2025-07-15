@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.joltcommunity.jolt</groupId>
-        <artifactId>jolt-parent</artifactId>
+        <groupId>io.github.jolt-community.jolt</groupId>
+        <artifactId>jolt-community-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
@@ -23,7 +23,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.joltcommunity.jolt</groupId>
+            <groupId>io.github.jolt-community.jolt</groupId>
             <artifactId>jolt-community-complete</artifactId>
             <version>${project.version}</version>
         </dependency>
