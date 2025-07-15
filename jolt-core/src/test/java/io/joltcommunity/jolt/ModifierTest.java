@@ -111,7 +111,7 @@ public class ModifierTest {
         Object context = testUnit.get("context");
         Object expected = testUnit.get(testCase.name());
         if (expected != null) {
-            Modifier modifier = testCase.getTemplatr(spec);
+            Modifier modifier = testCase.getModifier(spec);
             Object actual = modifier.transform(input, (Map<String, Object>) context);
             JoltTestUtil.runArrayOrderObliviousDiffy(testCase.name() + " failed case " + testFile, expected, actual);
         }
@@ -133,7 +133,7 @@ public class ModifierTest {
 
     @Test(expectedExceptions = SpecException.class, dataProvider = "getSpecValidationTestCases")
     public void testInvalidSpecs(ModifierTestCase testCase, Object spec) {
-        testCase.getTemplatr(spec);
+        testCase.getModifier(spec);
     }
 
     @DataProvider
@@ -176,7 +176,7 @@ public class ModifierTest {
         Object context = testUnit.get("context");
         Object expected = testUnit.get(testCase.name());
         if (expected != null) {
-            Modifier modifier = testCase.getTemplatr(spec);
+            Modifier modifier = testCase.getModifier(spec);
             Object actual = modifier.transform(input, (Map<String, Object>) context);
             JoltTestUtil.runDiffy(testCase.name() + " failed case " + testFile, expected, actual);
         }
@@ -225,24 +225,24 @@ public class ModifierTest {
     enum ModifierTestCase {
         OVERWRITR {
             @Override
-            Modifier getTemplatr(final Object spec) {
+            Modifier getModifier(final Object spec) {
                 return new Modifier.Overwritr(spec);
             }
         },
         DEFAULTR {
             @Override
-            Modifier getTemplatr(final Object spec) {
+            Modifier getModifier(final Object spec) {
                 return new Modifier.Defaultr(spec);
             }
         },
         DEFINR {
             @Override
-            Modifier getTemplatr(final Object spec) {
+            Modifier getModifier(final Object spec) {
                 return new Modifier.Definr(spec);
             }
         };
 
-        abstract Modifier getTemplatr(Object spec);
+        abstract Modifier getModifier(Object spec);
     }
 
     @SuppressWarnings("unused")
