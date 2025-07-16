@@ -27,5 +27,5 @@ jobs:
         run: |
           git fetch origin master
           git checkout master
-          git merge develop --no-ff
+          git merge develop --no-ff --allow-unrelated-histories
           git push origin master
