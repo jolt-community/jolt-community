@@ -45,11 +45,13 @@ import java.util.List;
  * <p>
  * First the output path is turned into its canonical form : "tuna.[4].[&1].bob.&3.[]".
  * Then, a series of Traversals is created.
+ * <pre>
  * tuna -> MapTraversal
  * [&1] -> ArrayTraversal
  * bob  -> MapTraversal
  * &3   -> MapTraversal
  * []   -> AutoExpandArrayTraversal
+ * </pre>
  * <p>
  * Later, a list of keys can then be provided, such as
  * [ "tuna", "2", "bob", "smith", "[]" ], and they can be quickly used without having to build or
