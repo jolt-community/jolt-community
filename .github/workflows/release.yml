@@ -1,0 +1,56 @@
+name: Auto Publish to Maven Central
+
+on:
+  release:
+    types: [created] # Trigger on release creation
+
+permissions:
+  contents: write # Required for pushing changes and tags
+  packages: write # Required for publishing packages (work with GitHub Packages)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Set version # make assumption the release tag is in the format vX.Y.Z
+        run: |
+          VERSION=${{ github.event.release.tag_name }}
+          CLEAN_VERSION=${VERSION#v}
+          mvn versions:set -DnewVersion=$CLEAN_VERSION
+
+      - name: Commit version change
+        run: |
+          git config user.name "joltbot"
+          git config user.email "joltbot@users.noreply.github.com"
+          git add **/pom.xml
+          git commit -m "Update version to ${{ github.event.release.tag_name }}"
+          git push
+
+      - name: Delete existing tag
+        run: |
+          git tag -d ${{ github.event.release.tag_name }}
+          git push origin :refs/tags/${{ github.event.release.tag_name }}
+
+      - name: Create and push updated tag
+        run: |
+          git tag ${{ github.event.release.tag_name }}
+          git push origin ${{ github.event.release.tag_name }}
+
+      - name: Publish package
+        run: mvn -P release --batch-mode deploy -DskipTests -DperformRelease=true
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}
