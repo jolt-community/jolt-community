@@ -30,52 +30,55 @@ import java.util.*;
  * can be adapted in by implementing the {@link Transform} or {@link SpecDriven} interfaces.
  * <p>
  * A Chainr spec should be an array of objects in order that look like this:
- * <p>
+ * <pre>
  * [
- * {
- * "operation": "[operation-name]",
- * // stuff that the specific transform needs go here
- * },
- * ...
+ *   {
+ *     "operation": "[operation-name]",
+ *     // stuff that the specific transform needs go here
+ *   },
+ *   ...
  * ]
+ * </pre>
  * <p>
  * Each operation is called in the order that it is specified within the array. The original
  * input to Chainr is passed into the first operation, with its output passed into the next,
  * and so on. The output of the final operation is returned from Chainr.
  * <p>
  * Currently, [operation-name] can be any of the following:
- * <p>
+ * <pre>
  * - shift: ({@link Shiftr}) a tool for moving parts of an input JSON document to a new output document
  * - default: ({@link Defaultr}) a tool for applying default values to the provided JSON document
  * - remove: ({@link Removr}) a tool for removing specific values from the provided JSON document
  * - sort: ({@link Sortr}) sort the JSON document
  * - java: passes control to whatever Java class you specify as long as it implements the {@link Transform} interface
+ * </pre>
  * <p>
  * Shift, default, and remove operation all require a "spec", while sort does not.
- * <p>
+ * <pre>
  * [
- * {
- * "operation": "shift",
- * "spec" : { // shiftr spec }
- * },
- * {
- * "operation": "sort"  // sort does not need a spec
- * },
- * ...
+ *   {
+ *     "operation": "shift",
+ *     "spec" : { // shiftr spec }
+ *   },
+ *   {
+ *     "operation": "sort"  // sort does not need a spec
+ *   },
+ *   ...
  * ]
+ * </pre>
  * <p>
  * Custom Java classes that implement {@link Transform} and/or {@link SpecDriven} can be loaded by specifying the full
  * className to load. Additionally, if upon reflection of the class we see that it is an instance of a
  * {@link SpecDriven}, then we will construct it with a the supplied "spec" object.
- * <p>
+ * <pre>
  * [
- * {
- * "operation": "io.joltcommunity.tuna.CustomTransform",
- * <p>
- * "spec" : { ... } // optional spec to use to construct a custom {@link Transform} if it has the {@link SpecDriven} marker interface.
- * },
- * ...
+ *   {
+ *     "operation": "io.joltcommunity.tuna.CustomTransform",
+ *     "spec" : { ... } // optional spec to use to construct a custom {@link Transform} if it has the {@link SpecDriven} marker interface.
+ *   },
+ *   ...
  * ]
+ * </pre>
  */
 public class Chainr implements Transform, ContextualTransform {
 
