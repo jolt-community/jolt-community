@@ -34,7 +34,7 @@ The two maven artifacts are:
 
 ### JoltSample.java
 
-Available [here](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/java/io/joltcommunity/jolt/sample/JoltSample.java).
+Available [here](https://github.com/jolt-community/jolt-community/tree/main/jolt-core/src/test/java/io/joltcommunity/jolt/sample/JoltSample.java).
 
 ``` java
 package io.joltcommunity.jolt.sample;
@@ -65,7 +65,7 @@ public class JoltSample {
 ```
 
 ### /json/sample/input.json
-Available [here](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/resources/json/sample/input.json).
+Available [here](https://github.com/jolt-community/jolt-community/tree/main/jolt-core/src/test/resources/json/sample/input.json).
 
 ``` json
 {
@@ -81,7 +81,7 @@ Available [here](https://github.com/jolt-community/jolt-community/tree/master/jo
 ```
 
 ### /json/sample/spec.json
-Available [here](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/resources/json/sample/spec.json).
+Available [here](https://github.com/jolt-community/jolt-community/tree/main/jolt-core/src/test/resources/json/sample/spec.json).
 
 ``` json
 [

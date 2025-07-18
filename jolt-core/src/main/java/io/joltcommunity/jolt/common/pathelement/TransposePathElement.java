@@ -30,41 +30,47 @@ import io.joltcommunity.jolt.utils.StringTools;
  * It can be used on the Left and Right hand sides of the spec.
  * <p>
  * Input
+ * <pre>
  * {
- * "author" : "Stephen Hawking",
- * "book" : "A Brief History of Time"
+ *   "author" : "Stephen Hawking",
+ *   "book" : "A Brief History of Time"
  * }
- * <p>
+ * </pre>
  * Wanted
+ * <pre>
  * {
- * "Stephen Hawking" : "A Brief History of Time"
+ *   "Stephen Hawking" : "A Brief History of Time"
  * }
+ * </pre>
  * <p>
  * The first part of the process is to allow a CompositeShiftr node to look down the input JSON tree.
  * <p>
  * Spec
+ * <pre>
  * {
- * "@author" : "@book"
+ *   "@book" : "@author"
  * }
- * <p>
+ * </pre>
  * <p>
  * Secondly, we can look up the tree, and come down a different path to locate data.
- * <p>
  * For example of this see the following ShiftrUnit tests :
+ * <pre>
  * LHS Lookup : json/shiftr/filterParents.json
  * RHS Lookup : json/shiftr/transposeComplex6_rhs-complex-at.json
- * <p>
+ * </pre>
  * <p>
  * CanonicalForm Expansion
+ * <pre>
  * Sugar
  * "@2         -> "@(2,)
  * "@(2)       -> "@(2,)
  * "@author"   -> "@(0,author)"
  * "@(author)" -> "@(0,author)"
- * <p>
+ * 
  * Splenda
  * "@(a.b)"    -> "@(0,a.b)"
  * "@(a.&2.c)" -> "@(0,a.&(2,0).c)"
+ * </pre>
  */
 public class TransposePathElement extends BasePathElement implements MatchablePathElement, EvaluatablePathElement {
 
