@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  develop-to-master-sync:
+  develop-to-main-sync:
     permissions:
       contents: write  # for git push
     runs-on: ubuntu-latest
@@ -23,9 +23,9 @@ jobs:
           git config user.name "joltbot"
           git config user.email "joltbot@users.noreply.github.com"
 
-      - name: Merge develop into master
+      - name: Merge develop into main
         run: |
-          git fetch origin master
-          git checkout master
+          git fetch origin main
+          git checkout main
           git merge develop --no-ff --allow-unrelated-histories -X theirs
-          git push origin master
+          git push origin main
