@@ -61,19 +61,19 @@ Jolt [Slide Deck](https://docs.google.com/presentation/d/1sAiuiFC4Lzz4-064sg1p8E
 
 Javadoc explaining each transform DSL :
 
-* [shift](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Shiftr.java)
-* [default](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Defaultr.java)
-* [remove](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Removr.java)
-* [cardinality](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/CardinalityTransform.java)
-* [sort](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Sortr.java)
+* [shift](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Shiftr.java)
+* [default](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Defaultr.java)
+* [remove](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Removr.java)
+* [cardinality](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/CardinalityTransform.java)
+* [sort](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Sortr.java)
 * full qualified Java ClassName : Class implements the Transform or ContextualTransform interfaces, and can optionally be SpecDriven (marker interface)
-    * [Transform](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Transform.java) interface
-    * [SpecDriven](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/SpecDriven.java)
+    * [Transform](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Transform.java) interface
+    * [SpecDriven](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/SpecDriven.java)
         * where the "input" is "hydrated" Java version of your JSON Data
 
-Running a Jolt transform means creating an instance of [Chainr](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Chainr.java)  with a list of transforms.
+Running a Jolt transform means creating an instance of [Chainr](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Chainr.java)  with a list of transforms.
 
-The JSON spec for Chainr looks like : [unit test](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/test/resources/json/chainr/integration/firstSample.json).
+The JSON spec for Chainr looks like : [unit test](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/test/resources/json/chainr/integration/firstSample.json).
 
 The Java side looks like :
 
@@ -90,7 +90,7 @@ return output;
 ### <a name="Shiftr_Transform_DSL"></a> Shiftr Transform DSL
 
 The Shiftr transform generally does most of the "heavy lifting" in the transform chain.
-To see the Shiftr DSL in action, please look at our unit tests ([shiftr tests](https://github.com/jolt-community/jolt-community/tree/master/jolt-core/src/test/resources/json/shiftr)) for nice bite sized transform examples, and read the extensive Shiftr [javadoc](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Shiftr.java).
+To see the Shiftr DSL in action, please look at our unit tests ([shiftr tests](https://github.com/jolt-community/jolt-community/tree/main/jolt-core/src/test/resources/json/shiftr)) for nice bite sized transform examples, and read the extensive Shiftr [javadoc](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Shiftr.java).
 
 Our unit tests follow the pattern :
 
@@ -110,11 +110,11 @@ Our unit tests follow the pattern :
 }
 ```
 
-We read in "input", apply the "spec", and [Diffy](https://github.com/jolt-community/jolt-community/blob/master/json-utils/src/main/java/io/joltcommunity/jolt/Diffy.java) it against the "expected".
+We read in "input", apply the "spec", and [Diffy](https://github.com/jolt-community/jolt-community/blob/main/json-utils/src/main/java/io/joltcommunity/jolt/Diffy.java) it against the "expected".
 
 To learn the Shiftr DSL, examine "input" and "output" json, get an understanding of how data is moving, and *then* look at the transform spec to see how it facilitates the transform.
 
-For reference, [this](https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/test/resources/json/shiftr/firstSample.json) was the very first test we wrote.
+For reference, [this](https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/test/resources/json/shiftr/firstSample.json) was the very first test we wrote.
 
 
 ## <a name="Demo"></a> Demo
