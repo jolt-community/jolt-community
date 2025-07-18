@@ -38,12 +38,12 @@ jobs:
           git commit -m "Update version to ${{ github.event.release.tag_name }}"
           git push
 
-      - name: Delete existing tag
+      - name: Delete existing tag # This tag was created via github release, we need to include pom.xml update, so remove it first
         run: |
           git tag -d ${{ github.event.release.tag_name }}
           git push origin :refs/tags/${{ github.event.release.tag_name }}
 
-      - name: Create and push updated tag
+      - name: Create and push updated tag # re-create the same tag include pom.xml changes
         run: |
           git tag ${{ github.event.release.tag_name }}
           git push origin ${{ github.event.release.tag_name }}
