@@ -24,7 +24,7 @@ import net.sourceforge.argparse4j.inf.Subparsers;
 import java.io.File;
 
 /**
- * The JoltCliProcessor for Chainr. See https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Chainr.java
+ * The JoltCliProcessor for Chainr. See https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Chainr.java
  * for documentation on  Chainr.
  */
 public class TransformCliProcessor implements JoltCliProcessor {

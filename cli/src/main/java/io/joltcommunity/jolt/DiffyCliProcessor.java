@@ -24,7 +24,7 @@ import net.sourceforge.argparse4j.inf.Subparsers;
 import java.io.File;
 
 /**
- * The JoltCliProcessor for Diffy. See https://github.com/jolt-community/jolt-community/blob/master/json-utils/src/main/java/io/joltcommunity/jolt/Diffy.java
+ * The JoltCliProcessor for Diffy. See https://github.com/jolt-community/jolt-community/blob/main/json-utils/src/main/java/io/joltcommunity/jolt/Diffy.java
  * for documentation on  Diffy.
  */
 public class DiffyCliProcessor implements JoltCliProcessor {
