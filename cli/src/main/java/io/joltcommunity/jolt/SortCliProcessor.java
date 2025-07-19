@@ -24,7 +24,7 @@ import net.sourceforge.argparse4j.inf.Subparsers;
 import java.io.File;
 
 /**
- * The JoltCliProcessor for Sortr. See https://github.com/jolt-community/jolt-community/blob/master/jolt-core/src/main/java/io/joltcommunity/jolt/Sortr.java
+ * The JoltCliProcessor for Sortr. See https://github.com/jolt-community/jolt-community/blob/main/jolt-core/src/main/java/io/joltcommunity/jolt/Sortr.java
  * for documentation on  Sortr.
  */
 public class SortCliProcessor implements JoltCliProcessor {
