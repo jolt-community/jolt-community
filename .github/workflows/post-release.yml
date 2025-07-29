@@ -9,7 +9,9 @@ permissions:
 jobs:
   main-to-develop-sync:
     permissions:
-      contents: write  # for git push
+      contents: write
+      pull-requests: write
+
     runs-on: ubuntu-latest
 
     steps:
@@ -18,14 +20,10 @@ jobs:
         with:
           ref: main
 
-      - name: Configure Git
-        run: |
-          git config user.name "joltbot"
-          git config user.email "joltbot@users.noreply.github.com"
-
-      - name: Merge main into develop
-        run: |
-          git fetch origin develop
-          git checkout develop
-          git merge main --no-ff --allow-unrelated-histories
-          git push origin develop
+      - name: Create PR from main to develop
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Merge main into develop"
+          body: "This PR merges changes from main into develop."
+          base: develop
