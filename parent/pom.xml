@@ -9,6 +9,20 @@
     <packaging>pom</packaging>
 
     <name>Jolt Parent</name>
+    <description>JSON to JSON transformation library written in Java where the "specification" for the transform is itself a JSON document.</description>
+    <url>https://github.com/jolt-community/jolt-community</url>
+    <developers>
+        <developer>
+            <id>bobeal</id>
+            <name>Benoit Orihuela</name>
+            <email>bobeal@pm.me</email>
+        </developer>
+        <developer>
+            <id>emmansun</id>
+            <name>Sun Yimin</name>
+            <email>emman.sun@foxmail.com</email>
+        </developer>
+    </developers>
 
     <licenses>
         <license>
