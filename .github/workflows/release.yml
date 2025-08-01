@@ -2,49 +2,24 @@ name: Auto Publish to Maven Central
 
 on:
   release:
-    types: [created] # Trigger on release creation
+    types: [published] # Trigger on release publish
 
 permissions:
-  contents: write # Required for pushing changes and tags
-  pull-requests: write # Required for creating PRs
+  contents: read # Required for reading the repository contents
   packages: write # Required for publishing packages
 
 jobs:
-  update-version:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Update version in pom.xml
-        run: |
-          VERSION=${{ github.event.release.tag_name }}
-          CLEAN_VERSION=${VERSION#v}
-          echo "VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
-
-      - name: Create branch for version update
-        run: |
-          git checkout -b update-version-to-${{ env.VERSION }}
-          mvn versions:set -DnewVersion=${{ env.VERSION }}
-          git config user.name "joltbot"
-          git config user.email "joltbot@users.noreply.github.com"
-          git commit -am "Update version to ${{ env.VERSION }}"
-          git push origin update-version-to-${{ env.VERSION }}
-
-      - name: Create PR to update version
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-version-to-${{ env.VERSION }}
-          title: "Update version to ${{ env.VERSION }}"
-          body: "This PR updates the version in pom.xml to match the release version."
-          base: main
-
   publish:
-    needs: update-version
     runs-on: ubuntu-latest
-    if: github.event.action == 'closed' # Ensure PR is merged
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Cache OWASP Dependency-Check data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: dependency-check-data-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            dependency-check-data-${{ runner.os }}-
       - name: Set up Maven Central Repository
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
@@ -56,18 +31,10 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Update release tag
-        run: |
-          git tag -f ${{ github.event.release.tag_name }}
-          git push origin -f ${{ github.event.release.tag_name }}
-
       - name: Publish package
         run: mvn -P release --batch-mode deploy -DskipTests -DperformRelease=true
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}
-
-      - name: Delete version update branch
-        run: |
-          git push origin --delete update-version-to-${{ env.VERSION }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }} # Optional, if needed for NVD checks
