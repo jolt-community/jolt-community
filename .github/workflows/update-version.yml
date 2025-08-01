@@ -1,0 +1,35 @@
+name: Update version to pom.xml
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to set in pom.xml (e.g., 1.2.3)'
+        required: true
+        type: string
+
+permissions:
+  contents: write # Required for pushing changes and tags
+  pull-requests: write # Required for creating PRs
+  packages: write # Required for publishing packages
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Update version in pom.xml
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          mvn versions:set -DnewVersion="$VERSION" -DprocessAllModules=true -DgenerateBackupPoms=false
+
+      - name: Create PR to update version
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-version-to-${{ env.VERSION }}
+          title: "Update version to ${{ env.VERSION }}"
+          body: "This PR updates the version in pom.xml to match the release version."
+          delete-branch: true
