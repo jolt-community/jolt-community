@@ -72,7 +72,7 @@
         <jakarta-inject.version>2.0.1</jakarta-inject.version>
 
         <!-- module dependencies -->
-        <jackson.version>2.19.0</jackson.version>
+        <jackson.version>2.19.2</jackson.version>
         <guice.version>7.0.0</guice.version>
         <argparse4j.version>0.9.0</argparse4j.version>
 
