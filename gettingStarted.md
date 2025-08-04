@@ -5,24 +5,24 @@
 Maven Dependency to Add to your pom file
 ``` xml
 <dependency>
-    <groupId>io.joltcommunity.jolt</groupId>
-    <artifactId>jolt-core</artifactId>
+    <groupId>io.github.jolt-community.jolt</groupId>
+    <artifactId>jolt-community-core</artifactId>
     <version>${latest.jolt.version}</version>
 </dependency>
 <dependency>
-    <groupId>io.joltcommunity.jolt</groupId>
-    <artifactId>json-utils</artifactId>
+    <groupId>io.github.jolt-community.jolt</groupId>
+    <artifactId>json-community-utils</artifactId>
     <version>${latest.jolt.version}</version>
 </dependency>
 ```
 
-Where `latest.jolt.version` looks like `0.0.16`, and can be found by looking at the [project's releases](https://github.com/jolt-community/jolt-community/releases).
+Where `latest.jolt.version` looks like `1.0.0`, and can be found by looking at the [project's releases](https://github.com/jolt-community/jolt-community/releases).
 
 The two maven artifacts are:
 
-1. `jolt-core` : only one dependency on apache.commons for StringUtils
-    * The goal is for the `jolt-core` artifact to be pure Java, so that it does not cause any dependency issues.
-2. `json-utils` : Jackson wrapper and testing utilities.   Used by jolt-core as a test dependency.
+1. `jolt-community-core` : only one dependency on apache.commons for StringUtils
+    * The goal is for the `jolt-community-coree` artifact to be pure Java, so that it does not cause any dependency issues.
+2. `json-community-utils` : Jackson wrapper and testing utilities.   Used by jolt-community-core as a test dependency.
     * If you are willing to pull in Jackson 2, this artifact provides nice utility methods.
 
 
