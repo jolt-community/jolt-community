@@ -69,7 +69,7 @@
 
         <!-- core -->
         <commons-lang3.version>3.18.0</commons-lang3.version>
-        <jakarta-inject.version>2.0.1</jakarta-inject.version>
+        <jakarta-inject.version>2.0.1.MR</jakarta-inject.version>
 
         <!-- module dependencies -->
         <jackson.version>2.19.0</jackson.version>
