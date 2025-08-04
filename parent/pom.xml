@@ -46,7 +46,7 @@
 
         <!-- maven-driving properties. -->
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <dependency-check-maven.version>12.1.3</dependency-check-maven.version>
@@ -69,10 +69,10 @@
 
         <!-- core -->
         <commons-lang3.version>3.18.0</commons-lang3.version>
-        <jakarta-inject.version>2.0.1</jakarta-inject.version>
+        <jakarta-inject.version>2.0.1.MR</jakarta-inject.version>
 
         <!-- module dependencies -->
-        <jackson.version>2.19.0</jackson.version>
+        <jackson.version>2.19.2</jackson.version>
         <guice.version>7.0.0</guice.version>
         <argparse4j.version>0.9.0</argparse4j.version>
 
