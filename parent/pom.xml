@@ -68,7 +68,7 @@
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
 
         <!-- core -->
-        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <jakarta-inject.version>2.0.1</jakarta-inject.version>
 
         <!-- module dependencies -->
