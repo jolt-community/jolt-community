@@ -22,6 +22,8 @@ import io.joltcommunity.jolt.exception.SpecException;
 import org.testng.annotations.Test;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -88,8 +90,10 @@ public class TransposePathElementTest {
     @Test
     public void testEvaluateReturnsNullForNonString() {
         Date date = new Date();
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", date);
         WalkedPath walkedPath = new WalkedPath();
-        PathStep pathStep = new PathStep(date, new MatchedElement("date"));
+        PathStep pathStep = new PathStep(map, new MatchedElement("date"));
         walkedPath.add(pathStep);
         TransposePathElement pe = TransposePathElement.parse("@date");
         String result = pe.evaluate(walkedPath);
