@@ -15,10 +15,16 @@
  */
 package io.joltcommunity.jolt.common.pathelement;
 
+import io.joltcommunity.jolt.common.tree.MatchedElement;
+import io.joltcommunity.jolt.common.tree.PathStep;
+import io.joltcommunity.jolt.common.tree.WalkedPath;
 import io.joltcommunity.jolt.exception.SpecException;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class TransposePathElementTest {
 
@@ -77,5 +83,16 @@ public class TransposePathElementTest {
     @Test(expectedExceptions = SpecException.class)
     public void testParseKeyWithWildcardThrowsException() {
         TransposePathElement.parse("@author*");
+    }
+
+    @Test
+    public void testEvaluateReturnsNullForNonString() {
+        Date date = new Date();
+        WalkedPath walkedPath = new WalkedPath();
+        PathStep pathStep = new PathStep(date, new MatchedElement("date"));
+        walkedPath.add(pathStep);
+        TransposePathElement pe = TransposePathElement.parse("@date");
+        String result = pe.evaluate(walkedPath);
+        assertNull(result, "Expected null for non-string data type");
     }
 }

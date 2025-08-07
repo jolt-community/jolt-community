@@ -71,4 +71,18 @@ public class PathAndGroupReferenceTest {
     public void failDollarReferencePatternTest(String key) {
         new DollarReference("$" + key);
     }
+
+    @DataProvider
+    public Object[][] invalidReferenceTests() {
+        return new Object[][]{
+                {null},
+                {""},
+                {"pants"},
+        };
+    }
+
+    @Test(dataProvider = "invalidReferenceTests", expectedExceptions = SpecException.class)
+    public void invalidAmpReferencePatternTest(String key) {
+        new AmpReference(key);
+    }
 }

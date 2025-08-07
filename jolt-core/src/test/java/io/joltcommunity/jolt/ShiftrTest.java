@@ -87,6 +87,7 @@ public class ShiftrTest {
                 {"transposeSimple1"},
                 {"transposeSimple2"},
                 {"transposeSimple3"},
+                {"transposeLargeNumber"},
                 {"wildcards"},
                 {"wildcardSelfAndRef"},
                 {"wildcardsWithOr"}

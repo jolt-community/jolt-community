@@ -17,6 +17,7 @@
 package io.joltcommunity.jolt.common.pathelement;
 
 import io.joltcommunity.jolt.common.tree.MatchedElement;
+import io.joltcommunity.jolt.exception.SpecException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,9 +34,9 @@ public class StarSinglePathElementTest {
         Assert.assertFalse(star.stringMatch("tuna-bob"));
 
         MatchedElement lpe = star.match("bob-tuna", null);
-        Assert.assertEquals("bob-tuna", lpe.getSubKeyRef(0));
-        Assert.assertEquals("bob", lpe.getSubKeyRef(1));
-        Assert.assertEquals(2, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "bob-tuna");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "bob");
+        Assert.assertEquals(lpe.getSubKeyCount(), 2);
 
         Assert.assertNull(star.match("-tuna", null));
     }
@@ -51,9 +52,9 @@ public class StarSinglePathElementTest {
         Assert.assertFalse(star.stringMatch("bob-tuna"));
 
         MatchedElement lpe = star.match("tuna-bob", null);
-        Assert.assertEquals("tuna-bob", lpe.getSubKeyRef(0));
-        Assert.assertEquals("bob", lpe.getSubKeyRef(1));
-        Assert.assertEquals(2, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "tuna-bob");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "bob");
+        Assert.assertEquals(lpe.getSubKeyCount(), 2);
 
         Assert.assertNull(star.match("tuna-", null));
     }
@@ -69,10 +70,22 @@ public class StarSinglePathElementTest {
         Assert.assertFalse(star.stringMatch("marlin-bob-tuna"));
 
         MatchedElement lpe = star.match("tuna-bob-marlin", null);
-        Assert.assertEquals("tuna-bob-marlin", lpe.getSubKeyRef(0));
-        Assert.assertEquals("bob", lpe.getSubKeyRef(1));
-        Assert.assertEquals(2, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "tuna-bob-marlin");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "bob");
+        Assert.assertEquals(lpe.getSubKeyCount(), 2);
 
         Assert.assertNull(star.match("bob", null));
+    }
+
+    @Test(expectedExceptions = SpecException.class,
+            expectedExceptionsMessageRegExp = "StarSinglePathElement should only have one '\\*' in its key\\. Was: .*")
+    public void testMultipleStarsThrowsException() {
+        new StarSinglePathElement("foo**bar");
+    }
+
+    @Test(expectedExceptions = SpecException.class,
+            expectedExceptionsMessageRegExp = "StarSinglePathElement should have a key that is just '\\*'\\. Was: \\*")
+    public void testSingleStarThrowsException() {
+        new StarSinglePathElement("*");
     }
 }
