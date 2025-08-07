@@ -128,12 +128,12 @@ public class PathElementBuilder {
 
             return new AmpPathElement(elementKey);
         } else if (keyToInspect.contains("*")) {
-            return parseStartPathElement(keyToInspect, elementKey);
+            return parseStarPathElement(keyToInspect, elementKey);
         }
         return new LiteralPathElement(elementKey);
     }
 
-    private static StarPathElement parseStartPathElement(String keyToInspect, String elementKey) {
+    private static StarPathElement parseStarPathElement(String keyToInspect, String elementKey) {
         int numOfStars = StringTools.countMatches(keyToInspect, "*");
 
         if (numOfStars == 1) {
