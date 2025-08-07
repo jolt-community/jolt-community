@@ -214,9 +214,9 @@ public class TransposePathElement extends BasePathElement implements MatchablePa
 
             // Coerce a number into a String
             if (data instanceof Number) {
-                // the idea here being we are looking for an array index value
-                int val = ((Number) data).intValue();
-                return Integer.toString(val);
+                // use long instead of int, as we want to support larger numbers
+                long val = ((Number) data).longValue();
+                return Long.toString(val);
             }
 
             // Coerce a boolean into a String
@@ -224,7 +224,7 @@ public class TransposePathElement extends BasePathElement implements MatchablePa
                 return Boolean.toString((Boolean) data);
             }
 
-            if (data == null || !(data instanceof String)) {
+            if (!(data instanceof String)) {
 
                 // If this output path has a TransposePathElement, and when we evaluate it
                 //  it does not resolve to a String, then return null

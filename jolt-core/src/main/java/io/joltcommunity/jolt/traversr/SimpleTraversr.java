@@ -23,9 +23,10 @@ import java.util.List;
 
 /**
  * Simple Traversr that
- * <p>
+ * <pre>
  * 1 Does overwrite sets at the leaf level
  * 2 Will create intermediate container objects only on SET operations
+ * </pre>
  */
 public class SimpleTraversr<DataType> extends Traversr<DataType> {
 

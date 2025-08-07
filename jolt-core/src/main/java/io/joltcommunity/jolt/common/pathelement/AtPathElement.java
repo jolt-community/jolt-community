@@ -20,6 +20,13 @@ import io.joltcommunity.jolt.common.tree.MatchedElement;
 import io.joltcommunity.jolt.common.tree.WalkedPath;
 import io.joltcommunity.jolt.exception.SpecException;
 
+/**
+ * Path element representing the "@" key, which references the input in a Jolt transformation path.
+ * Only a single "@" is allowed as the key.
+ * Extends {@link BasePathElement} and implements {@link MatchablePathElement}.
+ * <p>
+ * It can be used on the Left hand sides of the spec only.
+ */
 public class AtPathElement extends BasePathElement implements MatchablePathElement {
     public AtPathElement(String key) {
         super(key);

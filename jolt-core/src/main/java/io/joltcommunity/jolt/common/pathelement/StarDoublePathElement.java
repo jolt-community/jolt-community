@@ -18,6 +18,7 @@ package io.joltcommunity.jolt.common.pathelement;
 
 import io.joltcommunity.jolt.common.tree.MatchedElement;
 import io.joltcommunity.jolt.common.tree.WalkedPath;
+import io.joltcommunity.jolt.exception.SpecException;
 import io.joltcommunity.jolt.utils.StringTools;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class StarDoublePathElement extends BasePathElement implements StarPathEl
         super(key);
 
         if (StringTools.countMatches(key, "*") != 2) {
-            throw new IllegalArgumentException("StarDoublePathElement should have two '*' in its key. Was: " + key);
+            throw new SpecException("StarDoublePathElement should have two '*' in its key. Was: " + key);
         }
 
         String[] split = key.split("\\*");

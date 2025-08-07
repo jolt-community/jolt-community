@@ -20,6 +20,7 @@ import io.joltcommunity.jolt.common.Optional;
 import io.joltcommunity.jolt.common.tree.ArrayMatchedElement;
 import io.joltcommunity.jolt.common.tree.MatchedElement;
 import io.joltcommunity.jolt.common.tree.WalkedPath;
+import io.joltcommunity.jolt.exception.SpecException;
 
 /**
  * PathElement for the lone "*" wildcard.   In this case we can avoid doing any
@@ -29,7 +30,7 @@ public class StarAllPathElement implements StarPathElement {
 
     public StarAllPathElement(String key) {
         if (!"*".equals(key)) {
-            throw new IllegalArgumentException("StarAllPathElement key should just be a single '*'.  Was: " + key);
+            throw new SpecException("StarAllPathElement key should just be a single '*'.  Was: " + key);
         }
     }
 

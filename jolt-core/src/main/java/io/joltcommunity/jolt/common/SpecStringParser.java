@@ -62,13 +62,9 @@ public class SpecStringParser {
         while (iter.hasNext()) {
 
             c = iter.next();
-
-            currIsEscape = false;
-            if (c == '\\' && !prevIsEscape) {
-                // current is Escape only if the char is escape, or
-                //  it is an Escape and the prior char was, then don't consider this one an escape
-                currIsEscape = true;
-            }
+            // current is Escape only if the char is escape, or
+            //  it is an Escape and the prior char was, then don't consider this one an escape
+            currIsEscape = c == '\\' && !prevIsEscape;
 
             if (prevIsEscape && c != '.' && c != '\\') {
                 sb.append('\\');
@@ -88,7 +84,7 @@ public class SpecStringParser {
                 if (prevIsEscape) {
                     sb.append('.');
                 } else {
-                    if (sb.length() != 0) {
+                    if (!sb.isEmpty()) {
                         pathStrings.add(sb.toString());
                     }
                     return parseDotNotation(pathStrings, iter, dotNotationRef);
@@ -100,7 +96,7 @@ public class SpecStringParser {
             prevIsEscape = currIsEscape;
         }
 
-        if (sb.length() != 0) {
+        if (!sb.isEmpty()) {
             pathStrings.add(sb.toString());
         }
         return pathStrings;

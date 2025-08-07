@@ -28,7 +28,7 @@ import java.util.List;
  * <p>
  * MatchedElements are not thread safe, and should instead be stack / single Thread/Transform specific.
  * <p>
- * This mutability was specifically added for the the HashCount functionality, which allows Shiftr
+ * This mutability was specifically added for the HashCount functionality, which allows Shiftr
  * to transform data form maps to lists.
  */
 public class MatchedElement extends BasePathElement implements EvaluatablePathElement {

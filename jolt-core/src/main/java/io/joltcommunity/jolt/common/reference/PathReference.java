@@ -23,12 +23,14 @@ package io.joltcommunity.jolt.common.reference;
  * #,  #0  are the same
  * <p>
  * The "canonical form" is "Cx", where :
+ * <pre>
  * C : the character used to determine the type of Reference
  * x : pathIndex : which is how far up the walkedPath the look
+ * </pre>
  */
 public interface PathReference {
 
-    public int getPathIndex();
+    int getPathIndex();
 
     /**
      * Get the canonical form of this Reference.
@@ -38,5 +40,5 @@ public interface PathReference {
      *
      * @return fully expanded String representation of this Reference
      */
-    public String getCanonicalForm();
+    String getCanonicalForm();
 }
