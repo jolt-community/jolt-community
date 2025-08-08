@@ -87,9 +87,9 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public Object jsonToObject(String json, String charset) {
-        try {
-            return jsonToObject(new ByteArrayInputStream(json.getBytes(charset)));
-        } catch (UnsupportedEncodingException e) {
+        try (InputStream in = new ByteArrayInputStream(json.getBytes(charset))) {
+            return jsonToObject(in);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -110,9 +110,9 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public Map<String, Object> jsonToMap(String json, String charset) {
-        try {
-            return jsonToMap(new ByteArrayInputStream(json.getBytes(charset)));
-        } catch (UnsupportedEncodingException e) {
+        try (InputStream in = new ByteArrayInputStream(json.getBytes(charset))) {
+            return jsonToMap(in);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -133,9 +133,9 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public List<Object> jsonToList(String json, String charset) {
-        try {
-            return jsonToList(new ByteArrayInputStream(json.getBytes(charset)));
-        } catch (UnsupportedEncodingException e) {
+        try (InputStream in = new ByteArrayInputStream(json.getBytes(charset))) {
+            return jsonToList(in);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -152,8 +152,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public Object filepathToObject(String filePath) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(filePath);
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             return jsonToObject(fileInputStream);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load JSON file from: " + filePath);
@@ -162,8 +161,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public Map<String, Object> filepathToMap(String filePath) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(filePath);
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             return jsonToMap(fileInputStream);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load JSON file from: " + filePath);
@@ -172,8 +170,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public List<Object> filepathToList(String filePath) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(filePath);
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             return jsonToList(fileInputStream);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load JSON file from: " + filePath);
@@ -182,9 +179,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public Object classpathToObject(String classPath) {
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream(classPath);
-
+        try (InputStream inputStream = this.getClass().getResourceAsStream(classPath)) {
             return jsonToObject(inputStream);
         } catch (Exception e) {
             throw new RuntimeException("Unable to load JSON object from classPath : " + classPath, e);
@@ -193,8 +188,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public Map<String, Object> classpathToMap(String classPath) {
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream(classPath);
+        try (InputStream inputStream = this.getClass().getResourceAsStream(classPath)) {
             return jsonToMap(inputStream);
         } catch (Exception e) {
             throw new RuntimeException("Unable to load JSON map from classPath : " + classPath, e);
@@ -203,8 +197,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public List<Object> classpathToList(String classPath) {
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream(classPath);
+        try (InputStream inputStream = this.getClass().getResourceAsStream(classPath)) {
             return jsonToList(inputStream);
         } catch (Exception e) {
             throw new RuntimeException("Unable to load JSON map from classPath : " + classPath, e);
@@ -245,8 +238,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public <T> T fileToType(String filePath, TypeReference<T> typeRef) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(filePath);
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             return streamToType(fileInputStream, typeRef);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load JSON file from: " + filePath);
@@ -255,8 +247,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     @Override
     public <T> T fileToType(String filePath, Class<T> aClass) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(filePath);
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             return streamToType(fileInputStream, aClass);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load JSON file from: " + filePath);

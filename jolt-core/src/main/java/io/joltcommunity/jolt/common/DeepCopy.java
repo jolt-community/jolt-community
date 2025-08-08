@@ -32,23 +32,19 @@ public class DeepCopy {
      * @return deep copy of the object
      */
     public static Object simpleDeepCopy(Object object) {
-
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
+        try (
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos)
+        ) {
             oos.writeObject(object);
             oos.flush();
-            oos.close();
-            bos.close();
-
             byte[] byteData = bos.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteData);
-
-            return new ObjectInputStream(bais).readObject();
-        } catch (IOException ioe) {
-            throw new RuntimeException("DeepCopy IOException", ioe);
-        } catch (ClassNotFoundException cnf) {
-            throw new RuntimeException("DeepCopy ClassNotFoundException", cnf);
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(byteData);
+                 ObjectInputStream ois = new ObjectInputStream(bais)) {
+                return ois.readObject();
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            throw new RuntimeException("DeepCopy failed", ex);
         }
     }
 }
