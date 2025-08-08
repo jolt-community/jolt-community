@@ -28,7 +28,7 @@ At a base level, a single `shift` "command" is a mapping from an input path to a
 
 The spec syntax tends to follow this format:
 
-```json
+```jsonc
 {
   "original_key": "new_key"
 }
@@ -48,7 +48,7 @@ In `shift`, a nested input path is specified via a JSON tree structure, and the 
 
 For example, given the following JSON:
 
-```json
+```jsonc
 {
   "keep": {
     "old":"shift me to keep.new"
@@ -57,7 +57,7 @@ For example, given the following JSON:
 ```
 to make the following JSON
 
-```json
+```jsonc
 {
   "keep": {
     "new":"shift me to keep.new"
@@ -85,7 +85,7 @@ This would be INCORRECT syntax for shifting `keep.old` to `keep.new`:
 
 While counter-intuitive, the nested key syntax on the LHS disambiguates nested and dot-flattened input keys. For example, in the below input, the LHS key `"keep.old"` might match on multiple locations, causing confusion and ambiguity.
 
-```json
+```jsonc
 {
   "keep": {
     "old":"shift me to keep.new"
@@ -96,7 +96,7 @@ While counter-intuitive, the nested key syntax on the LHS disambiguates nested a
 
 Currently, the "INCORRECT" spec would actually output the following:
 
-```json
+```jsonc
 {
   "keep": {
     "new":"do not shift this value to keep.new"
@@ -127,7 +127,7 @@ Recall one of the most important facts about `shift`:
 
 This spec matches all key names in the root level of the json, and maps them to their current key. 
 
-```json
+```jsonc
 {
   "*":"&"
 }
@@ -141,7 +141,7 @@ Explicitly shifting a key excludes it from the `*` wildcard.  Furthermore, if on
 
 For example, take the following input JSON, with three sub-objects.
 
-```json
+```jsonc
 {
   "untouched":{"a":true, "b":{"c":true}},
   "root_shift":{"a":true, "b":{"c":true}},
@@ -150,7 +150,7 @@ For example, take the following input JSON, with three sub-objects.
 ```
 In a spec which uses `"*":"&"` at the root level, such as:
 
-```json
+```jsonc
 {
   "*":"&",
   "root_shift":"SHIFTED_root_shift",
@@ -163,7 +163,7 @@ You will see that:
 2. The explicitly shifted sub-object `"root_shift"` mapped to a new key keeps it's sub-attributes.
 3. The sub-object `"subobject_shift"` is now missing the attribute `"b":{"c":true}`, however, because it did have a different sub-attribute shifted, and `"b":{"c":true}` was unshifted. `"b":{"c":true}` was not kept in place by the `"*":"&"` idiom because `"subobject_shift"` is explicitly shifted, and explicitly shifting a key excludes it from the `*` wildcard.
 
-```json
+```jsonc
 {
   "untouched":{"a":true, "b":{"c":true}},
   "SHIFTED_root_shift":{"a":true, "b":{"c":true}},
@@ -173,7 +173,7 @@ You will see that:
 
 To keep `"b":{"c":true}` within `"subobject_shift"`, we must use a second `"*":"&"` idiom, within `"subobject_shift"`:
 
-```json
+```jsonc
 {
   "*":"&",
   "root_shift":"SHIFTED_root_shift",
@@ -183,7 +183,7 @@ To keep `"b":{"c":true}` within `"subobject_shift"`, we must use a second `"*":"
 
 It is worth noting, however, that the `&` wildcard allows us to write this spec more concisely:
 
-```json
+```jsonc
 {
   "*":"&",
   "root_shift":"SHIFTED_&",
@@ -197,7 +197,7 @@ Using wildcards, you can leverage the fact that you know, not just the data and 
 
 Expanding the example above, say we have the following expanded Input JSON:
 
-```json
+```jsonc
 {
   "rating": {
       "primary": {
@@ -218,7 +218,7 @@ Expanding the example above, say we have the following expanded Input JSON:
 
 The Spec would be:
 
-```json
+```jsonc
 {
   "rating": {
     "primary": {
@@ -246,7 +246,7 @@ The Spec would be:
 
 Yielding the following output:
 
-```json
+```jsonc
 {
   "Rating": 3,
   "RatingRange": 5,
@@ -277,7 +277,7 @@ The `*` wildcard can be used by itself or to match part of a key.
 As illustrated in the example above, the `*` wildcard by itself is useful for "templating" JSON maps,
 where each key / value has the same "format".
 
-```json
+```jsonc
 // example input
 {
   "rating" : {
@@ -299,7 +299,7 @@ to allow us to write more compact rules and avoid having to explicitly write ver
 This is useful for working with input JSON with keys that are "prefixed".
 Ex: if you had an input document like
 
-```json
+```jsonc
 {
   "tag-Pro": "Awesome",
   "tag-Con": "Bogus"
@@ -327,7 +327,7 @@ The `&` wildcard can access data from that path in a 0 major, upward oriented wa
 
 Example:
 
-```json
+```jsonc
 {
     "foo" : {
         "bar": {
@@ -361,7 +361,7 @@ Example, "tag-*-*" would match "tag-Foo-Bar", making
 
   Example of "a list of the input keys":
 
-  ```json
+  ```jsonc
   // input
   {
     "rating": {
@@ -409,7 +409,7 @@ On the LHS of the spec, # allows you to specify a hard coded String to be place 
 The initial use-case for this feature was to be able to process a Boolean input value, and if the value is
   boolean true write out the string "enabled".  Note, this was possible before, but it required two `shift` steps.
 
-```json
+```jsonc
     "hidden" : {
         "true" : {                             // if the value of "hidden" is true
             "#disabled" : "clients.clientId"   // write the word "disabled" to the path "clients.clientId"
@@ -422,7 +422,7 @@ The initial use-case for this feature was to be able to process a Boolean input 
   Valid only on the LHS of the spec.
   This 'or' wildcard allows you to match multiple input keys.   Useful if you don't always know exactly what your input data will be.
   Example Spec :
-  ```json
+  ```jsonc
   {
     "rating|Rating" : "rating-primary"   // match "rating" or "Rating" copy the data to "rating-primary"
   }
@@ -439,7 +439,7 @@ The initial use-case for this feature was to be able to process a Boolean input 
 
  Example `@` wildcard usage :
 
- ```json
+ ```jsonc
  // Say we have a spec that just operates on the value of the input key "rating"
  {
     "foo" : "place.to.put.value",  // leveraging the implicit operation of `shift` which is to operate on input JSON values
@@ -471,7 +471,7 @@ Reading from (input) and writing to (output) JSON Arrays is fully supported.
 1) Handling Arrays in the input JSON
 `shift` treats JSON arrays in the input data as Maps with numeric keys.
 Example :
-```json
+```jsonc
   // input
   {
     "Photos": [ "AAA.jpg", "BBB.jpg" ]
@@ -497,7 +497,7 @@ Traditional array brackets, [ ], are used to specify array index in the output J
 []'s are only valid on the RHS of the `shift` spec.
 
 Example :
-```json
+```jsonc
   // input
   {
     "photo-1-id": "327704",
@@ -531,7 +531,7 @@ Example :
 JSON Arrays in `shift` spec are used to to specify that piece of input data should be copied to two places in the output JSON.
 Example :
 
-```json
+```jsonc
 // input
 { "foo" : 3 }
 
@@ -550,7 +550,7 @@ Example :
 If a spec file is configured to output multiple pieces of data to the same output location, the
 output location will be turned into a JSON array.
 Example :
-```json
+```jsonc
   // input
   {
       "foo" : "bar",
@@ -602,7 +602,7 @@ and a Jackson-style map-of-maps input.
  `default` walks the spec and asks "Does this exist in the data?  If not, add it."
 
  Example : Given input JSON like
- ```json
+ ```jsonc
  {
    "Rating":3,
    "SecondaryRatings":{
@@ -619,7 +619,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  With the desired output being :
- ```json
+ ```jsonc
  {
    "Rating":3,
    "RatingRange" : 5,
@@ -648,7 +648,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  This is what the `default` Spec would look like
- ```json
+ ```jsonc
  {
    "RatingRange" : 5,
    "SecondaryRatings": {
@@ -682,7 +682,7 @@ and a Jackson-style map-of-maps input.
    This means all `default` keys below this entry have to be "integers".
 
  Valid Array Specification :
- ```json
+ ```jsonc
  {
    "photos[]" : {
      "2" : {
@@ -694,7 +694,7 @@ and a Jackson-style map-of-maps input.
  ```
 
  An Invalid Array Specification would be :
- ```json
+ ```jsonc
  {
    "photos[]" : {
      "photo-id-1234" : {
@@ -748,7 +748,7 @@ and a Jackson-style map-of-maps input.
  While, Removr walks the spec and asks "if this exists, remove it."
 
  Example : Given input JSON like
- ```json
+ ```jsonc
  {
    "~emVersion" : "2",
    "id":"123124",
@@ -762,7 +762,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  With the desired output being :
- ```json
+ ```jsonc
  {
    "id":"123124",
    "this" : "stays",
@@ -773,7 +773,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  This is what the Removr Spec would look like
- ```json
+ ```jsonc
  {
    "~emVersion" : "",
    "productId":"",
@@ -793,7 +793,7 @@ and a Jackson-style map-of-maps input.
 
    `*` wildcard by itself :
     To remove "all" keys under an input,  use the * by itself on the LHS.
-    ```json
+    ```jsonc
     // example input
     {
      "ratings":{
@@ -835,7 +835,7 @@ and a Jackson-style map-of-maps input.
    `*` wildcard as part of a key :
     This is useful for working with input JSON with keys that are "prefixed".
     Ex : if you had an input document like
-    ```json
+    ```jsonc
         {
          "ratings_legacy":{
               "Set1":{
@@ -864,7 +864,7 @@ and a Jackson-style map-of-maps input.
     A 'rating_*' would match both keys. As in `shift` wildcard matching, * wildcard is as non greedy as possible, which enable us to give more than one * in key.
 
     For an ouput that removed Set1 from all ratings_* key, the spec would be,
-     ```json
+     ```jsonc
         {
          "ratings_*":{
               "Set1":""
@@ -880,7 +880,7 @@ and a Jackson-style map-of-maps input.
    must be a number but in String format.
 
   Example
-  ```json
+  ```jsonc
   "spec": {
     "array": {
       "0" : ""
@@ -903,12 +903,12 @@ and a Jackson-style map-of-maps input.
   photos there actually are.
 
  Single photo :
- ```json
+ ```jsonc
      "photos" : { "url" : "pants.com/1.jpg" }  // photos element is a "single" map entry
  ```
 
  Or multiple photos :
- ```json
+ ```jsonc
      "photos" : [
         { "url" : "pants.com/1.jpg" },
         { "url" : "pants.com/2.jpg" }
@@ -926,7 +926,7 @@ and a Jackson-style map-of-maps input.
  Input data that are not called out in the spec will remain in the output unchanged.
 
  For example, given this simple input JSON :
- ```json
+ ```jsonc
  {
    "review" : {
      "rating" : [ 5, 4 ]
@@ -934,7 +934,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  A simple Cardinality spec could be constructed by specifying that the "rating" should be a single value:
- ```json
+ ```jsonc
  {
    "review" : {
      "rating" : "ONE"
@@ -942,7 +942,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  would product the following output JSON :
- ```json
+ ```jsonc
  {
    "review" : {
      "rating" : 5
@@ -976,7 +976,7 @@ and a Jackson-style map-of-maps input.
    achieve a for/each manner of processing input.
 
  Let's say we have the following input :
- ```json
+ ```jsonc
  {
    "photosArray" : [
      {
@@ -991,7 +991,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  And we'd like a spec that says "for each item 'url', covert to ONE" :
- ```json
+ ```jsonc
  {
    "photosArray" : {
      "*" : { // for each item in the array
@@ -1001,7 +1001,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  Which would yield the following output :
- ```json
+ ```jsonc
  {
    "photosArray" : [
      {
@@ -1021,7 +1021,7 @@ and a Jackson-style map-of-maps input.
    This wildcard should be used when content nested within modified content needs to be modified as well.
 
  Let's say we have the following input:
- ```json
+ ```jsonc
  {
    "views" : [
      { "count" : 1024 },
@@ -1030,7 +1030,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  The following spec would convert "views" to a ONE and "count" to a MANY :
- ```json
+ ```jsonc
  {
    "views" : {
      "@" : "ONE",
@@ -1039,7 +1039,7 @@ and a Jackson-style map-of-maps input.
  }
  ```
  Yielding the following output:
- ```json
+ ```jsonc
  {
    "views" : {
      "count" : [ 1024 ]
