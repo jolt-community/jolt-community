@@ -24,7 +24,7 @@ public abstract class BasePathReference implements PathReference {
 
     public BasePathReference(String refStr) {
 
-        if (refStr == null || refStr.length() == 0 || getToken() != refStr.charAt(0)) {
+        if (refStr == null || refStr.isEmpty() || getToken() != refStr.charAt(0)) {
             throw new SpecException("Invalid reference key=" + refStr + " either blank or doesn't start with correct character=" + getToken());
         }
 

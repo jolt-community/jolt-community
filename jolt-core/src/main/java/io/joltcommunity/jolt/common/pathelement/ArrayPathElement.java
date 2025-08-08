@@ -26,6 +26,13 @@ import io.joltcommunity.jolt.common.tree.MatchedElement;
 import io.joltcommunity.jolt.common.tree.WalkedPath;
 import io.joltcommunity.jolt.exception.SpecException;
 
+/**
+ * Represents a path element for array access in a Jolt transformation specification.
+ * Handles different array path types such as auto-expand, explicit index, references, hash, and transpose.
+ * Provides evaluation and matching logic for array path elements.
+ * <p>
+ * It can be used on the Right hand sides of the spec only.
+ */
 public class ArrayPathElement extends BasePathElement implements MatchablePathElement, EvaluatablePathElement {
 
     private final ArrayPathType arrayPathType;
@@ -73,7 +80,7 @@ public class ArrayPathElement extends BasePathElement implements MatchablePathEl
                     apt = ArrayPathType.EXPLICIT_INDEX;
                     canonicalForm = "[" + aI + "]";
                 } else {
-                    throw new SpecException("Bad explict array index:" + meat + " from key:" + key);
+                    throw new SpecException("Bad explicit array index:" + meat + " from key:" + key);
                 }
             }
         }
@@ -119,8 +126,7 @@ public class ArrayPathElement extends BasePathElement implements MatchablePathEl
 
             case HASH:
                 MatchedElement element = walkedPath.elementFromEnd(ref.getPathIndex()).getMatchedElement();
-                Integer index = element.getHashCount();
-                return index.toString();
+                return Integer.toString(element.getHashCount());
 
             case TRANSPOSE:
                 String key = transposePathElement.evaluate(walkedPath);

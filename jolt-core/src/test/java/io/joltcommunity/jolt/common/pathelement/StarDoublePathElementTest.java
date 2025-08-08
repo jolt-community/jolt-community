@@ -17,6 +17,7 @@
 package io.joltcommunity.jolt.common.pathelement;
 
 import io.joltcommunity.jolt.common.tree.MatchedElement;
+import io.joltcommunity.jolt.exception.SpecException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,10 +36,10 @@ public class StarDoublePathElementTest {
         // * -> bbb
         // a -> a
         // * -> ccc
-        Assert.assertEquals("bbbaccc", lpe.getSubKeyRef(0));
-        Assert.assertEquals("bbb", lpe.getSubKeyRef(1));
-        Assert.assertEquals("ccc", lpe.getSubKeyRef(2));
-        Assert.assertEquals(3, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "bbbaccc");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "bbb");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "ccc");
+        Assert.assertEquals(lpe.getSubKeyCount(), 3);
 
     }
 
@@ -57,10 +58,10 @@ public class StarDoublePathElementTest {
         // a -> a index 4
         // * -> def
         // c -> c
-        Assert.assertEquals("abcadefc", lpe.getSubKeyRef(0));
-        Assert.assertEquals("abc", lpe.getSubKeyRef(1));
-        Assert.assertEquals("def", lpe.getSubKeyRef(2));
-        Assert.assertEquals(3, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "abcadefc");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "abc");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "def");
+        Assert.assertEquals(lpe.getSubKeyCount(), 3);
 
     }
 
@@ -81,10 +82,10 @@ public class StarDoublePathElementTest {
         // b -> b   index 3
         // * -> bac index 4
         // c -> c
-        Assert.assertEquals("abcbbac", lpe.getSubKeyRef(0));
-        Assert.assertEquals("bc", lpe.getSubKeyRef(1));
-        Assert.assertEquals("bac", lpe.getSubKeyRef(2));
-        Assert.assertEquals(3, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "abcbbac");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "bc");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "bac");
+        Assert.assertEquals(lpe.getSubKeyCount(), 3);
 
     }
 
@@ -103,10 +104,10 @@ public class StarDoublePathElementTest {
         // b -> b
         // * -> c index 2
         // c -> c
-        Assert.assertEquals("abccbcc", lpe.getSubKeyRef(0));
-        Assert.assertEquals("bcc", lpe.getSubKeyRef(1));
-        Assert.assertEquals("c", lpe.getSubKeyRef(2));
-        Assert.assertEquals(3, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "abccbcc");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "bcc");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "c");
+        Assert.assertEquals(lpe.getSubKeyCount(), 3);
 
     }
 
@@ -122,10 +123,28 @@ public class StarDoublePathElementTest {
         // b -> b
         // * -> ccbcc index 2
         // c -> c
-        Assert.assertEquals("abbccbccc", lpe.getSubKeyRef(0));
-        Assert.assertEquals("b", lpe.getSubKeyRef(1));
-        Assert.assertEquals("ccbcc", lpe.getSubKeyRef(2));
-        Assert.assertEquals(3, lpe.getSubKeyCount());
+        Assert.assertEquals(lpe.getSubKeyRef(0), "abbccbccc");
+        Assert.assertEquals(lpe.getSubKeyRef(1), "b");
+        Assert.assertEquals(lpe.getSubKeyRef(2), "ccbcc");
+        Assert.assertEquals(lpe.getSubKeyCount(), 3);
 
+    }
+
+    @Test(expectedExceptions = SpecException.class,
+            expectedExceptionsMessageRegExp = "StarDoublePathElement should have two '\\*' in its key\\. Was: abc")
+    public void testNoStarThrowsException() {
+        new StarDoublePathElement("abc");
+    }
+
+    @Test(expectedExceptions = SpecException.class,
+            expectedExceptionsMessageRegExp = "StarDoublePathElement should have two '\\*' in its key\\. Was: a\\*b")
+    public void testOneStarThrowsException() {
+        new StarDoublePathElement("a*b");
+    }
+
+    @Test(expectedExceptions = SpecException.class,
+            expectedExceptionsMessageRegExp = "StarDoublePathElement should have two '\\*' in its key\\. Was: a\\*b\\*c\\*d")
+    public void testMoreThanTwoStarsThrowsException() {
+        new StarDoublePathElement("a*b*c*d");
     }
 }

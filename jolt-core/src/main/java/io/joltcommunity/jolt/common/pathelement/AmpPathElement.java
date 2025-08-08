@@ -25,9 +25,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * PathElement class that handles keys with & values, like input: "photos-&(1,1)""
- * It breaks down the string into a series of String or Reference tokens, that can be used to
+ * PathElement class that handles keys with & values, like input: "photos-&(1,1)"
+ * It breaks down the string into a series of String or Reference tokens, that can be used to.
+ * <p>
  * 1) match input like "photos-5" where "&(1,1)" evaluated to 5
+ * <p>
+ * Extends {@link BasePathElement} and implements {@link MatchablePathElement} and {@link EvaluatablePathElement}.
+ * <p>
+ * It can be used on the Left and Right hand sides of the spec,
+ * but most of the cases are on the Right hand side (path as key).
  */
 public class AmpPathElement extends BasePathElement implements MatchablePathElement, EvaluatablePathElement {
 
@@ -50,7 +56,7 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
             if (c == '&') {
 
                 // store off any literal text captured thus far
-                if (literal.length() > 0) {
+                if (!literal.isEmpty()) {
                     tok.add(literal.toString());
                     canonicalBuilder.append(literal);
                     literal = new StringBuilder();
@@ -67,7 +73,7 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
             }
             index++;
         }
-        if (literal.length() > 0) {
+        if (!literal.isEmpty()) {
             tok.add(literal.toString());
             canonicalBuilder.append(literal.toString());
         }
@@ -106,7 +112,7 @@ public class AmpPathElement extends BasePathElement implements MatchablePathElem
     @Override
     public String evaluate(WalkedPath walkedPath) {
 
-        // Walk thru our tokens and build up a string
+        // Walk through our tokens and build up a string
         // Use the supplied Path to fill in our token References
         StringBuilder output = new StringBuilder();
 

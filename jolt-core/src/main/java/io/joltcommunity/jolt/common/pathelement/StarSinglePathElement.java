@@ -18,6 +18,7 @@ package io.joltcommunity.jolt.common.pathelement;
 
 import io.joltcommunity.jolt.common.tree.MatchedElement;
 import io.joltcommunity.jolt.common.tree.WalkedPath;
+import io.joltcommunity.jolt.exception.SpecException;
 import io.joltcommunity.jolt.utils.StringTools;
 
 import java.util.ArrayList;
@@ -35,9 +36,9 @@ public class StarSinglePathElement extends BasePathElement implements StarPathEl
         super(key);
 
         if (StringTools.countMatches(key, "*") != 1) {
-            throw new IllegalArgumentException("StarSinglePathElement should only have one '*' in its key. Was: " + key);
+            throw new SpecException("StarSinglePathElement should only have one '*' in its key. Was: " + key);
         } else if ("*".equals(key)) {
-            throw new IllegalArgumentException("StarSinglePathElement should have a key that is just '*'. Was: " + key);
+            throw new SpecException("StarSinglePathElement should have a key that is just '*'. Was: " + key);
         }
 
         if (key.startsWith("*")) {

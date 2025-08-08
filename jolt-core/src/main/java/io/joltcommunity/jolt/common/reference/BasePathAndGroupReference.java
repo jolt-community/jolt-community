@@ -20,12 +20,14 @@ import io.joltcommunity.jolt.exception.SpecException;
 
 /**
  * All "References" extend this class and support three level of syntactic sugar
+ * <p>
  * Example with the AmpReference
+ * <pre>
  * 1   "&"
  * 2   "&0"
  * 3   "&(0,0)"
  * all three mean the same thing.
- * <p>
+ * </pre>
  * References are used to look up values in a WalkedPath.
  * In the CanonicalForm the first entry is how far up the WalkedPath to look for a LiteralPathElement,
  * and the second entry is which part of that LiteralPathElement to ask for.
@@ -37,7 +39,7 @@ public abstract class BasePathAndGroupReference implements PathAndGroupReference
 
     public BasePathAndGroupReference(String refStr) {
 
-        if (refStr == null || refStr.length() == 0 || getToken() != refStr.charAt(0)) {
+        if (refStr == null || refStr.isEmpty() || getToken() != refStr.charAt(0)) {
             throw new SpecException("Invalid reference key=" + refStr + " either blank or doesn't start with correct character=" + getToken());
         }
 

@@ -51,7 +51,21 @@ public class PathReferenceTest {
     }
 
     @Test(dataProvider = "getFailReferenceTests", expectedExceptions = SpecException.class)
-    public void failAmpReferencePatternTest(String key) {
+    public void failHashReferencePatternTest(String key) {
         new HashReference("#" + key);
+    }
+
+    @DataProvider
+    public Object[][] invalidReferenceTests() {
+        return new Object[][]{
+                {null},
+                {""},
+                {"pants"},
+        };
+    }
+
+    @Test(dataProvider = "invalidReferenceTests", expectedExceptions = SpecException.class)
+    public void invalidHashReferencePatternTest(String key) {
+        new HashReference(key);
     }
 }

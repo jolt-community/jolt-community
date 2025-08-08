@@ -24,6 +24,8 @@ import io.joltcommunity.jolt.utils.StringTools;
 /**
  * For use on the LHS, allows the user to specify an explicit string to write out.
  * Aka given a input that is boolean, would want to write something out other than "true" / "false".
+ * <p>
+ * It can be used on the Left hand sides of the spec only.
  */
 public class HashPathElement extends BasePathElement implements MatchablePathElement {
 
@@ -40,10 +42,9 @@ public class HashPathElement extends BasePathElement implements MatchablePathEle
             throw new SpecException("LHS # should start with a # : " + key);
         }
 
-        if (key.length() <= 1) {
+        if (key.length() < 2) {
             throw new SpecException("HashPathElement input is too short : " + key);
         }
-
 
         if (key.charAt(1) == '(') {
             if (key.charAt(key.length() - 1) == ')') {

@@ -51,76 +51,14 @@ public class PathElementBuilder {
     /**
      * Visible for Testing.
      * <p>
-     * Inspects the key in a particular order to determine the correct sublass of
+     * Inspects the key in a particular order to determine the correct subclass of
      * PathElement to create.
      *
      * @param origKey String that should represent a single PathElement
      * @return a concrete implementation of PathElement
      */
     public static PathElement parseSingleKeyLHS(String origKey) {
-
-        String elementKey;  // the String to use to actually make Elements
-        String keyToInspect;  // the String to use to determine which kind of Element to create
-
-        if (origKey.contains("\\")) {
-            // only do the extra work of processing for escaped chars, if there is one.
-            keyToInspect = removeEscapedValues(origKey);
-            elementKey = removeEscapeChars(origKey);
-        } else {
-            keyToInspect = origKey;
-            elementKey = origKey;
-        }
-
-        //// LHS single values
-        if ("@".equals(keyToInspect)) {
-            return new AtPathElement(elementKey);
-        } else if ("*".equals(keyToInspect)) {
-            return new StarAllPathElement(elementKey);
-        } else if (keyToInspect.startsWith("[")) {
-
-            if (StringTools.countMatches(keyToInspect, "[") != 1 || StringTools.countMatches(keyToInspect, "]") != 1) {
-                throw new SpecException("Invalid key:" + origKey + " has too many [] references.");
-            }
-
-            return new ArrayPathElement(elementKey);
-        }
-        //// LHS multiple values
-        else if (keyToInspect.startsWith("@") || keyToInspect.contains("@(")) {
-            // The traspose path element gets the origKey so that it has it's escapes.
-            return TransposePathElement.parse(origKey);
-        } else if (keyToInspect.contains("@")) {
-            throw new SpecException("Invalid key:" + origKey + " can not have an @ other than at the front.");
-        } else if (keyToInspect.contains("$")) {
-            return new DollarPathElement(elementKey);
-        } else if (keyToInspect.contains("[")) {
-
-            if (StringTools.countMatches(keyToInspect, "[") != 1 || StringTools.countMatches(keyToInspect, "]") != 1) {
-                throw new SpecException("Invalid key:" + origKey + " has too many [] references.");
-            }
-
-            return new ArrayPathElement(elementKey);
-        } else if (keyToInspect.contains("&")) {
-
-            if (keyToInspect.contains("*")) {
-                throw new SpecException("Invalid key:" + origKey + ", Can't mix * with & ) ");
-            }
-            return new AmpPathElement(elementKey);
-        } else if (keyToInspect.contains("*")) {
-
-            int numOfStars = StringTools.countMatches(keyToInspect, "*");
-
-            if (numOfStars == 1) {
-                return new StarSinglePathElement(elementKey);
-            } else if (numOfStars == 2) {
-                return new StarDoublePathElement(elementKey);
-            } else {
-                return new StarRegexPathElement(elementKey);
-            }
-        } else if (keyToInspect.contains("#")) {
-            return new HashPathElement(elementKey);
-        } else {
-            return new LiteralPathElement(elementKey);
-        }
+        return parseKeyToPathElement(origKey);
     }
 
     /**
@@ -130,18 +68,18 @@ public class PathElementBuilder {
         String fixedNotation = fixLeadingBracketSugar(dotNotation);
         List<String> pathStrs = parseDotNotation(new LinkedList<>(), stringIterator(fixedNotation), dotNotation);
 
-        return parseList(pathStrs, dotNotation);
+        return parseKeysToPathElements(pathStrs, dotNotation);
     }
 
     /**
      * @param refDotNotation the original dotNotation string used for error messages
      * @return List of PathElements based on the provided List<String> keys
      */
-    public static List<PathElement> parseList(List<String> keys, String refDotNotation) {
+    public static List<PathElement> parseKeysToPathElements(List<String> keys, String refDotNotation) {
         ArrayList<PathElement> paths = new ArrayList<>();
 
         for (String key : keys) {
-            PathElement path = parseSingleKeyLHS(key);
+            PathElement path = parseKeyToPathElement(key);
             if (path instanceof AtPathElement) {
                 throw new SpecException("'.@.' is not valid on the RHS: " + refDotNotation);
             }
@@ -149,5 +87,60 @@ public class PathElementBuilder {
         }
 
         return paths;
+    }
+
+    private static PathElement parseKeyToPathElement(String origKey) {
+        String elementKey = origKey;  // the String to use to actually make Elements
+        String keyToInspect = origKey;  // the String to use to determine which kind of Element to create
+
+        if (origKey.contains("\\")) {
+            // only do the extra work of processing for escaped chars, if there is one.
+            keyToInspect = removeEscapedValues(origKey);
+            elementKey = removeEscapeChars(origKey);
+        }
+
+        if ("@".equals(keyToInspect)) {
+            return new AtPathElement(elementKey);
+        } else if ("*".equals(keyToInspect)) {
+            return new StarAllPathElement(elementKey);
+        } else if (keyToInspect.startsWith("$")) {
+            return new DollarPathElement(elementKey);
+        } else if (keyToInspect.startsWith("#")) {
+            return new HashPathElement(elementKey);
+        } else if (keyToInspect.startsWith("[")) {
+
+            if (StringTools.countMatches(keyToInspect, "[") != 1 || StringTools.countMatches(keyToInspect, "]") != 1) {
+                throw new SpecException("Invalid key:" + origKey + " has too many [] references.");
+            }
+
+            return new ArrayPathElement(elementKey);
+        }
+        else if (keyToInspect.startsWith("@")) {
+            // The transpose path element gets the origKey so that it has it's escapes.
+            return TransposePathElement.parse(origKey);
+        } else if (keyToInspect.contains("@")) {
+            throw new SpecException("Invalid key:" + origKey + " can not have an @ other than at the front.");
+        } else if (keyToInspect.contains("&")) {
+
+            if (keyToInspect.contains("*")) {
+                throw new SpecException("Invalid key:" + origKey + ", Can't mix * with & ) ");
+            }
+
+            return new AmpPathElement(elementKey);
+        } else if (keyToInspect.contains("*")) {
+            return parseStarPathElement(keyToInspect, elementKey);
+        }
+        return new LiteralPathElement(elementKey);
+    }
+
+    private static StarPathElement parseStarPathElement(String keyToInspect, String elementKey) {
+        int numOfStars = StringTools.countMatches(keyToInspect, "*");
+
+        if (numOfStars == 1) {
+            return new StarSinglePathElement(elementKey);
+        } else if (numOfStars == 2) {
+            return new StarDoublePathElement(elementKey);
+        }
+        return new StarRegexPathElement(elementKey);
     }
 }

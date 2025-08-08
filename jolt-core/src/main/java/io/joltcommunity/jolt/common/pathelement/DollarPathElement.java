@@ -20,6 +20,23 @@ import io.joltcommunity.jolt.common.reference.DollarReference;
 import io.joltcommunity.jolt.common.tree.MatchedElement;
 import io.joltcommunity.jolt.common.tree.WalkedPath;
 
+/**
+ * Represents a path element that uses dollar-style references for dynamic key resolution
+ * within a Jolt transformation path. This element evaluates its value based on the
+ * {@link DollarReference} provided in the key, allowing for flexible referencing of
+ * previously matched elements in the {@link WalkedPath}.
+ *
+ * <p>Example usage: <code>$</code> or <code>$(0,1)</code> in a Jolt spec.</p>
+ *
+ * Implements:
+ * <ul>
+ *   <li>{@link MatchablePathElement} for matching path elements</li>
+ *   <li>{@link EvaluatablePathElement} for evaluating dynamic references</li>
+ * </ul>
+ *
+ * <p>
+ * It can be used on the Left hand sides of the spec only.
+ */
 public class DollarPathElement extends BasePathElement implements MatchablePathElement, EvaluatablePathElement {
 
     private final DollarReference dRef;
