@@ -222,6 +222,14 @@ public class JsonUtilsTest {
         util.jsonToMap("{\"a\":1}", "invalid-charset");
     }
 
+    @Test
+    public void testJsonToListWithValidJson() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        List<Object> result = util.jsonToList("[1, 2, 3]");
+        Assert.assertEquals(result.size(), 3);
+        Assert.assertEquals(result.get(0), 1);
+    }
+
     @Test(expectedExceptions = RuntimeException.class)
     public void testJsonToListWithInvalidCharsetThrowsException() {
         JsonUtilImpl util = new JsonUtilImpl();
