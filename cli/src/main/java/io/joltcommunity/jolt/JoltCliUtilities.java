@@ -48,20 +48,16 @@ public class JoltCliUtilities {
      * @return the Map containing the JSON data
      */
     public static Object createJsonObjectFromFile(File file, boolean suppressOutput) {
-        Object jsonObject = null;
-        try {
-            FileInputStream inputStream = new FileInputStream(file);
-            jsonObject = JsonUtils.jsonToObject(inputStream);
-            inputStream.close();
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            return JsonUtils.jsonToObject(inputStream);
+        } catch (JsonParseException e) {
+            printToStandardOut("File " + file.getAbsolutePath() + " did not contain properly formatted JSON.", suppressOutput);
+            System.exit(1);
         } catch (IOException e) {
-            if (e instanceof JsonParseException) {
-                printToStandardOut("File " + file.getAbsolutePath() + " did not contain properly formatted JSON.", suppressOutput);
-            } else {
-                printToStandardOut("Failed to open file: " + file.getAbsolutePath(), suppressOutput);
-            }
+            printToStandardOut("Failed to open file: " + file.getAbsolutePath(), suppressOutput);
             System.exit(1);
         }
-        return jsonObject;
+        return null; // Unreachable, but required for compilation
     }
 
     /**

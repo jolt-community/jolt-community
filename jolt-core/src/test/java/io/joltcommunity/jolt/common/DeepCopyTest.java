@@ -51,4 +51,10 @@ public class DeepCopyTest {
         Object expectedModified = JsonUtils.classpathToObject("/json/deepcopy/modifed.json");
         JoltTestUtil.runDiffy("Verify fiddled post deepcopy object looks correct / was modifed.", expectedModified, fiddle);
     }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testSimpleDeepCopy_NonSerializable() {
+        Object nonSerializable = new Object(); // Not Serializable
+        DeepCopy.simpleDeepCopy(nonSerializable);
+    }
 }

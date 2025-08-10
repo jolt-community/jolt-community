@@ -17,6 +17,7 @@
 package io.joltcommunity.jolt;
 
 import com.beust.jcommander.internal.Sets;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -26,8 +27,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class JsonUtilsTest {
@@ -210,4 +210,147 @@ public class JsonUtilsTest {
         Assert.assertEquals(actual, expected);
     }
 
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testJsonToObjectWithInvalidCharsetThrowsException() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.jsonToObject("{\"a\":1}", "invalid-charset");
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testJsonToMapWithInvalidCharsetThrowsException() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.jsonToMap("{\"a\":1}", "invalid-charset");
+    }
+
+    @Test
+    public void testJsonToListWithValidJson() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        List<Object> result = util.jsonToList("[1, 2, 3]");
+        Assert.assertEquals(result.size(), 3);
+        Assert.assertEquals(result.get(0), 1);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testJsonToListWithInvalidCharsetThrowsException() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.jsonToList("{\"a\":1}", "invalid-charset");
+    }
+
+    @Test
+    public void testFilepathToObject_ValidFile() throws IOException {
+        String path = Objects.requireNonNull(getClass().getResource("/jsonUtils/valid.json")).getFile();
+
+        JsonUtilImpl util = new JsonUtilImpl();
+        Object result = util.filepathToObject(path);
+        Assert.assertTrue(result instanceof java.util.Map);
+        Assert.assertEquals(((java.util.Map<?, ?>) result).get("foo"), 123);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testFilepathToObject_FileNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.filepathToObject("non_existent_file.json");
+    }
+
+    @Test
+    public void testFilepathToMap_ValidFile() throws IOException {
+        String path = Objects.requireNonNull(getClass().getResource("/jsonUtils/valid.json")).getFile();
+        JsonUtilImpl util = new JsonUtilImpl();
+        Map<String, Object> result = util.filepathToMap(path);
+        Assert.assertEquals(result.get("foo"), 123);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testFilepathToMap_FileNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.filepathToMap("non_existent_map.json");
+    }
+
+    @Test
+    public void testFilepathToList_ValidFile() throws IOException {
+        String path = Objects.requireNonNull(getClass().getResource("/jsonUtils/valid_list.json")).getFile();
+        JsonUtilImpl util = new JsonUtilImpl();
+        List<Object> result = util.filepathToList(path);
+        Assert.assertEquals(result.size(), 3);
+        Assert.assertEquals(result.get(0), 1);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testFilepathToList_FileNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.filepathToList("non_existent_list.json");
+    }
+
+    @Test
+    public void testClasspathToObject_ValidResource() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        Object result = util.classpathToObject("/jsonUtils/valid.json");
+        Assert.assertTrue(result instanceof Map);
+        Assert.assertEquals(((Map<?, ?>) result).get("foo"), 123);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testClasspathToObject_ResourceNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.classpathToObject("/jsonUtils/non_existent.json");
+    }
+
+    @Test
+    public void testClasspathToMap_ValidResource() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        Map<String, Object> result = util.classpathToMap("/jsonUtils/valid.json");
+        Assert.assertEquals(result.get("foo"), 123);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testClasspathToMap_ResourceNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.classpathToMap("/jsonUtils/non_existent.json");
+    }
+
+    @Test
+    public void testClasspathToList_ValidResource() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        List<Object> result = util.classpathToList("/jsonUtils/valid_list.json");
+        Assert.assertEquals(result.size(), 3);
+        Assert.assertEquals(result.get(0), 1);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testClasspathToList_ResourceNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.classpathToList("/jsonUtils/non_existent_list.json");
+    }
+
+    @Test
+    public void testFileToType_WithTypeReference_ValidFile() throws IOException {
+        String path = Objects.requireNonNull(getClass().getResource("/jsonUtils/valid.json")).getFile();
+
+        JsonUtilImpl util = new JsonUtilImpl();
+        Map<String, Integer> result = util.fileToType(
+                path,
+                new TypeReference<Map<String, Integer>>() {}
+        );
+        Assert.assertEquals(result.get("foo"), 123);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testFileToType_WithTypeReference_FileNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.fileToType("non_existent_type_ref.json", new TypeReference<Map<String, String>>() {});
+    }
+
+    @Test
+    public void testFileToType_WithClass_ValidFile() throws IOException {
+        String path = Objects.requireNonNull(getClass().getResource("/jsonUtils/valid.json")).getFile();
+        JsonUtilImpl util = new JsonUtilImpl();
+        Map result = util.fileToType(path, Map.class);
+        Assert.assertEquals(result.get("foo"), 123);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class)
+    public void testFileToType_WithClass_FileNotFound() {
+        JsonUtilImpl util = new JsonUtilImpl();
+        util.fileToType("non_existent_class.json", Map.class);
+    }
 }

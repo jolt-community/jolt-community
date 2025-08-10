@@ -20,6 +20,7 @@ import io.joltcommunity.jolt.chainr.instantiator.ChainrInstantiator;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * A factory class with various static methods that return instances of Chainr.
@@ -89,11 +90,10 @@ public class ChainrFactory {
      */
     public static Chainr fromFile(File chainrSpecFile, ChainrInstantiator chainrInstantiator) {
         Object chainrSpec;
-        try {
-            FileInputStream fileInputStream = new FileInputStream(chainrSpecFile);
+        try (FileInputStream fileInputStream = new FileInputStream(chainrSpecFile)) {
             chainrSpec = JsonUtils.jsonToObject(fileInputStream);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to load chainr spec file " + chainrSpecFile.getAbsolutePath());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load chainr spec file " + chainrSpecFile.getAbsolutePath(), e);
         }
         return getChainr(chainrInstantiator, chainrSpec);
     }

@@ -100,7 +100,7 @@ public class ChainrFactoryTest {
         Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
-    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load chainr spec file.*")
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to unmarshal JSON to an Object.*")
     public void testGetChainrInstanceFromFile_error()
             throws Exception {
         ChainrFactory.fromFile(malformedFile);
@@ -113,7 +113,7 @@ public class ChainrFactoryTest {
         Assert.assertNotNull(result, "ChainrFactory did not return an instance of Chainr.");
     }
 
-    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to load chainr spec file.*")
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Unable to unmarshal JSON to an Object.*")
     public void testGetChainrInstanceFromFileWithInstantiator_error()
             throws Exception {
         ChainrFactory.fromFile(malformedFile, new DefaultChainrInstantiator());
