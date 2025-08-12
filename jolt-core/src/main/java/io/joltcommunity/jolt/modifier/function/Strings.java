@@ -20,6 +20,7 @@ import io.joltcommunity.jolt.common.Optional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 @SuppressWarnings("deprecated")
 public class Strings {
@@ -216,6 +217,65 @@ public class Strings {
         protected Optional<Object> applyList(String source, List<Object> args) {
 
             return padString(false, source, args);
+        }
+    }
+
+    public static final class replace extends Function.ListFunction {
+        @Override
+        protected Optional<Object> applyList(List<Object> args) {
+
+            // There is only one path that leads to success and many
+            //  ways for this to fail.   So using a do/while loop
+            //  to make the bailing easy.
+            do {
+
+                if (args == null || args.size() != 3) {
+                    break;
+                }
+
+                if (!(args.get(0) instanceof String source &&
+                        args.get(1) instanceof String target &&
+                        args.get(2) instanceof String replacement)) {
+                    break;
+                }
+
+                return Optional.of(source.replace(target, replacement));
+
+            } while (false);
+
+            return Optional.empty();
+        }
+    }
+
+    public static final class replaceAll extends Function.ListFunction {
+        @Override
+        protected Optional<Object> applyList(List<Object> args) {
+
+            // There is only one path that leads to success and many
+            //  ways for this to fail.   So using a do/while loop
+            //  to make the bailing easy.
+            do {
+
+                if (args == null || args.size() != 3) {
+                    break;
+                }
+
+                if (!(args.get(0) instanceof String source &&
+                        args.get(1) instanceof String regex &&
+                        args.get(2) instanceof String replacement)) {
+                    break;
+                }
+
+                try {
+                    return Optional.of(source.replaceAll(regex, replacement));
+                } catch (PatternSyntaxException e) {
+                    // if the regex is invalid, we just return an empty Optional
+                    break;
+                }
+
+            } while (false);
+
+            return Optional.empty();
         }
     }
 }

@@ -3,7 +3,8 @@
         "string": "the QuIcK brOwn fox",
         "zeroIndex": 0,
         "threeIndex": 3,
-        "trimMe": "  tuna "
+        "trimMe": "  tuna ",
+        "tobeReplacedAll": "Java123is456fun"
     },
     "spec": {
         "lower": {
@@ -58,7 +59,19 @@
         "trim": {
             "trimed": "=trim(@(2,trimMe))"
         },
-        "trimMe": "=trim"
+        "trimMe": "=trim",
+        "replace": {
+            "replaced": "=replace(@(2,string), 'fox', 'dog')",
+            "badArgs1": "=replace(@(2,string), 'fox')",
+            "badArgs2": "=replace(@(2,string), 'fox', 2)"
+        },
+        "replaceAll": {
+            "replaced": "=replaceAll(@(2,tobeReplacedAll), '\\d+', ' ')",
+            "badArgs1": "=replaceAll(@(2,tobeReplacedAll), '\\d+')",
+            "badArgs2": "=replaceAll(@(2,tobeReplacedAll), '\\d+', 2)",
+            "badArgs3": "=replaceAll(@(2,tobeReplacedAll), '[abc', ' ')"
+        },
+        "tobeReplacedAll": "=replaceAll(@(2,tobeReplacedAll), '\\d+', ' ')"
     },
     "context": {
         "value": "JumpeD OVeR THE laZy dog"
@@ -72,6 +85,7 @@
         //
         // from the input, but overwritten by modify
         "trimMe": "tuna",
+        "tobeReplacedAll": "Java is fun",
         //
         // the things modify added
         "lower": {
@@ -100,6 +114,12 @@
         },
         "trim": {
             "trimed": "tuna"
+        },
+        "replace": {
+            "replaced": "the QuIcK brOwn dog"
+        },
+        "replaceAll": {
+            "replaced": "Java is fun"
         }
     }
 }
