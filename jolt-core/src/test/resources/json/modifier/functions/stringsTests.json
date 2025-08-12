@@ -62,14 +62,20 @@
         "trimMe": "=trim",
         "replace": {
             "replaced": "=replace(@(2,string), 'fox', 'dog')",
+            "badArgs0": "=relace",
             "badArgs1": "=replace(@(2,string), 'fox')",
-            "badArgs2": "=replace(@(2,string), 'fox', 2)"
+            "badArgs2": "=replace(@(2,string), 'fox', 2)",
+            "badArgs3": "=replace(@(2,string), 2, 'dog')",
+            "badArgs4": "=replace(2, 'fox', 'dog')"
         },
         "replaceAll": {
             "replaced": "=replaceAll(@(2,tobeReplacedAll), '\\d+', ' ')",
+            "badArgs0": "=replaceAll",
             "badArgs1": "=replaceAll(@(2,tobeReplacedAll), '\\d+')",
             "badArgs2": "=replaceAll(@(2,tobeReplacedAll), '\\d+', 2)",
-            "badArgs3": "=replaceAll(@(2,tobeReplacedAll), '[abc', ' ')"
+            "badArgs3": "=replaceAll(@(2,tobeReplacedAll), '[abc', ' ')",
+            "badArgs4": "=replaceAll(@(2,tobeReplacedAll), 2, ' ')",
+            "badArgs5": "=replaceAll(2, '\\d+', ' ')"
         },
         "tobeReplacedAll": "=replaceAll(@(2,tobeReplacedAll), '\\d+', ' ')"
     },
