@@ -229,7 +229,7 @@ public class Strings {
             //  to make the bailing easy.
             do {
 
-                if (args == null || args.size() != 3) {
+                if (args.size() != 3) {
                     break;
                 }
 
@@ -256,7 +256,7 @@ public class Strings {
             //  to make the bailing easy.
             do {
 
-                if (args == null || args.size() != 3) {
+                if (args.size() != 3) {
                     break;
                 }
 
