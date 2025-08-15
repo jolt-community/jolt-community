@@ -4,7 +4,7 @@
         "zeroIndex": 0,
         "threeIndex": 3,
         "trimMe": "  tuna ",
-        "tobeReplacedAll": "Java123is456fun"
+        "toBeReplacedAll": "Java123is456fun"
     },
     "spec": {
         "lower": {
@@ -69,15 +69,15 @@
             "badArgs4": "=replace(2, 'fox', 'dog')"
         },
         "replaceAll": {
-            "replaced": "=replaceAll(@(2,tobeReplacedAll), '\\d+', ' ')",
+            "replaced": "=replaceAll(@(2,toBeReplacedAll), '\\d+', ' ')",
             "badArgs0": "=replaceAll",
-            "badArgs1": "=replaceAll(@(2,tobeReplacedAll), '\\d+')",
-            "badArgs2": "=replaceAll(@(2,tobeReplacedAll), '\\d+', 2)",
-            "badArgs3": "=replaceAll(@(2,tobeReplacedAll), '[abc', ' ')",
-            "badArgs4": "=replaceAll(@(2,tobeReplacedAll), 2, ' ')",
+            "badArgs1": "=replaceAll(@(2,toBeReplacedAll), '\\d+')",
+            "badArgs2": "=replaceAll(@(2,toBeReplacedAll), '\\d+', 2)",
+            "badArgs3": "=replaceAll(@(2,toBeReplacedAll), '[abc', ' ')",
+            "badArgs4": "=replaceAll(@(2,toBeReplacedAll), 2, ' ')",
             "badArgs5": "=replaceAll(2, '\\d+', ' ')"
         },
-        "tobeReplacedAll": "=replaceAll(@(2,tobeReplacedAll), '\\d+', ' ')"
+        "toBeReplacedAll": "=replaceAll(@(2,toBeReplacedAll), '\\d+', ' ')"
     },
     "context": {
         "value": "JumpeD OVeR THE laZy dog"
@@ -91,7 +91,7 @@
         //
         // from the input, but overwritten by modify
         "trimMe": "tuna",
-        "tobeReplacedAll": "Java is fun",
+        "toBeReplacedAll": "Java is fun",
         //
         // the things modify added
         "lower": {
