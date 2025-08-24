@@ -295,13 +295,13 @@ public class Math {
         return Optional.empty();
     }
 
-    public static Optional<Double> divideAndRound(List<Object> argList, int digitsAfterDecimalPoint) {
+    public static Optional<Double> divideAndRound(List<Object> argList, int digitsAfterDecimalPoint, RoundingMode roundingMode) {
 
         Optional<Double> divideResult = divide(argList);
 
         if (divideResult.isPresent()) {
             Double divResult = divideResult.get();
-            BigDecimal bigDecimal = new BigDecimal(divResult).setScale(digitsAfterDecimalPoint, RoundingMode.HALF_UP);
+            BigDecimal bigDecimal = new BigDecimal(divResult).setScale(digitsAfterDecimalPoint, roundingMode);
             return Optional.of(bigDecimal.doubleValue());
         }
 
@@ -362,12 +362,38 @@ public class Math {
     }
 
     @SuppressWarnings("unchecked")
-    public static final class divideAndRound extends Function.ArgDrivenListFunction<Integer> {
-
+    public static final class divideAndRound extends Function.ListFunction {
 
         @Override
-        protected Optional<Object> applyList(Integer digitsAfterDecimalPoint, List<Object> args) {
-            return (Optional) divideAndRound(args, digitsAfterDecimalPoint);
+        protected Optional<Object> applyList(List<Object> argList) {
+            do {
+                if (argList.size() < 3) {
+                    break;
+                }
+                Object digitsObj = argList.get(0);
+
+                if (!(digitsObj instanceof Integer)) {
+                    break;
+                }
+                int digitsAfterDecimalPoint = (Integer) digitsObj;
+                if (argList.size() == 3) {
+                    List<Object> numbers = argList.subList(1, argList.size());
+                    return (Optional) divideAndRound(numbers, digitsAfterDecimalPoint, RoundingMode.HALF_UP);
+                }
+                Object roundingModeObj = argList.get(1);
+                if (!(roundingModeObj instanceof String)) {
+                    break;
+                }
+                RoundingMode roundingMode;
+                try {
+                    roundingMode = RoundingMode.valueOf(((String) roundingModeObj).toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    break;
+                }
+                List<Object> numbers = argList.subList(2, argList.size());
+                return (Optional) divideAndRound(numbers, digitsAfterDecimalPoint, roundingMode);
+            } while (false);
+            return Optional.empty();
         }
     }
 

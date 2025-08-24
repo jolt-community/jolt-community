@@ -38,6 +38,10 @@
             "dr": 13
         },
         "data5": {
+            "nr": 51,
+            "dr": 13
+        },
+        "data6": {
             "aInt": 10,
             "bInt": 3,
             "aDouble": 10.0,
@@ -78,16 +82,20 @@
             "explicit1": "=divide(@(1,value))",
             "explicit2": "=divide(12,3)",
             "div": "=divide(@(1,nr),@(1,dr))",
-            // Look up the numerator and denominator from the input
-            "roundedDiv": "=divideAndRound(4, @(1,nr),@(1,dr))",
-            // Round the result to the 4 decimal points
-            //
             "badArgs1": "=divide(1,2,3)",
             // too many params
             "badArgs2": "=divide(1)"
             // not enough params
         },
         "data5": {
+            "roundedDiv": "=divideAndRound(4, @(1,nr),@(1,dr))",
+            "roundedDivDown": "=divideAndRound(4, 'DOWN', @(1,nr),@(1,dr))",
+            "badArgs1": "=divideAndRound(@(1,nr),@(1,dr))",
+            "badArgs2": "=divideAndRound('DOWN', @(1,nr),@(1,dr))",
+            "badArgs3": "=divideAndRound(4, 5, @(1,nr),@(1,dr))",
+            "badArgs4": "=divideAndRound(4, 'WE', @(1,nr),@(1,dr))"
+        },
+        "data6": {
             "happyInt": "=intSubtract(@(1,aInt),@(1,bInt))",
             "happyDouble": "=doubleSubtract(@(1,aDouble),@(1,bDouble))",
             //
@@ -149,7 +157,6 @@
             ],
             "test3": 0.0,
             "div": 3.923076923076923,
-            "roundedDiv": 3.9231,
             "explicit1": 2.5,
             "explicit2": 4.0,
             "value": [
@@ -160,6 +167,12 @@
             "dr": 13
         },
         "data5": {
+            "roundedDiv": 3.9231,
+            "roundedDivDown": 3.9230,
+            "nr": 51,
+            "dr": 13
+        },
+        "data6": {
             // og data
             "aInt": 10,
             "bInt": 3,
