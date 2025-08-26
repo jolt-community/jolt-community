@@ -21,6 +21,8 @@ import io.joltcommunity.jolt.common.Optional;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 import static io.joltcommunity.jolt.modifier.function.Math.abs;
@@ -50,6 +52,9 @@ public class MathTest extends AbstractTester {
 
         Function DIV_OF = new Math.divide();
         Function DIV_AND_ROUND_OF = new Math.divideAndRound();
+
+        Function MUL_OF = new Math.multiply();
+        Function MUL_AND_ROUND_OF = new Math.multiplyAndRound();
 
         testCases.add(new Object[]{"max-empty-array", MAX_OF, new Object[]{}, Optional.empty()});
         testCases.add(new Object[]{"max-empty-list", MAX_OF, new ArrayList<>(), Optional.empty()});
@@ -253,6 +258,35 @@ public class MathTest extends AbstractTester {
         testCases.add(new Object[]{"longsubtract-happy-path", LONG_SUBTRACT_OF, Arrays.asList(4L, 1L), Optional.of(3L)});
         testCases.add(new Object[]{"longsubtract-single-value", LONG_SUBTRACT_OF, 2L, Optional.empty()});
         testCases.add(new Object[]{"longsubtract-wrong-type", LONG_SUBTRACT_OF, Arrays.asList(4.0, 1), Optional.empty()});
+
+        // Test to make sure "mul" only uses the first and second element in the array and ignores the rest.
+        testCases.add(new Object[]{"mul-combo-array", MUL_OF, Arrays.asList(10L, 5.0, 2), Optional.empty()});
+        testCases.add(new Object[]{"mul-combo-string-array", MUL_OF, Arrays.asList(10L, "5", 2), Optional.empty()});
+        testCases.add(new Object[]{"mul-single-element-array", MUL_OF, Arrays.asList("5"), Optional.empty()});
+        testCases.add(new Object[]{"mul-single-element", MUL_OF, "10", Optional.empty()});
+
+        // Mul 0 by any number returns 0.0(double)
+        testCases.add(new Object[]{"mul-combo-valid-array", MUL_OF, Arrays.asList(0.0, 10), Optional.of(0.0)});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigdec-int", MUL_OF, Arrays.asList(BigDecimal.valueOf(10.1), 10), Optional.of(BigDecimal.valueOf(101.0))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigdec-bigint", MUL_OF, Arrays.asList(BigDecimal.valueOf(10.1), BigInteger.valueOf(10L)), Optional.of(BigDecimal.valueOf(101.0))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigdec-double", MUL_OF, Arrays.asList(BigDecimal.valueOf(10.1), 10.1), Optional.of(BigDecimal.valueOf(102.01))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigdec-bigdec", MUL_OF, Arrays.asList(BigDecimal.valueOf(10.1), BigDecimal.valueOf(10.1)), Optional.of(BigDecimal.valueOf(102.01))});
+        testCases.add(new Object[]{"mul-combo-valid-array-int-bigdec", MUL_OF, Arrays.asList(10, BigDecimal.valueOf(10.1)), Optional.of(BigDecimal.valueOf(101.0))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigint-bigdec", MUL_OF, Arrays.asList(BigInteger.valueOf(10L), BigDecimal.valueOf(10.1)), Optional.of(BigDecimal.valueOf(101.0))});
+        testCases.add(new Object[]{"mul-combo-valid-array-double-bigdec", MUL_OF, Arrays.asList(10.1, BigDecimal.valueOf(10.1)), Optional.of(BigDecimal.valueOf(102.01))});
+        testCases.add(new Object[]{"mul-combo-valid-array-double-bigint", MUL_OF, Arrays.asList(10.1, BigInteger.valueOf(10L)), Optional.of(BigDecimal.valueOf(101.0))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigint-double", MUL_OF, Arrays.asList(BigInteger.valueOf(10L), 10.1), Optional.of(BigDecimal.valueOf(101.0))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigint-int", MUL_OF, Arrays.asList(BigInteger.valueOf(10L), 10L), Optional.of(BigInteger.valueOf(100))});
+        testCases.add(new Object[]{"mul-combo-valid-array-bigint-bigint", MUL_OF, Arrays.asList(BigInteger.valueOf(10L), BigInteger.valueOf(10L)), Optional.of(BigInteger.valueOf(100))});
+        testCases.add(new Object[]{"mul-combo-valid-array-int-bigint", MUL_OF, Arrays.asList(10L, BigInteger.valueOf(10L)), Optional.of(BigInteger.valueOf(100))});
+        testCases.add(new Object[]{"mul-combo-valid-array-int-double", MUL_OF, Arrays.asList(10, 10.1), Optional.of(101.0)});
+
+        testCases.add(new Object[]{"mulAndRound-single-precision-array", MUL_AND_ROUND_OF, Arrays.asList(1, 5.2, 2), Optional.of(10.4)});
+        testCases.add(new Object[]{"mulAndRound-double-precision-array", MUL_AND_ROUND_OF, Arrays.asList(2, 5.2, 2), Optional.of(10.40)});
+        testCases.add(new Object[]{"mulAndRound-trailing-precision-array", MUL_AND_ROUND_OF, Arrays.asList(3, 5.2, 2), Optional.of(10.400)});
+        testCases.add(new Object[]{"mulAndRound-no-precision-array", MUL_AND_ROUND_OF, Arrays.asList(0, 5.25, 2), Optional.of(11.0)}); // Round up as >= 0.5
+        testCases.add(new Object[]{"mulAndRound-no-precision-array", MUL_AND_ROUND_OF, Arrays.asList(0, 5.15, 2), Optional.of(10.0)}); // Round down as < 0.5
+
 
         // Test to make sure "div" only uses the first and second element in the array and ignores the rest.
         testCases.add(new Object[]{"div-combo-array", DIV_OF, Arrays.asList(10L, 5.0, 2), Optional.empty()});

@@ -63,6 +63,8 @@ public abstract class Modifier implements SpecDriven, ContextualTransform {
         STOCK_FUNCTIONS.put("longSubtract", new Math.longSubtract());
         STOCK_FUNCTIONS.put("divide", new Math.divide());
         STOCK_FUNCTIONS.put("divideAndRound", new Math.divideAndRound());
+        STOCK_FUNCTIONS.put("multiply", new Math.multiply());
+        STOCK_FUNCTIONS.put("multiplyAndRound", new Math.multiplyAndRound());
 
         STOCK_FUNCTIONS.put("toInteger", new Objects.toInteger());
         STOCK_FUNCTIONS.put("toDouble", new Objects.toDouble());

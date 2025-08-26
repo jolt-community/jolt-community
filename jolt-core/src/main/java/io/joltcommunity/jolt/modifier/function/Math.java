@@ -20,6 +20,7 @@ package io.joltcommunity.jolt.modifier.function;
 import io.joltcommunity.jolt.common.Optional;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.List;
 
@@ -270,6 +271,67 @@ public class Math {
         return Optional.of(a - b);
     }
 
+    public static Optional<? extends Number> multiply(List<Object> argList) {
+        if (argList.size() != 2) {
+            return Optional.empty();
+        }
+
+        Optional<? extends Number> leftOpt = Objects.toNumber(argList.get(0));
+        Optional<? extends Number> rightOpt = Objects.toNumber(argList.get(1));
+
+        if (!leftOpt.isPresent() || !rightOpt.isPresent()) {
+            return Optional.empty();
+        }
+
+        Number left = leftOpt.get();
+        Number right = rightOpt.get();
+
+        // 1. If either is BigDecimal
+        if (left instanceof BigDecimal || right instanceof BigDecimal) {
+            BigDecimal l = (left instanceof BigDecimal) ? (BigDecimal) left : new BigDecimal(left.toString());
+            BigDecimal r = (right instanceof BigDecimal) ? (BigDecimal) right : new BigDecimal(right.toString());
+            return Optional.of(l.multiply(r));
+        }
+        // 2. If left is BigInteger and right is Double
+        if (left instanceof BigInteger && right instanceof Double) {
+            BigDecimal l = new BigDecimal(left.toString());
+            BigDecimal r = BigDecimal.valueOf((Double) right);
+            return Optional.of(l.multiply(r));
+        }
+        // 3. If left is Double and right is BigInteger
+        if (left instanceof Double && right instanceof BigInteger) {
+            BigDecimal l = BigDecimal.valueOf((Double) left);
+            BigDecimal r = new BigDecimal(right.toString());
+            return Optional.of(l.multiply(r));
+        }
+        // 4. If either is BigInteger
+        if (left instanceof BigInteger || right instanceof BigInteger) {
+            BigInteger l = (left instanceof BigInteger) ? (BigInteger) left : BigInteger.valueOf(left.longValue());
+            BigInteger r = (right instanceof BigInteger) ? (BigInteger) right : BigInteger.valueOf(right.longValue());
+            return Optional.of(l.multiply(r));
+        }
+        // 5. If either is Double
+        if (left instanceof Double || right instanceof Double) {
+            return Optional.of(left.doubleValue() * right.doubleValue());
+        }
+        // 6. Otherwise, use long multiplication
+        return Optional.of(left.longValue() * right.longValue());
+    }
+
+    public static Optional<? extends Number> multiplyAndRound(List<Object> argList, int digitsAfterDecimalPoint, RoundingMode roundingMode) {
+        Optional<? extends Number> result = multiply(argList);
+        if (result.isPresent()) {
+            Number resultValue = result.get();
+            if (resultValue instanceof BigDecimal) {
+                BigDecimal bigDecimal = ((BigDecimal) resultValue).setScale(digitsAfterDecimalPoint, roundingMode);
+                return Optional.of(bigDecimal);
+            } else if (resultValue instanceof Double) {
+                BigDecimal bigDecimal = BigDecimal.valueOf((Double) resultValue).setScale(digitsAfterDecimalPoint, roundingMode);
+                return Optional.of(bigDecimal.doubleValue());
+            }
+        }
+        return result;
+    }
 
     public static Optional<Double> divide(List<Object> argList) {
 
@@ -348,6 +410,51 @@ public class Math {
         @Override
         protected Optional<Number> applySingle(final Object arg) {
             return abs(arg);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static final class multiply extends Function.ListFunction {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> argList) {
+            return (Optional) multiply(argList);
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static final class multiplyAndRound extends Function.ListFunction {
+        @Override
+        protected Optional<Object> applyList(List<Object> argList) {
+            do {
+                if (argList.size() < 3) {
+                    break;
+                }
+                Object digitsObj = argList.get(0);
+
+                if (!(digitsObj instanceof Integer)) {
+                    break;
+                }
+                int digitsAfterDecimalPoint = (Integer) digitsObj;
+                if (argList.size() == 3) {
+                    List<Object> numbers = argList.subList(1, argList.size());
+                    return (Optional) multiplyAndRound(numbers, digitsAfterDecimalPoint, RoundingMode.HALF_UP);
+                }
+                Object roundingModeObj = argList.get(1);
+                if (!(roundingModeObj instanceof String)) {
+                    break;
+                }
+                RoundingMode roundingMode;
+                try {
+                    roundingMode = RoundingMode.valueOf(((String) roundingModeObj).toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    break;
+                }
+                List<Object> numbers = argList.subList(2, argList.size());
+                return (Optional) multiplyAndRound(numbers, digitsAfterDecimalPoint, roundingMode);
+            } while (false);
+            return Optional.empty();
         }
     }
 
