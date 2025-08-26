@@ -322,10 +322,7 @@ public class Math {
         Optional<? extends Number> result = multiply(argList);
         if (result.isPresent()) {
             Number resultValue = result.get();
-            if (resultValue instanceof BigDecimal) {
-                BigDecimal bigDecimal = ((BigDecimal) resultValue).setScale(digitsAfterDecimalPoint, roundingMode);
-                return Optional.of(bigDecimal);
-            } else if (resultValue instanceof Double) {
+            if (resultValue instanceof Double) {
                 BigDecimal bigDecimal = BigDecimal.valueOf((Double) resultValue).setScale(digitsAfterDecimalPoint, roundingMode);
                 return Optional.of(bigDecimal.doubleValue());
             }

@@ -119,7 +119,11 @@
             "bigIntMulBigInt": "=multiply(@(1,bigInt),@(1,bigInt))",
             "bigIntMulBigDec": "=multiply(@(1,bigInt),@(1,bigDec))",
             "bigIntMulInt": "=multiply(@(1,bigInt),@(1,int))",
-            "bigIntMulDouble": "=multiply(@(1,bigInt),@(1,double))"
+            "bigIntMulDouble": "=multiply(@(1,bigInt),@(1,double))",
+            "badArgs1": "=multiplyAndRound(@(1,int),@(1,double))",
+            "badArgs2": "=multiplyAndRound('DOWN', @(1,int),@(1,double))",
+            "badArgs3": "=multiplyAndRound(4, 5, @(1,int),@(1,double))",
+            "badArgs4": "=multiplyAndRound(4, 'WE', @(1,int),@(1,double))"
         }
     },
     "context": {

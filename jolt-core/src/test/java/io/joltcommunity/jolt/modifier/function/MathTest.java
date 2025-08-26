@@ -280,10 +280,14 @@ public class MathTest extends AbstractTester {
         testCases.add(new Object[]{"mul-combo-valid-array-bigint-bigint", MUL_OF, Arrays.asList(BigInteger.valueOf(10L), BigInteger.valueOf(10L)), Optional.of(BigInteger.valueOf(100))});
         testCases.add(new Object[]{"mul-combo-valid-array-int-bigint", MUL_OF, Arrays.asList(10L, BigInteger.valueOf(10L)), Optional.of(BigInteger.valueOf(100))});
         testCases.add(new Object[]{"mul-combo-valid-array-int-double", MUL_OF, Arrays.asList(10, 10.1), Optional.of(101.0)});
+        testCases.add(new Object[]{"mul-combo-valid-array-int-int", MUL_OF, Arrays.asList(10, 10), Optional.of(100L)});
 
         testCases.add(new Object[]{"mulAndRound-single-precision-array", MUL_AND_ROUND_OF, Arrays.asList(1, 5.2, 2), Optional.of(10.4)});
         testCases.add(new Object[]{"mulAndRound-double-precision-array", MUL_AND_ROUND_OF, Arrays.asList(2, 5.2, 2), Optional.of(10.40)});
         testCases.add(new Object[]{"mulAndRound-trailing-precision-array", MUL_AND_ROUND_OF, Arrays.asList(3, 5.2, 2), Optional.of(10.400)});
+        testCases.add(new Object[]{"mulAndRound-bigdec-single-precision-array", MUL_AND_ROUND_OF, Arrays.asList(1, BigDecimal.valueOf(5.2), 2), Optional.of(BigDecimal.valueOf(10.4))});
+        testCases.add(new Object[]{"mulAndRound-bigdec-double-precision-array", MUL_AND_ROUND_OF, Arrays.asList(2, BigDecimal.valueOf(5.2), 2), Optional.of(BigDecimal.valueOf(10.4))});
+        testCases.add(new Object[]{"mulAndRound-bigdec-trailing-precision-array", MUL_AND_ROUND_OF, Arrays.asList(3, BigDecimal.valueOf(5.2), 2), Optional.of(BigDecimal.valueOf(10.4))});
         testCases.add(new Object[]{"mulAndRound-no-precision-array", MUL_AND_ROUND_OF, Arrays.asList(0, 5.25, 2), Optional.of(11.0)}); // Round up as >= 0.5
         testCases.add(new Object[]{"mulAndRound-no-precision-array", MUL_AND_ROUND_OF, Arrays.asList(0, 5.15, 2), Optional.of(10.0)}); // Round down as < 0.5
 
