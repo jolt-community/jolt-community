@@ -120,6 +120,8 @@
             "bigIntMulBigDec": "=multiply(@(1,bigInt),@(1,bigDec))",
             "bigIntMulInt": "=multiply(@(1,bigInt),@(1,int))",
             "bigIntMulDouble": "=multiply(@(1,bigInt),@(1,double))",
+            "rounded": "=multiplyAndRound(4, 3.453, 3.33)",
+            "roundedDown": "=multiplyAndRound(4, 'DOWN', 3.453, 3.33)",
             "badArgs1": "=multiplyAndRound(@(1,int),@(1,double))",
             "badArgs2": "=multiplyAndRound('DOWN', @(1,int),@(1,double))",
             "badArgs3": "=multiplyAndRound(4, 5, @(1,int),@(1,double))",
@@ -206,6 +208,8 @@
             "double": 3.0,
             //
             // computed
+            "rounded" : 11.4985,
+            "roundedDown" : 11.4984,
             "bigIntMulBigInt": 15241578753238836750495351562536198787501905199875019052100,
             "bigIntMulBigDec": 1.5241578753238838E58,
             "bigIntMulInt": 1234567890123456789012345678900,
