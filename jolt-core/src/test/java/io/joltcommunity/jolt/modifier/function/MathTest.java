@@ -264,6 +264,8 @@ public class MathTest extends AbstractTester {
         testCases.add(new Object[]{"mul-combo-string-array", MUL_OF, Arrays.asList(10L, "5", 2), Optional.empty()});
         testCases.add(new Object[]{"mul-single-element-array", MUL_OF, Arrays.asList("5"), Optional.empty()});
         testCases.add(new Object[]{"mul-single-element", MUL_OF, "10", Optional.empty()});
+        testCases.add(new Object[]{"mul-empty-element", MUL_OF, Arrays.asList(null, null), Optional.empty()});
+        testCases.add(new Object[]{"mulAndRound-empty-element", MUL_AND_ROUND_OF, Arrays.asList(1, null, null), Optional.empty()});
 
         // Mul 0 by any number returns 0.0(double)
         testCases.add(new Object[]{"mul-combo-valid-array", MUL_OF, Arrays.asList(0.0, 10), Optional.of(0.0)});
