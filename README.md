@@ -25,8 +25,7 @@ This repository is a community-maintained fork of JOLT. For the original version
    8. [Alternatives](#Alternatives)
    9. [Performance](#Performance)
    10. [CLI](#CLI)
-   11. [Code Coverage](#Code_Coverage)
-   12. [Release Notes](#Release_Notes)
+   11. [Release Notes](#Release_Notes)
 
 ## <a name="Overview"></a> Overview
 
