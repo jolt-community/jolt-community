@@ -17,15 +17,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout main branch
+      - name: Checkout develop branch
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          ref: main
-
-      - name: Reset develop branch
-        run: |
-          git fetch origin develop:develop
-          git reset --hard develop
+          ref: develop
 
       - name: Create PR from develop to main
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
@@ -33,5 +28,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Merge develop into main"
           body: "This PR merges changes from develop into main."
+          base: main
           branch: sync-develop-to-main
           delete-branch: true
