@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.jolt-community.jolt</groupId>
         <artifactId>jolt-community-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <relativePath>parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>jolt-community</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <name>Jolt</name>
 
