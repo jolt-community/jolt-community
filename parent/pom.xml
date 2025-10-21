@@ -262,13 +262,10 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <version>${maven-rat-plugin.version}</version>
                 <configuration>
-                    <includes>
-                        <include>**/*.java</include>
-                    </includes>
+                    <inputInclude>**/*.java</inputInclude>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>rat-check</id>
                         <phase>test</phase>
                         <goals>
                             <goal>check</goal>
