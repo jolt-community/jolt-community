@@ -263,6 +263,11 @@
                 <version>${maven-rat-plugin.version}</version>
                 <configuration>
                     <inputInclude>**/*.java</inputInclude>
+                    <inputExcludes>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/OWNERS</exclude>
+                        <exclude>/test-output/</exclude>
+                    </inputExcludes>
                 </configuration>
                 <executions>
                     <execution>
