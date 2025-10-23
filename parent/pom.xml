@@ -60,7 +60,7 @@
         <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
         <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
-        <maven-rat-plugin.version>0.16.1</maven-rat-plugin.version>
+        <maven-rat-plugin.version>0.17</maven-rat-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <versions-maven-plugin.version>2.19.1</versions-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
@@ -262,13 +262,15 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <version>${maven-rat-plugin.version}</version>
                 <configuration>
-                    <includes>
-                        <include>**/*.java</include>
-                    </includes>
+                    <inputInclude>**/*.java</inputInclude>
+                    <inputExcludes>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/OWNERS</exclude>
+                        <exclude>/test-output/</exclude>
+                    </inputExcludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>rat-check</id>
                         <phase>test</phase>
                         <goals>
                             <goal>check</goal>
