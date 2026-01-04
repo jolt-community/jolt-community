@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.UUID.*;
+
 /**
  * Modifier supports a Function on RHS that accepts jolt path expressions as arguments and evaluates
  * them at runtime before calling it. Function always returns an Optional, and the value is written
@@ -106,6 +108,7 @@ public interface Function {
      * will cause the key to remain unchanged
      */
     Function noop = args -> Optional.empty();
+
     /**
      * Returns the first argument, null or otherwise
      * <p>
@@ -126,6 +129,7 @@ public interface Function {
         }
         return Optional.of(args[0]);
     };
+
     /**
      * Returns the first argument if in not null
      * <p>
@@ -143,6 +147,7 @@ public interface Function {
         }
         return Optional.of(args[0]);
     };
+
     /**
      * Returns the first argument if it is null
      * <p>
@@ -160,6 +165,8 @@ public interface Function {
         }
         return Optional.of(args[0]);
     };
+
+    Function uuid = args -> Optional.of(randomUUID().toString());
 
     Optional<Object> apply(Object... args);
 

@@ -81,6 +81,7 @@ public abstract class Modifier implements SpecDriven, ContextualTransform {
         STOCK_FUNCTIONS.put("isPresent", Function.isPresent);
         STOCK_FUNCTIONS.put("notNull", Function.notNull);
         STOCK_FUNCTIONS.put("isNull", Function.isNull);
+        STOCK_FUNCTIONS.put("uuid", Function.uuid);
 
         STOCK_FUNCTIONS.put("firstElement", new Lists.firstElement());
         STOCK_FUNCTIONS.put("lastElement", new Lists.lastElement());
