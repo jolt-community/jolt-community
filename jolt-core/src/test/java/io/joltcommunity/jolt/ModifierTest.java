@@ -21,6 +21,7 @@ import io.joltcommunity.jolt.common.SpecStringParser;
 import io.joltcommunity.jolt.exception.SpecException;
 import io.joltcommunity.jolt.modifier.function.Function;
 import com.google.common.collect.Lists;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -28,6 +29,9 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
+
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 @SuppressWarnings("deprecated")
 public class ModifierTest {
@@ -220,6 +224,28 @@ public class ModifierTest {
         Modifier modifier = new Modifier.Overwritr(spec);
         Object actual = modifier.transform(input, null);
         JoltTestUtil.runArrayOrderObliviousDiffy("failed modifierFirstElementArray", expected, actual);
+    }
+
+    @Test
+    public void testUuidFunction() {
+        Map<String, Object> input = new HashMap<>() {{
+            put("id", null);
+        }};
+
+        Map<String, Object> spec = new HashMap<>() {{
+            put("id", "=uuid");
+        }};
+
+        Modifier modifier = new Modifier.Overwritr(spec);
+        Object actual = modifier.transform(input, null);
+
+        Object generatedUuid = ((Map<?, ?>) actual).get("id");
+        assertNotNull(generatedUuid, "UUID should not be null");
+        assertTrue(generatedUuid instanceof String, "UUID should be a String");
+        // Validate UUID format (8-4-4-4-12 hex digits)
+        String uuidPattern = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
+        assertTrue(((String) generatedUuid).matches(uuidPattern),
+                "Generated value should match UUID format: " + generatedUuid);
     }
 
     enum ModifierTestCase {
