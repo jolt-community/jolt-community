@@ -39,13 +39,19 @@ public class DatesTest extends AbstractTester {
         testCases.add(new Object[]{"fromEpoch-default-int", FROM_EPOCH, new Object[]{1}, Optional.of("19700101")});
         testCases.add(new Object[]{"fromEpoch-pattern-int", FROM_EPOCH, new Object[]{1, "yyyy"}, Optional.of("1970")});
         testCases.add(new Object[]{"fromEpoch-pattern-iso8601", FROM_EPOCH, new Object[]{1771176362001L, "yyyy-MM-dd'T'HH:mm:ssX"}, Optional.of("2026-02-15T17:26:02Z")});
-        testCases.add(new Object[]{"fromEpoch-pattern-invalid-patter", FROM_EPOCH, new Object[]{1, "ABCD"}, Optional.empty()});
+
+        testCases.add(new Object[]{"fromEpoch-pattern-null", FROM_EPOCH, null, Optional.empty()});
+        testCases.add(new Object[]{"fromEpoch-pattern-numeric-pattern", FROM_EPOCH, new Object[]{1, 1}, Optional.empty()});
+        testCases.add(new Object[]{"fromEpoch-pattern-invalid-pattern", FROM_EPOCH, new Object[]{1, "ABCD"}, Optional.empty()});
         testCases.add(new Object[]{"fromEpoch-default-string", FROM_EPOCH, new Object[]{"1"}, Optional.empty()});
         testCases.add(new Object[]{"fromEpoch-pattern-string", FROM_EPOCH, new Object[]{"1", "yyyy"}, Optional.empty()});
 
-        testCases.add(new Object[]{"toEpoch-pattern", TO_EPOCH, new Object[]{"2000-01-01", "yyyy-MM-dd"}, Optional.of(946684800000L)});
-        testCases.add(new Object[]{"toEpoch-pattern", TO_EPOCH, new Object[]{"2000-01-01T00:00:00Z", "yyyy-MM-dd'T'HH:mm:ss'Z'"}, Optional.of(946684800000L)});
-        testCases.add(new Object[]{"toEpoch-pattern", TO_EPOCH, new Object[]{"1970-01-01"}, Optional.empty()});
+        testCases.add(new Object[]{"toEpoch-pattern-day", TO_EPOCH, new Object[]{"2000-01-01", "yyyy-MM-dd"}, Optional.of(946684800000L)});
+        testCases.add(new Object[]{"toEpoch-pattern-seconds", TO_EPOCH, new Object[]{"2000-01-01T00:00:00Z", "yyyy-MM-dd'T'HH:mm:ss'Z'"}, Optional.of(946684800000L)});
+        testCases.add(new Object[]{"toEpoch-pattern-milliseconds", TO_EPOCH, new Object[]{"2000-01-01T00:00:00.000Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"}, Optional.of(946684800000L)});
+        testCases.add(new Object[]{"toEpoch-pattern-no-pattern", TO_EPOCH, new Object[]{"1970-01-01"}, Optional.empty()});
+        testCases.add(new Object[]{"toEpoch-pattern-invalid-data", TO_EPOCH, new Object[]{1}, Optional.empty()});
+        testCases.add(new Object[]{"toEpoch-pattern-null", TO_EPOCH, null, Optional.empty()});
 
         return testCases.iterator();
     }
