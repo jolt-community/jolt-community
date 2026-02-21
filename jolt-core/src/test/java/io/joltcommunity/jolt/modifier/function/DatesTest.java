@@ -28,7 +28,7 @@ import java.util.List;
 public class DatesTest extends AbstractTester {
 
     @Override
-    @DataProvider(parallel = false)
+    @DataProvider(parallel = true)
     public Iterator<Object[]> getTestCases() {
         List<Object[]> testCases = new LinkedList<>();
         Function NOW = new Dates.now();
@@ -84,6 +84,7 @@ public class DatesTest extends AbstractTester {
         testCases.add(new Object[]{"dateAdd-with-time", DATE_ADD, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "P1D", "UTC"}, Optional.of("2000-01-02T12:30:45")});
         testCases.add(new Object[]{"dateAdd-with-time", DATE_ADD, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "P1D", "Europe/Paris"}, Optional.of("2000-01-02T12:30:45")});
         testCases.add(new Object[]{"dateAdd-with-time-one-hour", DATE_ADD, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "PT1H", "UTC"}, Optional.of("2000-01-01T13:30:45")});
+        testCases.add(new Object[]{"dateAdd-with-time-day-and-hour", DATE_ADD, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "P1MT1H", "UTC"}, Optional.of("2000-02-01T13:30:45")});
 
         testCases.add(new Object[]{"dateAdd-timezone-missing", DATE_ADD, new Object[]{"2000-01-01", "yyyy-MM-dd", "P1D"}, Optional.empty()});
         testCases.add(new Object[]{"dateAdd-duration-invalid", DATE_ADD, new Object[]{"2000-01-01", "yyyy-MM-dd", "INVALID", "UTC"}, Optional.empty()});

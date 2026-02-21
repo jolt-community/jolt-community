@@ -22,7 +22,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 
 @SuppressWarnings("deprecated")
@@ -210,11 +209,12 @@ public class Dates {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(patternStr);
             TemporalAccessor temporal = formatter.parse(dateStr);
-            TemporalAmount period = computePeriodDuration(durationStr);
+            PeriodDuration periodDuration = computePeriodDuration(durationStr);
             Instant instant = parseToInstant(temporal, zoneIdStr);
 
             LocalDateTime resultDateTime = LocalDateTime.ofInstant(instant, ZoneId.of(zoneIdStr));
-            resultDateTime = add ? resultDateTime.plus(period) : resultDateTime.minus(period);
+            resultDateTime = add ? resultDateTime.plus(periodDuration.period).plus(periodDuration.duration) :
+                    resultDateTime.minus(periodDuration.period).minus(periodDuration.duration);
 
             return Optional.of(formatter.format(resultDateTime.atZone(ZoneId.of(zoneIdStr))));
         } catch (Exception e) {
@@ -264,22 +264,25 @@ public class Dates {
         }
     }
 
-    private static TemporalAmount computePeriodDuration(String periodDuration) {
+    private record PeriodDuration(Period period, Duration duration) {
+    }
+
+    private static PeriodDuration computePeriodDuration(String periodDuration) {
         if (periodDuration == null) {
-            return Period.ZERO;
+            return new PeriodDuration(Period.ZERO, Duration.ZERO);
         }
 
         String[] splitted = periodDuration.split("T");
         if (splitted.length == 1) {
             // has only date-based fields
-            return Period.parse(periodDuration);
+            return new PeriodDuration(Period.parse(periodDuration), Duration.ZERO);
         } else {
             Duration duration = Duration.parse("PT" + splitted[1]);
             if ("P".equals(splitted[0])) {
                 // has only time-based fields
-                return duration;
+                return new PeriodDuration(Period.ZERO, duration);
             } else {
-                return Period.parse(splitted[0]).plus(duration);
+                return new PeriodDuration(Period.parse(splitted[0]), duration);
             }
         }
     }
