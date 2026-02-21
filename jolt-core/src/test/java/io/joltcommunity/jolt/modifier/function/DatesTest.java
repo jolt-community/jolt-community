@@ -97,8 +97,14 @@ public class DatesTest extends AbstractTester {
     }
 
     @Test
-    public void nowReturnsEmptyIfNoPatternIsProvided() {
+    public void nowReturnsEmptyIfNoPatternAndTimeZoneIsProvided() {
         Optional<Object> opt = (new Dates.now()).apply();
+        assert !opt.isPresent();
+    }
+
+    @Test
+    public void nowReturnsEmptyIfNoTimeZoneIsProvided() {
+        Optional<Object> opt = (new Dates.now()).apply("yyyy-MM-dd");
         assert !opt.isPresent();
     }
 
