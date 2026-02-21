@@ -92,6 +92,9 @@ public abstract class Modifier implements SpecDriven, ContextualTransform {
         STOCK_FUNCTIONS.put("fromEpochMilli", new Dates.fromEpochMilli());
         STOCK_FUNCTIONS.put("toEpochMilli", new Dates.toEpochMilli());
         STOCK_FUNCTIONS.put("now", new Dates.now());
+        STOCK_FUNCTIONS.put("nowEpochMillis", Dates.now);
+        STOCK_FUNCTIONS.put("dateAdd", new Dates.dateAdd());
+        STOCK_FUNCTIONS.put("dateSubstract", new Dates.dateSubstract());
     }
 
     private final ModifierCompositeSpec rootSpec;

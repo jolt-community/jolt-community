@@ -18,46 +18,142 @@ package io.joltcommunity.jolt.modifier.function;
 
 import io.joltcommunity.jolt.common.Optional;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalAmount;
 import java.util.List;
 
 @SuppressWarnings("deprecated")
 public class Dates {
 
-    public static final String defaultDateFormat = "yyyyMMdd";
+    private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
 
-    public static Optional<Long> castToLong(Object obj) {
-        if (obj instanceof Number) {
-            return Optional.of(((Number) obj).longValue());
+    // Default to ISO8601 format at UTC timezone
+    public static final String defaultDatePattern = "yyyy-MM-dd'T'HH:mm:ssX";
+
+    public static final Function now = args -> now();
+
+    public static final class now extends Function.ListFunction {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> input) {
+            if (input == null || input.size() != 2) {
+                return Optional.empty();
+            } else {
+                return now(input.get(0), input.get(1));
+            }
         }
-        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static final class fromEpochMilli extends Function.BaseFunction<String> {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> input) {
+            if (input == null || input.size() != 3) {
+                return Optional.empty();
+            } else {
+                return (Optional) fromEpochMilli(input.get(0), input.get(1), input.get(2));
+            }
+        }
+
+        @Override
+        protected Optional<String> applySingle(Object arg) {
+            return fromEpochMilli(arg, defaultDatePattern, "UTC");
+        }
+    }
+
+    public static final class toEpochMilli extends Function.ListFunction {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> input) {
+            if (input == null || input.size() != 3) {
+                return Optional.empty();
+            } else {
+                return toEpochMilli(input.get(0), input.get(1), input.get(2));
+            }
+        }
+    }
+
+    public static final class format extends Function.ListFunction {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> input) {
+            if (input == null || input.size() != 4) {
+                return Optional.empty();
+            } else {
+                return format(input.get(0), input.get(1), input.get(2), input.get(3));
+            }
+        }
+    }
+
+    public static final class dateAdd extends Function.ListFunction {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> input) {
+            if (input == null || input.size() != 4) {
+                return Optional.empty();
+            } else {
+                return dateAdd(input.get(0), input.get(1), input.get(2), input.get(3));
+            }
+        }
+    }
+
+    public static final class dateSubstract extends Function.ListFunction {
+
+        @Override
+        protected Optional<Object> applyList(List<Object> input) {
+            if (input == null || input.size() != 4) {
+                return Optional.empty();
+            } else {
+                return dateSubstract(input.get(0), input.get(1), input.get(2), input.get(3));
+            }
+        }
     }
 
     /**
-     * Given a {@link java.lang.Number} representing an EPOCH in milliseconds and the pattern in which
-     * it has to be converted returns a String following that representation.
-     *
-     * @param arg    EPOCH to be converted.
-     * @param format pattern in which the EPOCH has to be converted; it uses
-     *               {@link java.time.format.DateTimeFormatter} format.
-     * @return String representing the date in <b>UTC timezone</b>, wrapped in an {@link Optional} object.
+     * This function returns current time, in EPOCH, of the <b>current locale/timezone</b>.
      */
-    public static Optional<String> fromEpochMilli(Object arg, Object format) {
-        Optional<Long> optEpoch = castToLong(arg);
-        if (arg == null || !(format instanceof String sdfFormat) || !optEpoch.isPresent()) {
+    private static Optional<Object> now() {
+        return Optional.of(Instant.now().toEpochMilli());
+    }
+
+    /**
+     * Returns the current time formatted with the provided pattern. If no pattern is provided,
+     * it defaults to {@link Dates#defaultDatePattern} (ISO8601 format at UTC timezone)
+     */
+    private static Optional<Object> now(Object pattern, Object zoneId) {
+        if (!((pattern instanceof String patternStr)
+                && zoneId instanceof String zoneIdStr))
+            return Optional.empty();
+
+        try {
+            Instant instant = Instant.now();
+            DateTimeFormatter formatter = createFormatterWithTimeZone(patternStr, zoneIdStr);
+            return Optional.of(formatter.format(instant));
+        } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    /**
+     * Given a {@link java.lang.Number} representing an EPOCH in milliseconds and the pattern and time-zone in which
+     * it has to be converted returns a String following that representation.
+     */
+    private static Optional<String> fromEpochMilli(Object arg, Object format, Object zoneId) {
+        Optional<Long> optEpoch = castToLong(arg);
+        if (arg == null
+                || !(format instanceof String sdfFormat)
+                || !optEpoch.isPresent()
+                || !(zoneId instanceof String zoneIdStr))
+            return Optional.empty();
 
         Long epoch = optEpoch.get();
         try {
             Instant instant = Instant.ofEpochMilli(epoch);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(sdfFormat)
-                    .withZone(java.time.ZoneId.of("UTC"));
+            DateTimeFormatter formatter = createFormatterWithTimeZone(sdfFormat, zoneIdStr);
             return Optional.of(formatter.format(instant));
         } catch (Exception e) {
             return Optional.empty();
@@ -68,34 +164,17 @@ public class Dates {
      * Given a String representing a {@link java.util.Date} and the pattern used to represent it,
      * returns the EPOCH in milliseconds of that date. The pattern uses the same pattern in
      * {@link java.time.format.DateTimeFormatter}.
-     *
-     * @param date   String representing the date
-     * @param format String representing the pattern
-     * @return Long representing the EPOCH in <b>UTC timezone</b>, wrapped in {@link Optional}.
      */
-    public static Optional<Long> toEpochMilli(Object date, Object format) {
-        if (!((date instanceof String dateStr) && (format instanceof String formatStr))) {
+    private static Optional<Object> toEpochMilli(Object date, Object format, Object zoneId) {
+        if (!((date instanceof String dateStr)
+                && (format instanceof String formatStr)
+                && (zoneId instanceof String zoneIdStr)))
             return Optional.empty();
-        }
 
         try {
-            java.time.ZoneId utcZone = java.time.ZoneId.of("UTC");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatStr);
             TemporalAccessor temporal = formatter.parse(dateStr);
-            Instant instant;
-
-            // Try to parse with timezone information if present
-            if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
-                instant = Instant.from(temporal);
-            } else if (temporal.isSupported(ChronoField.HOUR_OF_DAY)) {
-                // Has time information
-                LocalDateTime localDateTime = LocalDateTime.from(temporal);
-                instant = localDateTime.atZone(utcZone).toInstant();
-            } else {
-                // Date only
-                LocalDate localDate = LocalDate.from(temporal);
-                instant = localDate.atStartOfDay(utcZone).toInstant();
-            }
+            Instant instant = parseToInstant(temporal, zoneIdStr);
             return Optional.of(instant.toEpochMilli());
         } catch (Exception e) {
             return Optional.empty();
@@ -103,56 +182,107 @@ public class Dates {
     }
 
     /**
-     * This function returns current time, in EPOCH, of the <b>current locale/timezone</b>.
-     *
-     * @return Long representing current EPOCH, wrapped by {@link Optional}
-     * @see Instant#now()
+     * Transforms a date from one pattern to another.
      */
-    public static Optional<Long> now() {
-        return Optional.of(Instant.now().toEpochMilli());
-    }
-
-    public static final class now implements Function {
-        @Override
-        @SuppressWarnings("unchecked")
-        public Optional<Object> apply(Object... args) {
-            return (Optional) now();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static final class fromEpochMilli extends Function.BaseFunction<Object> {
-
-        @Override
-        protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 2) {
-                return Optional.empty();
-            } else {
-                return (Optional) fromEpochMilli(input.get(0), input.get(1));
-            }
-        }
-
-        @Override
-        protected Optional<Object> applySingle(Object arg) {
-            return (Optional) fromEpochMilli(arg, defaultDateFormat);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static final class toEpochMilli extends Function.BaseFunction<Object> {
-
-        @Override
-        protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 2) {
-                return Optional.empty();
-            } else {
-                return (Optional) toEpochMilli(input.get(0), input.get(1));
-            }
-        }
-
-        @Override
-        protected Optional<Object> applySingle(Object arg) {
+    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object zoneId) {
+        if (!((date instanceof String dateStr)
+                && (fromPattern instanceof String fromPatternStr)
+                && (toPattern instanceof String toPatternStr)
+                && (zoneId instanceof String zoneIdStr)))
             return Optional.empty();
+
+        try {
+            DateTimeFormatter fromFormatter = DateTimeFormatter.ofPattern(fromPatternStr);
+            DateTimeFormatter toFormatter = DateTimeFormatter.ofPattern(toPatternStr).withZone(ZoneId.of(zoneIdStr));
+            TemporalAccessor temporal = fromFormatter.parse(dateStr);
+            Instant instant = parseToInstant(temporal, zoneIdStr);
+            return Optional.of(toFormatter.format(instant));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<Object> modifyDate(Object date, Object pattern, Object duration, Object zoneId, boolean add) {
+        if (!((date instanceof String dateStr)
+                && (pattern instanceof String patternStr)
+                && (duration instanceof String durationStr)
+                && (zoneId instanceof String zoneIdStr)))
+            return Optional.empty();
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(patternStr);
+            TemporalAccessor temporal = formatter.parse(dateStr);
+            TemporalAmount period = computePeriodDuration(durationStr);
+            Instant instant = parseToInstant(temporal, zoneIdStr);
+
+            LocalDateTime resultDateTime = LocalDateTime.ofInstant(instant, ZoneId.of(zoneIdStr));
+            resultDateTime = add ? resultDateTime.plus(period) : resultDateTime.minus(period);
+
+            return Optional.of(formatter.format(resultDateTime.atZone(ZoneId.of(zoneIdStr))));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Adds a duration to a date, with duration expressed in ISO8601 format (e.g., P1D).
+     */
+    private static Optional<Object> dateAdd(Object date, Object pattern, Object duration, Object zoneId) {
+        return modifyDate(date, pattern, duration, zoneId,true);
+    }
+
+    /**
+     * Subtracts a duration from a date, with duration expressed in ISO8601 format (e.g., P1D).
+     */
+    private static Optional<Object> dateSubstract(Object date, Object pattern, Object duration, Object zoneId) {
+        return modifyDate(date, pattern, duration, zoneId,  false);
+    }
+
+    private static DateTimeFormatter createFormatterWithTimeZone(String pattern, String zoneId) {
+        return DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of(zoneId));
+    }
+
+    private static Optional<Long> castToLong(Object obj) {
+        if (obj instanceof Number) {
+            return Optional.of(((Number) obj).longValue());
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Parses a {@link TemporalAccessor} object into an {@link Instant}.
+     * The method checks the available fields in the provided {@code temporal}
+     * and determines the most appropriate way to convert it to an {@code Instant}.
+     */
+    private static Instant parseToInstant(TemporalAccessor temporal, String zoneId) {
+        if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
+            return Instant.from(temporal);
+        } else if (temporal.isSupported(ChronoField.HOUR_OF_DAY)) {
+            LocalDateTime localDateTime = LocalDateTime.from(temporal);
+            return localDateTime.atZone(ZoneId.of(zoneId)).toInstant();
+        } else {
+            LocalDate localDate = LocalDate.from(temporal);
+            return localDate.atStartOfDay(ZoneId.of(zoneId)).toInstant();
+        }
+    }
+
+    private static TemporalAmount computePeriodDuration(String periodDuration) {
+        if (periodDuration == null) {
+            return Period.ZERO;
+        }
+
+        String[] splitted = periodDuration.split("T");
+        if (splitted.length == 1) {
+            // has only date-based fields
+            return Period.parse(periodDuration);
+        } else {
+            Duration duration = Duration.parse("PT" + splitted[1]);
+            if ("P".equals(splitted[0])) {
+                // has only time-based fields
+                return duration;
+            } else {
+                return Period.parse(splitted[0]).plus(duration);
+            }
         }
     }
 }
