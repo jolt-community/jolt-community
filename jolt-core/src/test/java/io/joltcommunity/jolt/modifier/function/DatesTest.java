@@ -28,7 +28,7 @@ import java.util.List;
 public class DatesTest extends AbstractTester {
 
     @Override
-    @DataProvider(parallel = true)
+    @DataProvider(parallel = false)
     public Iterator<Object[]> getTestCases() {
         List<Object[]> testCases = new LinkedList<>();
         Function TO_EPOCH = new Dates.toEpochMilli();
@@ -49,6 +49,7 @@ public class DatesTest extends AbstractTester {
         testCases.add(new Object[]{"fromEpoch-pattern-invalid-pattern", FROM_EPOCH, new Object[]{1, "ABCD"}, Optional.empty()});
         testCases.add(new Object[]{"fromEpoch-default-string", FROM_EPOCH, new Object[]{"1"}, Optional.empty()});
         testCases.add(new Object[]{"fromEpoch-pattern-string", FROM_EPOCH, new Object[]{"1", "yyyy"}, Optional.empty()});
+        testCases.add(new Object[]{"fromEpoch-null", FROM_EPOCH, new Object[]{null}, Optional.empty()});
 
         testCases.add(new Object[]{"toEpoch-pattern-day", TO_EPOCH, new Object[]{"2000-01-01", "yyyy-MM-dd", "UTC"}, Optional.of(946684800000L)});
         testCases.add(new Object[]{"toEpoch-pattern-seconds", TO_EPOCH, new Object[]{"2000-01-01T00:00:00Z", "yyyy-MM-dd'T'HH:mm:ss'Z'", "UTC"}, Optional.of(946684800000L)});
@@ -104,7 +105,7 @@ public class DatesTest extends AbstractTester {
 
     @Test
     public void nowReturnsEmptyIfNoTimeZoneIsProvided() {
-        Optional<Object> opt = (new Dates.now()).apply("yyyy-MM-dd");
+        Optional<Object> opt = (new Dates.now()).apply(List.of("yyyy-MM-dd"));
         assert !opt.isPresent();
     }
 

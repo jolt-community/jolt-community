@@ -28,8 +28,6 @@ import java.util.List;
 @SuppressWarnings("deprecated")
 public class Dates {
 
-    private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
-
     // Default to ISO8601 format at UTC timezone
     public static final String defaultDatePattern = "yyyy-MM-dd'T'HH:mm:ssX";
 
@@ -39,7 +37,7 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 2) {
+            if (input.size() != 2) {
                 return Optional.empty();
             } else {
                 return now(input.get(0), input.get(1));
@@ -52,7 +50,7 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 3) {
+            if (input.size() != 3) {
                 return Optional.empty();
             } else {
                 return (Optional) fromEpochMilli(input.get(0), input.get(1), input.get(2));
@@ -69,7 +67,7 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 3) {
+            if (input.size() != 3) {
                 return Optional.empty();
             } else {
                 return toEpochMilli(input.get(0), input.get(1), input.get(2));
@@ -81,7 +79,7 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 4) {
+            if (input.size() != 4) {
                 return Optional.empty();
             } else {
                 return format(input.get(0), input.get(1), input.get(2), input.get(3));
@@ -93,7 +91,7 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 4) {
+            if (input.size() != 4) {
                 return Optional.empty();
             } else {
                 return dateAdd(input.get(0), input.get(1), input.get(2), input.get(3));
@@ -105,7 +103,7 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input == null || input.size() != 4) {
+            if (input.size() != 4) {
                 return Optional.empty();
             } else {
                 return dateSubstract(input.get(0), input.get(1), input.get(2), input.get(3));
