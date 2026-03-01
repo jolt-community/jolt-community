@@ -21,7 +21,6 @@ import io.joltcommunity.jolt.common.SpecStringParser;
 import io.joltcommunity.jolt.exception.SpecException;
 import io.joltcommunity.jolt.modifier.function.Function;
 import com.google.common.collect.Lists;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -152,6 +151,7 @@ public class ModifierTest {
         testCases.add(new Object[]{"/json/modifier/functions/sizeTests.json", ModifierTestCase.OVERWRITR});
         testCases.add(new Object[]{"/json/modifier/functions/labelsLookupTest.json", ModifierTestCase.DEFAULTR});
         testCases.add(new Object[]{"/json/modifier/functions/valueTests.json", ModifierTestCase.OVERWRITR});
+        testCases.add(new Object[]{"/json/modifier/functions/dateTests.json", ModifierTestCase.OVERWRITR});
 
         return testCases.iterator();
     }
