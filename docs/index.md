@@ -12,19 +12,39 @@
   - [Specification](#specification)
   - [JOLT Standard Syntax](#jolt-standard-syntax)
   - [The `shift` Operation](#the-shift-operation)
+    - [Shifting Nested JSON: LHS vs RHS](#shifting-nested-json-lhs-vs-rhs)
+    - [Wildcard-free `shift` Examples](#wildcard-free-shift-examples)
+    - [`shift` Wildcards](#shift-wildcards)
+      - [Essential Wildcard Expressions](#essential-wildcard-expressions)
+      - [`*` Wildcard](#-wildcard)
+      - [`&` Wildcard](#-wildcard-1)
+      - [`$` Wildcard](#-wildcard-2)
+      - [`#` Wildcard](#-wildcard-3)
+      - [`|` Wildcard](#-wildcard-4)
+      - [`@` Wildcard](#-wildcard-5)
+    - [JSON Arrays](#json-arrays)
   - [The `default` Operation](#the-default-operation)
   - [The `remove` Operation](#the-remove-operation)
+    - [`remove` Wildcards](#remove-wildcards)
   - [The `cardinality` Operation](#the-cardinality-operation)
   - [The `sort` Operation](#the-sort-operation)
+
+[↑ Back to top](#jolt-community-edition)
 
 ## Introduction
 
 JOLT Community Edition is a community-maintained edition of JOLT, a JSON to JSON transformation library written in Java.
 For the original version, please visit the [bazaarvoice/jolt](https://github.com/bazaarvoice/jolt) repository.
 
+---
+
 ## Getting Started
 
 **TODO**
+
+[↑ Back to top](#jolt-community-edition)
+
+---
 
 ## Learning JOLT
 
@@ -72,6 +92,24 @@ In addition to these "traditional" terms, we also define several "applied" terms
 | Root               | The outermost value, i.e. the entire JSON object itself. Typically an array or object. Often denoted as `$`, especially in paths.                                                                                                     |
 | Dot Notation       | A representation format for a path where keys are delimited by the character `.` in-between names. E.g. `$.settings.users.display_name`. Use is discouraged if any of the names contains the character `.`.                           |
 | Bracket Notation   | A representation format for a path where keys and indices are wrapped in square brackets. E.g. `$[0]["settings"]["users"]["display_name"]`                                                                                            |
+
+[↑ Back to top](#jolt-community-edition)
+
+---
+
+## Operations
+
+In JOLT, an operation is a certain (narrow) type of data transformation. By default, JOLT comes with several core
+operations:
+
+1. [shift](#the-shift-operation): move data from one path to another
+2. [default](#the-default-operation): provide attributes if they do not already exist
+3. [remove](#the-remove-operation): remove attributes from an object, or elements from an array
+4. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
+5. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
+
+Operations are extensible, and other types of transforms may be provided in certain platforms, such as `chain`, which
+allows for executing other operations in sequence.
 
 ### Specification
 
@@ -124,23 +162,11 @@ Below is an example of some common types of arbitrary attributes in practice.
 }
 ```
 
-## Operations
-
-### Introduction
-
-In JOLT, an operation is a certain (narrow) type of data transformation. By default, JOLT comes with several core
-operations:
-
-1. [shift](#the-shift-operation): move data from one path to another
-2. [default](#the-default-operation): provide attributes if they do not already exist
-3. [remove](#the-remove-operation): remove attributes from an object, or elements from an array
-4. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
-5. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
-
-Operations are extensible, and other types of transforms may be provided in certain platforms, such as `chain`, which
-allows for executing other operations in sequence.
+---
 
 ### The `shift` Operation
+
+> **Summary:** Moves data from one path to another. Any data not shifted will disappear from the output.
 
 `shift` is a kind of JOLT transform that specifies where "data" from the input JSON should be placed in the output JSON.
 At a base level, a single `shift` operation maps data from an input path to an output path.
@@ -638,7 +664,7 @@ Example:
 
 Example, "tag-\*-\*" would match "tag-Foo-Bar", making &(0,0) = "tag-Foo-Bar", &(0,1) = "Foo", &(0,2) = "Bar"
 
-#### `$` Wildcard
+##### `$` Wildcard
 
 Valid only on the LHS of the spec.
 The existence of this wildcard is a reflection of the fact that the "data" of the input JSON can be both in the "values"
@@ -919,7 +945,7 @@ Algorithm Low Level
 1) Try to match the input key with "literal" spec key values
 2) If no literal match is found, try to match against LHS `&` computed values.
    - For deterministic behaviour, if there is more than one `&` LHS key, they are applied/matched in alphabetical
-   order, after the `&` syntactic sugar is replaced with its canonical form.
+     order, after the `&` syntactic sugar is replaced with its canonical form.
 3) If no match is found, try to match against LHS keys with `*` wildcard values.
    - For deterministic behaviour, `*` wildcard keys are sorted and applied/matched in alphabetical order.
 
@@ -930,7 +956,13 @@ Implementation
 Instances of this class execute `shift` transformations given a transform spec of Jackson-style maps of maps
 and a Jackson-style map-of-maps input.
 
+[↑ Back to top](#jolt-community-edition)
+
+---
+
 ### The `default` Operation
+
+> **Summary:** Adds default values to the output in a non-destructive way. Existing values are preserved.
 
 `default` is a kind of JOLT transform that applies default values in a non-destructive way.
 
@@ -1085,13 +1117,20 @@ entry.
 
 To force unambiguity, `default` throws an Exception if the input is null.
 
+[↑ Back to top](#jolt-community-edition)
+
+---
+
 ### The `remove` Operation
 
-Removr is a kind of JOLT transform that removes content from the input JSON.
+> **Summary:** Removes specified keys and values from the input JSON.
 
-For comparison :
+`remove` is a kind of JOLT transform that removes content from the input JSON.
+
+For comparison:
 - `shift` walks the input data and asks its spec "Where should this go?"
-- `removr` walks the spec and asks "if this exists, remove it."
+- `default` walks the spec and asks "Does this exist in the data? If not, add it."
+- `remove` walks the spec and asks "If this exists, remove it."
 
 Example: given input JSON like:
 
@@ -1121,7 +1160,7 @@ With the desired output being:
 }
  ```
 
-This is what the Removr Spec would look like:
+This is what the `remove` Spec would look like:
 
  ```json
  {
@@ -1134,11 +1173,11 @@ This is what the Removr Spec would look like:
 }
  ```
 
-##### Removr Wildcards
+#### `remove` Wildcards
 
-`*` Wildcard
+##### `*` Wildcard
 
-Valid only on the LHS (input JSON keys) side of a Removr Spec
+Valid only on the LHS (input JSON keys) side of a `remove` Spec.
 The `*` wildcard can be used by itself or to match part of a key.
 
 `*` wildcard by itself:
@@ -1227,9 +1266,9 @@ For an output that removed Set1 from all `ratings_*` keys, the spec would be:
 }
 ```
 
-* Arrays
+##### Arrays
 
-Removr can also handle data in Arrays.
+`remove` can also handle data in Arrays.
 
 It can walk through all the elements of an array with the `*` wildcard.
 
@@ -1248,11 +1287,17 @@ Example:
 }
 ```
 
-In this case, Removr will remove the zeroth item from the input "array", which will cause data at
-index "1" to become the new "0". Because of this, Remove matches all the literal/explicit
+In this case, `remove` will remove the zeroth item from the input "array", which will cause data at
+index "1" to become the new "0". Because of this, `remove` matches all the literal/explicit
 indices first, sorts them from biggest to smallest, then does the removing.
 
+[↑ Back to top](#jolt-community-edition)
+
+---
+
 ### The `cardinality` Operation
+
+> **Summary:** Ensures that values are either singular (ONE) or arrays (MANY).
 
 The CardinalityTransform changes the cardinality of input JSON data elements.
 The impetus for the CardinalityTransform was to deal with data sources that are inconsistent with
@@ -1371,7 +1416,7 @@ Let's say we have the following input :
 }
  ```
 
-And we'd like a spec that says "for each item 'url', covert to ONE" :
+And we'd like a spec that says "for each item 'url', convert to ONE":
 
  ```json
  {
@@ -1460,11 +1505,19 @@ Cardinality Logic Table
 | Map     | MANY        | List   | make the input Map, be [0] in a new list     |
 | List    | MANY        | List   | no-op                                        |
 
+[↑ Back to top](#jolt-community-edition)
+
+---
+
 ### The `sort` Operation
 
-Recursively sorts all maps within a JSON object into new sorted LinkedHashMaps so that serialized
+> **Summary:** Recursively sorts all object keys alphabetically for deterministic output.
+
+Recursively sorts all maps within a JSON object into new sorted LinkedHashMaps so that serialised
 representations are deterministic. Useful for debugging and making test fixtures.
 
 Note this will make a copy of the input Map and List objects.
 
 The sort order is standard alphabetical ascending, with a special case for "~" prefixed keys to be bumped to the top.
+
+[↑ Back to top](#jolt-community-edition)
