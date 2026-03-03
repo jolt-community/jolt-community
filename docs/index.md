@@ -26,6 +26,9 @@
   - [The `default` Operation](#the-default-operation)
   - [The `remove` Operation](#the-remove-operation)
     - [`remove` Wildcards](#remove-wildcards)
+  - [The `modify-overwrite` Operation](#the-modify-overwrite-operation)
+    - [Modifier Variants](#modifier-variants)
+    - [Functions Reference](#functions-reference)
   - [The `cardinality` Operation](#the-cardinality-operation)
   - [The `sort` Operation](#the-sort-operation)
 
@@ -105,8 +108,9 @@ operations:
 1. [shift](#the-shift-operation): move data from one path to another
 2. [default](#the-default-operation): provide attributes if they do not already exist
 3. [remove](#the-remove-operation): remove attributes from an object, or elements from an array
-4. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
-5. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
+4. [modify-overwrite](#the-modify-overwrite-operation): modify values using built-in functions
+5. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
+6. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
 
 Operations are extensible, and other types of transforms may be provided in certain platforms, such as `chain`, which
 allows for executing other operations in sequence.
@@ -1290,6 +1294,249 @@ Example:
 In this case, `remove` will remove the zeroth item from the input "array", which will cause data at
 index "1" to become the new "0". Because of this, `remove` matches all the literal/explicit
 indices first, sorts them from biggest to smallest, then does the removing.
+
+[↑ Back to top](#jolt-community-edition)
+
+---
+
+### The `modify-overwrite` Operation
+
+> **Summary:** Modifies values in place using built-in functions. Available in three variants: overwrite, define, and default.
+
+The `modify-overwrite` operation (also known as `modify-overwrite-beta`) allows you to compute and modify values in your JSON using built-in functions. Unlike `shift` which moves data, or `default` which only adds missing values, modifier operations apply functions to transform existing values or create new ones.
+
+**Key Characteristics:**
+- Modifies data in place without restructuring
+- Supports function chaining and composition
+- Can reference values from elsewhere in the document
+- Works with both literal values and dynamic lookups
+
+#### Modifier Variants
+
+There are three variants of the modifier operation, each with different behaviour for handling existing values:
+
+##### 1. `modify-overwrite` (Overwritr)
+
+Writes the computed value whether the key exists or not. If the key exists, its value is overwritten.
+
+```json
+{
+  "operation": "modify-overwrite",
+  "spec": {
+    "fullName": "=concat(@(1,firstName),' ',@(1,lastName))"
+  }
+}
+```
+
+##### 2. `modify-define` (Definr)
+
+Only writes the computed value if the key does not exist. If the key exists (even with a `null` value), it is left unchanged.
+
+```json
+{
+  "operation": "modify-define",
+  "spec": {
+    "status": "=defaultValue('active')"
+  }
+}
+```
+
+##### 3. `modify-default` (Defaultr)
+
+Only writes the computed value if the key does not exist OR if its value is `null`. Existing non-null values are preserved.
+
+```json
+{
+  "operation": "modify-default",
+  "spec": {
+    "timestamp": "=now()"
+  }
+}
+```
+
+##### Comparison with the `default` operation
+
+Compared to the `default` operation, `modify-default` and `modify-define` are more powerful and flexible:
+- They can add computed/dynamic values using functions (`default` only adds static values)
+- They can perform transformations (concat, toLower, calculations, etc.)
+- They can reference other values using `@(levels,key)` lookups
+
+#### Spec Syntax
+
+The modifier spec follows these conventions:
+
+**Literal Values:**
+```json
+{
+  "key": "literal value"
+}
+```
+
+**Function Calls:**
+Functions are prefixed with `=`:
+```json
+{
+  "key": "=functionName(arg1, arg2, ...)"
+}
+```
+
+**Lookups:**
+Use `@(levels,key)` to reference values elsewhere in the document:
+```json
+{
+  "derived": "=concat(@(1,field1), @(1,field2))"
+}
+```
+
+**Context References:**
+Use `^` to reference context values:
+```json
+{
+  "contextValue": "^some.context.path"
+}
+```
+
+**Passthrough:**
+Use `@` alone to explicitly pass through the current value:
+```json
+{
+  "unchanged": "@"
+}
+```
+
+#### Functions Reference
+
+##### String Functions
+
+| Function     | Description                         | Example                          | Result            |
+|--------------|-------------------------------------|----------------------------------|-------------------|
+| `toLower`    | Converts string to lowercase        | `=toLower('HELLO')`              | `"hello"`         |
+| `toUpper`    | Converts string to uppercase        | `=toUpper('hello')`              | `"HELLO"`         |
+| `concat`     | Concatenates multiple values        | `=concat('Hello', ' ', 'World')` | `"Hello World"`   |
+| `join`       | Joins values with a delimiter       | `=join('-', 'a', 'b', 'c')`      | `"a-b-c"`         |
+| `split`      | Splits string by delimiter          | `=split('-', 'a-b-c')`           | `["a", "b", "c"]` |
+| `substring`  | Extracts substring                  | `=substring('Hello', 0, 3)`      | `"Hel"`           |
+| `trim`       | Removes leading/trailing whitespace | `=trim('  hello  ')`             | `"hello"`         |
+| `leftPad`    | Pads string on the left             | `=leftPad('5', 3, '0')`          | `"005"`           |
+| `rightPad`   | Pads string on the right            | `=rightPad('5', 3, '0')`         | `"500"`           |
+| `replace`    | Replaces first occurrence           | `=replace('hello', 'l', 'L')`    | `"heLlo"`         |
+| `replaceAll` | Replaces all occurrences (regex)    | `=replaceAll('hello', 'l', 'L')` | `"heLLo"`         |
+
+##### Mathematical Functions
+
+| Function           | Description                  | Example                        | Result |
+|--------------------|------------------------------|--------------------------------|--------|
+| `min`              | Returns minimum value        | `=min(5, 3, 9)`                | `3`    |
+| `max`              | Returns maximum value        | `=max(5, 3, 9)`                | `9`    |
+| `abs`              | Absolute value               | `=abs(-5)`                     | `5`    |
+| `avg`              | Average of values            | `=avg(2, 4, 6)`                | `4.0`  |
+| `intSum`           | Sum as integer               | `=intSum(1, 2, 3)`             | `6`    |
+| `doubleSum`        | Sum as double                | `=doubleSum(1.5, 2.5)`         | `4.0`  |
+| `longSum`          | Sum as long                  | `=longSum(100, 200)`           | `300`  |
+| `intSubtract`      | Subtract as integer          | `=intSubtract(10, 3)`          | `7`    |
+| `doubleSubtract`   | Subtract as double           | `=doubleSubtract(10.5, 3.2)`   | `7.3`  |
+| `longSubtract`     | Subtract as long             | `=longSubtract(1000, 300)`     | `700`  |
+| `divide`           | Division                     | `=divide(10, 2)`               | `5.0`  |
+| `divideAndRound`   | Division with rounding       | `=divideAndRound(10, 3, 0)`    | `3`    |
+| `multiply`         | Multiplication               | `=multiply(5, 3)`              | `15.0` |
+| `multiplyAndRound` | Multiplication with rounding | `=multiplyAndRound(5.7, 3, 0)` | `17`   |
+
+##### Type Conversion Functions
+
+| Function    | Description                       | Example              | Result |
+|-------------|-----------------------------------|----------------------|--------|
+| `toInteger` | Converts to integer               | `=toInteger('42')`   | `42`   |
+| `toDouble`  | Converts to double                | `=toDouble('3.14')`  | `3.14` |
+| `toLong`    | Converts to long                  | `=toLong('9999')`    | `9999` |
+| `toBoolean` | Converts to boolean               | `=toBoolean('true')` | `true` |
+| `toString`  | Converts to string                | `=toString(42)`      | `"42"` |
+| `size`      | Returns size of collection/string | `=size([1,2,3])`     | `3`    |
+
+##### List Functions
+
+| Function       | Description                 | Example                  | Result    |
+|----------------|-----------------------------|--------------------------|-----------|
+| `firstElement` | Gets first element of array | `=firstElement([1,2,3])` | `1`       |
+| `lastElement`  | Gets last element of array  | `=lastElement([1,2,3])`  | `3`       |
+| `elementAt`    | Gets element at index       | `=elementAt([1,2,3], 1)` | `2`       |
+| `toList`       | Converts value to list      | `=toList(5)`             | `[5]`     |
+| `sort`         | Sorts list                  | `=sort([3,1,2])`         | `[1,2,3]` |
+
+##### Object Functions
+
+| Function                 | Description                     | Example                     |
+|--------------------------|---------------------------------|-----------------------------|
+| `squashNulls`            | Removes null values from object | `=squashNulls()`            |
+| `recursivelySquashNulls` | Recursively removes nulls       | `=recursivelySquashNulls()` |
+| `squashDuplicates`       | Removes duplicate values        | `=squashDuplicates()`       |
+
+##### Date Functions
+
+| Function         | Description                        | Example                              |
+|------------------|------------------------------------|--------------------------------------|
+| `now`            | Returns current date/time string   | `=now()`                             |
+| `nowEpochMillis` | Returns current epoch milliseconds | `=nowEpochMillis()`                  |
+| `fromEpochMilli` | Converts epoch millis to date      | `=fromEpochMilli(1609459200000)`     |
+| `toEpochMilli`   | Converts date to epoch millis      | `=toEpochMilli('2021-01-01')`        |
+| `dateAdd`        | Adds duration to date              | `=dateAdd(date, amount, unit)`       |
+| `dateSubstract`  | Subtracts duration from date       | `=dateSubstract(date, amount, unit)` |
+
+##### Utility Functions
+
+| Function    | Description                 | Example                | Result               |
+|-------------|-----------------------------|------------------------|----------------------|
+| `noop`      | Returns input unchanged     | `=noop(value)`         | `value`              |
+| `isPresent` | Checks if value exists      | `=isPresent(@(1,key))` | `true/false`         |
+| `notNull`   | Checks if value is not null | `=notNull(@(1,key))`   | `true/false`         |
+| `isNull`    | Checks if value is null     | `=isNull(@(1,key))`    | `true/false`         |
+| `uuid`      | Generates a UUID            | `=uuid()`              | `"550e8400-e29b..."` |
+
+#### Example
+
+```json
+{
+  "operation": "modify-overwrite",
+  "spec": {
+    "person": {
+      "fullName": "=concat(@(1,firstName),' ',@(1,lastName))",
+      "age": "=toInteger(@(1,ageString))",
+      "email": "=toLower(@(1,email))",
+      "status": "=defaultValue('active')",
+      "createdAt": "=now()",
+      "id": "=uuid()"
+    }
+  }
+}
+```
+
+**Input:**
+```json
+{
+  "person": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "ageString": "30",
+    "email": "JOHN.DOE@EXAMPLE.COM"
+  }
+}
+```
+
+**Output:**
+```json
+{
+  "person": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "ageString": "30",
+    "email": "john.doe@example.com",
+    "fullName": "John Doe",
+    "age": 30,
+    "status": "active",
+    "createdAt": "2025-03-02T10:30:00Z",
+    "id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```
 
 [↑ Back to top](#jolt-community-edition)
 
