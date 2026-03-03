@@ -26,7 +26,7 @@
   - [The `default` Operation](#the-default-operation)
   - [The `remove` Operation](#the-remove-operation)
     - [`remove` Wildcards](#remove-wildcards)
-  - [The `modify-overwrite` Operation](#the-modify-overwrite-operation)
+  - [The `modify` Operations](#the-modify-operations)
     - [Modifier Variants](#modifier-variants)
     - [Functions Reference](#functions-reference)
   - [The `cardinality` Operation](#the-cardinality-operation)
@@ -1299,11 +1299,13 @@ indices first, sorts them from biggest to smallest, then does the removing.
 
 ---
 
-### The `modify-overwrite` Operation
+### The `modify` Operations
 
 > **Summary:** Modifies values in place using built-in functions. Available in three variants: overwrite, define, and default.
 
-The `modify-overwrite` operation (also known as `modify-overwrite-beta`) allows you to compute and modify values in your JSON using built-in functions. Unlike `shift` which moves data, or `default` which only adds missing values, modifier operations apply functions to transform existing values or create new ones.
+The `modify` operations allow you to compute and modify values in your JSON using built-in functions. 
+Unlike `shift` which moves data, or `default` which only adds missing values, modifier operations apply functions 
+to transform existing values or create new ones.
 
 **Key Characteristics:**
 - Modifies data in place without restructuring
@@ -1315,7 +1317,7 @@ The `modify-overwrite` operation (also known as `modify-overwrite-beta`) allows 
 
 There are three variants of the modifier operation, each with different behaviour for handling existing values:
 
-##### 1. `modify-overwrite` (Overwritr)
+##### 1. `modify-overwrite` (or `modify-overwrite-beta`)
 
 Writes the computed value whether the key exists or not. If the key exists, its value is overwritten.
 
@@ -1328,7 +1330,7 @@ Writes the computed value whether the key exists or not. If the key exists, its 
 }
 ```
 
-##### 2. `modify-define` (Definr)
+##### 2. `modify-define` (or `modify-define-beta`)
 
 Only writes the computed value if the key does not exist. If the key exists (even with a `null` value), it is left unchanged.
 
@@ -1341,7 +1343,7 @@ Only writes the computed value if the key does not exist. If the key exists (eve
 }
 ```
 
-##### 3. `modify-default` (Defaultr)
+##### 3. `modify-default` (or `modify-default-beta`)
 
 Only writes the computed value if the key does not exist OR if its value is `null`. Existing non-null values are preserved.
 
