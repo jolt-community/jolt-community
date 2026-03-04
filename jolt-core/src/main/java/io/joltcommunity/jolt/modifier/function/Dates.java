@@ -78,10 +78,10 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input.size() != 4) {
+            if (input.size() != 5) {
                 return Optional.empty();
             } else {
-                return format(input.get(0), input.get(1), input.get(2), input.get(3));
+                return format(input.get(0), input.get(1), input.get(2), input.get(3), input.get(4));
             }
         }
     }
@@ -181,18 +181,19 @@ public class Dates {
     /**
      * Transforms a date from one pattern to another.
      */
-    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object zoneId) {
+    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object fromZoneId, Object toZoneId) {
         if (!((date instanceof String dateStr)
                 && (fromPattern instanceof String fromPatternStr)
                 && (toPattern instanceof String toPatternStr)
-                && (zoneId instanceof String zoneIdStr)))
+                && (fromZoneId instanceof String fromZoneIdStr)
+                && (toZoneId instanceof String toZoneIdStr)))
             return Optional.empty();
 
         try {
             DateTimeFormatter fromFormatter = DateTimeFormatter.ofPattern(fromPatternStr);
-            DateTimeFormatter toFormatter = DateTimeFormatter.ofPattern(toPatternStr).withZone(ZoneId.of(zoneIdStr));
+            DateTimeFormatter toFormatter = DateTimeFormatter.ofPattern(toPatternStr).withZone(ZoneId.of(toZoneIdStr));
             TemporalAccessor temporal = fromFormatter.parse(dateStr);
-            Instant instant = parseToInstant(temporal, zoneIdStr);
+            Instant instant = parseToInstant(temporal, fromZoneIdStr);
             return Optional.of(toFormatter.format(instant));
         } catch (Exception e) {
             return Optional.empty();
