@@ -78,10 +78,14 @@ public class Dates {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input.size() != 5) {
-                return Optional.empty();
-            } else {
+            if (input.size() == 3) {
+                return format(input.get(0), input.get(1), input.get(2));
+            } else if (input.size() == 4){
+                return format(input.get(0), input.get(1), input.get(2), input.get(3));
+            } else if (input.size() == 5){
                 return format(input.get(0), input.get(1), input.get(2), input.get(3), input.get(4));
+            } else  {
+                return Optional.empty();
             }
         }
     }
@@ -176,6 +180,16 @@ public class Dates {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+
+    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern) {
+        String defaultZoneId = ZoneId.systemDefault().getId();
+        return format(date, fromPattern, toPattern, defaultZoneId, defaultZoneId);
+    }
+
+    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object zoneId) {
+        return format(date, fromPattern, toPattern, zoneId, zoneId);
     }
 
     /**
