@@ -18,16 +18,19 @@ package io.joltcommunity.jolt.jsonUtil.testdomain.three;
 
 import io.joltcommunity.jolt.jsonUtil.testdomain.QueryFilter;
 import io.joltcommunity.jolt.jsonUtil.testdomain.QueryParam;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,30 +40,65 @@ import java.util.Map;
 @JsonDeserialize(using = LogicalFilter3.LogicalFilter4Deserializer.class)
 public class LogicalFilter3 implements QueryFilter {
 
+    public static class LogicalFilter3Serializer extends ValueSerializer<LogicalFilter3> {
+
+        @Override
+        public void serialize(LogicalFilter3 filter, JsonGenerator jgen, SerializationContext provider) {
+            jgen.writeStartObject();
+            jgen.writePOJOProperty( filter.getQueryParam().toString(), filter.getFilters().values() );
+            jgen.writeEndObject();
+        }
+    }
+
+    public static class LogicalFilter4Deserializer extends ValueDeserializer<LogicalFilter3> {
+
+        @Override
+        public LogicalFilter3 deserialize( JsonParser jp, DeserializationContext ctxt ) {
+
+            ObjectReadContext objectCodec = jp.objectReadContext();
+            ObjectNode root = jp.readValueAsTree();
+
+            // We assume it is a LogicalFilter
+            Iterator<String> iter = root.propertyNames().iterator();
+            String key = iter.next();
+
+            JsonNode arrayNode = root.iterator().next();
+            if ( arrayNode == null || arrayNode.isMissingNode() || ! arrayNode.isArray() ) {
+                throw new RuntimeException( "Invalid format of LogicalFilter encountered." );
+            }
+
+            // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
+            JsonParser subJsonParser = arrayNode.traverse( objectCodec );
+            List<QueryFilter> childrenQueryFilters = subJsonParser.readValueAs( new TypeReference<List<QueryFilter>>() {} );
+
+            return new LogicalFilter3( QueryParam.valueOf( key ), childrenQueryFilters );
+        }
+    }
+
     private final QueryParam queryParam;
     private final Map<QueryParam, QueryFilter> filters;
 
-    public LogicalFilter3(QueryParam queryParam, List<QueryFilter> filters) {
+    public LogicalFilter3( QueryParam queryParam, List<QueryFilter> filters ) {
         this.queryParam = queryParam;
 
         this.filters = new LinkedHashMap<>();
-        for (QueryFilter queryFilter : filters) {
-            this.filters.put(queryFilter.queryParam(), queryFilter);
+        for ( QueryFilter queryFilter : filters ) {
+            this.filters.put( queryFilter.getQueryParam(), queryFilter );
         }
     }
 
     @Override
-    public Map<QueryParam, QueryFilter> filters() {
+    public Map<QueryParam, QueryFilter> getFilters() {
         return filters;
     }
 
     @Override
-    public QueryParam queryParam() {
+    public QueryParam getQueryParam() {
         return queryParam;
     }
 
     @Override
-    public String value() {
+    public String getValue() {
         return null;
     }
 
@@ -73,40 +111,5 @@ public class LogicalFilter3 implements QueryFilter {
     public boolean isReal() {
         return false;
     }
-
-    public static class LogicalFilter3Serializer extends JsonSerializer<LogicalFilter3> {
-
-        @Override
-        public void serialize(LogicalFilter3 filter, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeStartObject();
-            jgen.writeObjectField(filter.queryParam().toString(), filter.filters().values());
-            jgen.writeEndObject();
-        }
-    }
-
-    public static class LogicalFilter4Deserializer extends JsonDeserializer<LogicalFilter3> {
-
-        @Override
-        public LogicalFilter3 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-
-            ObjectCodec objectCodec = jp.getCodec();
-            ObjectNode root = jp.readValueAsTree();
-
-            // We assume it is a LogicalFilter
-            Iterator<String> iter = root.fieldNames();
-            String key = iter.next();
-
-            JsonNode arrayNode = root.iterator().next();
-            if (arrayNode == null || arrayNode.isMissingNode() || !arrayNode.isArray()) {
-                throw new RuntimeException("Invalid format of LogicalFilter encountered.");
-            }
-
-            // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
-            JsonParser subJsonParser = arrayNode.traverse(objectCodec);
-            List<QueryFilter> childrenQueryFilters = subJsonParser.readValueAs(new TypeReference<List<QueryFilter>>() {
-            });
-
-            return new LogicalFilter3(QueryParam.valueOf(key), childrenQueryFilters);
-        }
-    }
 }
+
