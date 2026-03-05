@@ -16,7 +16,7 @@
  */
 package io.joltcommunity.jolt;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 
 import java.io.InputStream;
 import java.util.List;
