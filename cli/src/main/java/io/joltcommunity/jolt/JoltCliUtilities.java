@@ -16,11 +16,12 @@
  */
 package io.joltcommunity.jolt;
 
-import com.fasterxml.jackson.core.JsonParseException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import tools.jackson.core.JacksonException;
 
 /**
  * A utility class for the Jolt CLI tool.
@@ -50,7 +51,7 @@ public class JoltCliUtilities {
     public static Object createJsonObjectFromFile(File file, boolean suppressOutput) {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             return JsonUtils.jsonToObject(inputStream);
-        } catch (JsonParseException e) {
+        } catch (JacksonException e) {
             printToStandardOut("File " + file.getAbsolutePath() + " did not contain properly formatted JSON.", suppressOutput);
             System.exit(1);
         } catch (IOException e) {
