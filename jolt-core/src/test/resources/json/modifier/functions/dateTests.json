@@ -63,6 +63,20 @@
             "badArgs6": "=dateSubstract(@(2,dateForOps), 'INVALID-PATTERN', 'P1D', 'UTC')",
             "badArgs7": "=dateSubstract(@(2,dateForOps), 'yyyy-MM-dd', @(2,invalidDuration), 'UTC')",
             "badArgs8": "=dateSubstract(@(2,dateForOps), 'yyyy-MM-dd', 'P1D', 'Invalid/Timezone')"
+        },
+        "format": {
+            "formatDate": "=format(@(2,dateForOps), 'yyyy-MM-dd', 'yyyy MM dd')",
+            "formatDateTime": "=format(@(2,dateTimeForOps), yyyy-MM-dd HH:mm:ss, yyyy-MM-dd'T'HH:mm:ss'Z')",
+            "formatWithTimeZone": "=format(@(2,dateTimeForOps), yyyy-MM-dd HH:mm:ss, yyyy-MM-dd'T'HH:mm:ssXXX, Europe/Paris)",
+            "formatFromTimeZoneToTimeZone": "=format(@(2,dateTimeForOps), yyyy-MM-dd HH:mm:ss, yyyy-MM-dd'T'HH:mm:ss'Z',Europe/Paris, UTC)",
+            "badArgs1": "=format(@(2,numberValue), 'yyyy-MM-dd', 'yyyy MM dd')",
+            "badArgs2": "=format(@(2,invalidDate), 'yyyy-MM-dd', 'yyyy MM dd')",
+            "badArgs3": "=format(@(2,dateForOps), 'yyyy-MM-dd', 456)",
+            "badArgs4": "=format(@(2,dateForOps), 'yyyy-MM-dd', 'yyyy MM dd', 789)",
+            "badArgs5": "=format(@(2,dateForOps), 'INVALID-PATTERN', 'yyyy MM dd')",
+            "badArgs6": "=format(@(2,dateForOps), 'yyyy-MM-dd', 'INVALID-PATTERN')",
+            "badArgs7": "=format(@(2,dateForOps), 'yyyy-MM-dd', 'yyyy MM dd', 'Invalid/Timezone')",
+            "badArgs8": "=format(@(2,dateForOps), 'yyyy-MM-dd', 'yyyy MM dd', 'UTC', 'Invalid/Timezone')"
         }
     },
     "OVERWRITR": {
@@ -101,6 +115,12 @@
             "subtractMonths": "1999-11-01",
             "subtractYears": "1999-01-01",
             "subtractHours": "2000-01-01 10:00:00"
+        },
+        "format": {
+            "formatDate": "2000 01 01",
+            "formatDateTime": "2000-01-01T12:00:00Z",
+            "formatWithTimeZone": "2000-01-01T12:00:00+01:00",
+            "formatFromTimeZoneToTimeZone": "2000-01-01T11:00:00Z"
         }
     }
 }
