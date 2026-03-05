@@ -45,7 +45,7 @@ public class LogicalFilter3 implements QueryFilter {
         @Override
         public void serialize(LogicalFilter3 filter, JsonGenerator jgen, SerializationContext provider) {
             jgen.writeStartObject();
-            jgen.writePOJOProperty( filter.getQueryParam().toString(), filter.getFilters().values() );
+            jgen.writePOJOProperty( filter.queryParam().toString(), filter.filters().values() );
             jgen.writeEndObject();
         }
     }
@@ -83,22 +83,22 @@ public class LogicalFilter3 implements QueryFilter {
 
         this.filters = new LinkedHashMap<>();
         for ( QueryFilter queryFilter : filters ) {
-            this.filters.put( queryFilter.getQueryParam(), queryFilter );
+            this.filters.put( queryFilter.queryParam(), queryFilter );
         }
     }
 
     @Override
-    public Map<QueryParam, QueryFilter> getFilters() {
+    public Map<QueryParam, QueryFilter> filters() {
         return filters;
     }
 
     @Override
-    public QueryParam getQueryParam() {
+    public QueryParam queryParam() {
         return queryParam;
     }
 
     @Override
-    public String getValue() {
+    public String value() {
         return null;
     }
 
