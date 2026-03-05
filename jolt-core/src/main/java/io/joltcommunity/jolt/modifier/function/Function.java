@@ -25,6 +25,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static java.util.UUID.*;
+
 
 /**
  * Modifier supports a Function on RHS that accepts jolt path expressions as arguments and evaluates
@@ -160,6 +162,8 @@ public interface Function {
         }
         return Optional.of(args[0]);
     };
+    
+    Function uuid = args -> Optional.of(randomUUID().toString());
 
     Optional<Object> apply(Object... args);
 
@@ -388,6 +392,7 @@ public interface Function {
         }
 
         protected abstract Optional<T> applySingle(final Object arg);
+        
     }
 
 }
