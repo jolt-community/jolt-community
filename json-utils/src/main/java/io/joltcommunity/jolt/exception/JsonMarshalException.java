@@ -18,7 +18,12 @@ package io.joltcommunity.jolt.exception;
 
 public class JsonMarshalException extends RuntimeException {
 
-    public JsonMarshalException(String msg) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2234726763666700472L;
+
+	public JsonMarshalException(String msg) {
         super(msg);
     }
 

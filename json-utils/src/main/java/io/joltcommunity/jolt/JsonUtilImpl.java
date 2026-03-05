@@ -68,6 +68,7 @@ public class JsonUtilImpl implements JsonUtil {
 
     public JsonUtilImpl() {
         this.objectMapper = buildStockJoltObjectMapper();
+        prettyPrintWriter = this.objectMapper.writerWithDefaultPrettyPrinter();
     }
 
     
@@ -108,7 +109,7 @@ public class JsonUtilImpl implements JsonUtil {
     public Object jsonToObject(InputStream in) {
         try {
             return objectMapper.readValue(in, Object.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to an Object.", e);
         }
     }
@@ -131,7 +132,7 @@ public class JsonUtilImpl implements JsonUtil {
     public Map<String, Object> jsonToMap(InputStream in) {
         try {
             return objectMapper.readValue(in, mapTypeReference);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to a Map.", e);
         }
     }
@@ -154,7 +155,7 @@ public class JsonUtilImpl implements JsonUtil {
     public List<Object> jsonToList(InputStream in) {
         try {
             return objectMapper.readValue(in, listTypeReference);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to a List.", e);
         }
     }
@@ -268,7 +269,7 @@ public class JsonUtilImpl implements JsonUtil {
     public <T> T streamToType(InputStream in, TypeReference<T> typeRef) {
         try {
             return objectMapper.readValue(in, typeRef);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to type: " + typeRef, e);
         }
     }
@@ -277,7 +278,7 @@ public class JsonUtilImpl implements JsonUtil {
     public <T> T streamToType(InputStream in, Class<T> aClass) {
         try {
             return objectMapper.readValue(in, aClass);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to class: " + aClass, e);
         }
     }
@@ -288,7 +289,7 @@ public class JsonUtilImpl implements JsonUtil {
     public String toJsonString(Object obj) {
         try {
             return objectMapper.writeValueAsString(obj);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonMarshalException("Unable to serialize object : " + obj, e);
         }
     }
@@ -297,7 +298,7 @@ public class JsonUtilImpl implements JsonUtil {
     public String toPrettyJsonString(Object obj) {
         try {
             return prettyPrintWriter.writeValueAsString(obj);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonMarshalException("Unable to serialize object : " + obj, e);
         }
     }

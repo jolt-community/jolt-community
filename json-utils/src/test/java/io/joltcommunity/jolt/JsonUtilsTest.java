@@ -17,7 +17,7 @@
 package io.joltcommunity.jolt;
 
 import com.beust.jcommander.internal.Sets;
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
