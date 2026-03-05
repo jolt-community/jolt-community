@@ -70,7 +70,7 @@ public class DatesTest extends AbstractTester {
         testCases.add(new Object[]{"format-with-time", FORMAT, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss"}, Optional.of("2000-01-01 12:30:45")});
         testCases.add(new Object[]{"format-with-time", FORMAT, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "Europe/Paris"}, Optional.of("2000-01-01 12:30:45")});
         testCases.add(new Object[]{"format-to-iso8601", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ss'Z'"}, Optional.of("2000-01-01T00:00:00Z")});
-        testCases.add(new Object[]{"format-with-UTC-timezone", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX","UTC"}, Optional.of("2000-01-01T00:00:00Z")});
+        testCases.add(new Object[]{"format-with-default-timezone", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX"}, Optional.of("2000-01-01T00:00:00Z")});
         testCases.add(new Object[]{"format-with-paris-timezone", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX","Europe/Paris"}, Optional.of("2000-01-01T00:00:00+01:00")});
         testCases.add(new Object[]{"format-to-a-different-timezone", FORMAT, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "Europe/Paris", "UTC" }, Optional.of("2000-01-01 11:30:45")});
 

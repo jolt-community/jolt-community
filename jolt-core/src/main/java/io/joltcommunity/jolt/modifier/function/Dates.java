@@ -184,7 +184,7 @@ public class Dates {
 
 
     private static Optional<Object> format(Object date, Object fromPattern, Object toPattern) {
-        String defaultZoneId = ZoneId.systemDefault().getId();
+        String defaultZoneId = ZoneOffset.UTC.getId();
         return format(date, fromPattern, toPattern, defaultZoneId, defaultZoneId);
     }
 
