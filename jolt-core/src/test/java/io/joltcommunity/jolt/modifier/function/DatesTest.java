@@ -34,7 +34,7 @@ public class DatesTest extends AbstractTester {
         Function NOW = new Dates.now();
         Function TO_EPOCH = new Dates.toEpochMilli();
         Function FROM_EPOCH = new Dates.fromEpochMilli();
-        Function FORMAT = new Dates.format();
+        Function FORMAT_DATE = new Dates.formatDate();
         Function DATE_ADD = new Dates.dateAdd();
         Function DATE_SUBSTRACT = new Dates.dateSubstract();
 
@@ -66,20 +66,20 @@ public class DatesTest extends AbstractTester {
         testCases.add(new Object[]{"toEpoch-date-invalid", TO_EPOCH, new Object[]{1}, Optional.empty()});
         testCases.add(new Object[]{"toEpoch-null-args", TO_EPOCH, null, Optional.empty()});
 
-        testCases.add(new Object[]{"format-date-only", FORMAT, new Object[]{"2000-01-01", "yyyy-MM-dd", "yyyyMMdd"}, Optional.of("20000101")});
-        testCases.add(new Object[]{"format-with-time", FORMAT, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss"}, Optional.of("2000-01-01 12:30:45")});
-        testCases.add(new Object[]{"format-with-time", FORMAT, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "Europe/Paris"}, Optional.of("2000-01-01 12:30:45")});
-        testCases.add(new Object[]{"format-to-iso8601", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ss'Z'"}, Optional.of("2000-01-01T00:00:00Z")});
-        testCases.add(new Object[]{"format-with-default-timezone", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX"}, Optional.of("2000-01-01T00:00:00Z")});
-        testCases.add(new Object[]{"format-with-paris-timezone", FORMAT, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX","Europe/Paris"}, Optional.of("2000-01-01T00:00:00+01:00")});
-        testCases.add(new Object[]{"format-to-a-different-timezone", FORMAT, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "Europe/Paris", "UTC" }, Optional.of("2000-01-01 11:30:45")});
+        testCases.add(new Object[]{"format-date-only", FORMAT_DATE, new Object[]{"2000-01-01", "yyyy-MM-dd", "yyyyMMdd"}, Optional.of("20000101")});
+        testCases.add(new Object[]{"format-with-time", FORMAT_DATE, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss"}, Optional.of("2000-01-01 12:30:45")});
+        testCases.add(new Object[]{"format-with-time", FORMAT_DATE, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "Europe/Paris"}, Optional.of("2000-01-01 12:30:45")});
+        testCases.add(new Object[]{"format-to-iso8601", FORMAT_DATE, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ss'Z'"}, Optional.of("2000-01-01T00:00:00Z")});
+        testCases.add(new Object[]{"format-with-default-timezone", FORMAT_DATE, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX"}, Optional.of("2000-01-01T00:00:00Z")});
+        testCases.add(new Object[]{"format-with-paris-timezone", FORMAT_DATE, new Object[]{"20000101", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssXXX","Europe/Paris"}, Optional.of("2000-01-01T00:00:00+01:00")});
+        testCases.add(new Object[]{"format-to-a-different-timezone", FORMAT_DATE, new Object[]{"2000-01-01T12:30:45", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "Europe/Paris", "UTC" }, Optional.of("2000-01-01 11:30:45")});
 
-        testCases.add(new Object[]{"format-missing-parameter", FORMAT, new Object[]{"2000-01-01", "yyyy-MM-dd"}, Optional.empty()});
-        testCases.add(new Object[]{"format-from-pattern-invalid", FORMAT, new Object[]{"2000-01-01", "ABCD", "yyyy-MM-dd"}, Optional.empty()});
-        testCases.add(new Object[]{"format-to-pattern-invalid", FORMAT, new Object[]{"2000-01-01", "yyyy-MM-dd", "ABCD"}, Optional.empty()});
-        testCases.add(new Object[]{"format-pattern-numeric", FORMAT, new Object[]{"2000-01-01", "yyyy-MM-dd", 1}, Optional.empty()});
-        testCases.add(new Object[]{"format-too-many-timezones", FORMAT, new Object[]{"2000-01-01", "yyyy-MM-dd", "yyyy-MM-dd", "UTC", "UTC", "UTC"}, Optional.empty()});
-        testCases.add(new Object[]{"format-null-args", FORMAT, null, Optional.empty()});
+        testCases.add(new Object[]{"format-missing-parameter", FORMAT_DATE, new Object[]{"2000-01-01", "yyyy-MM-dd"}, Optional.empty()});
+        testCases.add(new Object[]{"format-from-pattern-invalid", FORMAT_DATE, new Object[]{"2000-01-01", "ABCD", "yyyy-MM-dd"}, Optional.empty()});
+        testCases.add(new Object[]{"format-to-pattern-invalid", FORMAT_DATE, new Object[]{"2000-01-01", "yyyy-MM-dd", "ABCD"}, Optional.empty()});
+        testCases.add(new Object[]{"format-pattern-numeric", FORMAT_DATE, new Object[]{"2000-01-01", "yyyy-MM-dd", 1}, Optional.empty()});
+        testCases.add(new Object[]{"format-too-many-timezones", FORMAT_DATE, new Object[]{"2000-01-01", "yyyy-MM-dd", "yyyy-MM-dd", "UTC", "UTC", "UTC"}, Optional.empty()});
+        testCases.add(new Object[]{"format-null-args", FORMAT_DATE, null, Optional.empty()});
 
         testCases.add(new Object[]{"dateAdd-one-day", DATE_ADD, new Object[]{"2000-01-01", "yyyy-MM-dd", "P1D", "UTC"}, Optional.of("2000-01-02")});
         testCases.add(new Object[]{"dateAdd-one-month", DATE_ADD, new Object[]{"2000-01-01", "yyyy-MM-dd", "P1M", "UTC"}, Optional.of("2000-02-01")});

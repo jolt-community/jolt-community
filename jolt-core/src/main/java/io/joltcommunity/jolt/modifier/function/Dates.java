@@ -74,16 +74,16 @@ public class Dates {
         }
     }
 
-    public static final class format extends Function.ListFunction {
+    public static final class formatDate extends Function.ListFunction {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
             if (input.size() == 3) {
-                return format(input.get(0), input.get(1), input.get(2));
+                return formatDate(input.get(0), input.get(1), input.get(2));
             } else if (input.size() == 4){
-                return format(input.get(0), input.get(1), input.get(2), input.get(3));
+                return formatDate(input.get(0), input.get(1), input.get(2), input.get(3));
             } else if (input.size() == 5){
-                return format(input.get(0), input.get(1), input.get(2), input.get(3), input.get(4));
+                return formatDate(input.get(0), input.get(1), input.get(2), input.get(3), input.get(4));
             } else  {
                 return Optional.empty();
             }
@@ -183,19 +183,19 @@ public class Dates {
     }
 
 
-    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern) {
+    private static Optional<Object> formatDate(Object date, Object fromPattern, Object toPattern) {
         String defaultZoneId = ZoneOffset.UTC.getId();
-        return format(date, fromPattern, toPattern, defaultZoneId, defaultZoneId);
+        return formatDate(date, fromPattern, toPattern, defaultZoneId, defaultZoneId);
     }
 
-    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object zoneId) {
-        return format(date, fromPattern, toPattern, zoneId, zoneId);
+    private static Optional<Object> formatDate(Object date, Object fromPattern, Object toPattern, Object zoneId) {
+        return formatDate(date, fromPattern, toPattern, zoneId, zoneId);
     }
 
     /**
      * Transforms a date from one pattern to another.
      */
-    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object fromZoneId, Object toZoneId) {
+    private static Optional<Object> formatDate(Object date, Object fromPattern, Object toPattern, Object fromZoneId, Object toZoneId) {
         if (!((date instanceof String dateStr)
                 && (fromPattern instanceof String fromPatternStr)
                 && (toPattern instanceof String toPatternStr)
