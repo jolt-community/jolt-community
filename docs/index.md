@@ -1474,14 +1474,15 @@ Use `@` alone to explicitly pass through the current value:
 
 ##### Date Functions
 
-| Function         | Description                        | Example                              |
-|------------------|------------------------------------|--------------------------------------|
-| `now`            | Returns current date/time string   | `=now()`                             |
-| `nowEpochMillis` | Returns current epoch milliseconds | `=nowEpochMillis()`                  |
-| `fromEpochMilli` | Converts epoch millis to date      | `=fromEpochMilli(1609459200000)`     |
-| `toEpochMilli`   | Converts date to epoch millis      | `=toEpochMilli('2021-01-01')`        |
-| `dateAdd`        | Adds duration to date              | `=dateAdd(date, amount, unit)`       |
-| `dateSubstract`  | Subtracts duration from date       | `=dateSubstract(date, amount, unit)` |
+| Function         | Description                            | Example                                                                                                                                                                                                                                 |
+|------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `now`            | Returns current date/time string       | `=now()`                                                                                                                                                                                                                                |
+| `nowEpochMillis` | Returns current epoch milliseconds     | `=nowEpochMillis()`                                                                                                                                                                                                                     |
+| `fromEpochMilli` | Converts epoch millis to date          | `=fromEpochMilli(1609459200000)`                                                                                                                                                                                                        |
+| `toEpochMilli`   | Converts date to epoch millis          | `=toEpochMilli('2021-01-01')`                                                                                                                                                                                                           |
+| `dateAdd`        | Adds duration to date                  | `=dateAdd(date, amount, unit)`                                                                                                                                                                                                          |
+| `dateSubstract`  | Subtracts duration from date           | `=dateSubstract(date, amount, unit)`                                                                                                                                                                                                    |
+| `formatDate`     | Change date from one format to another | `=formatDate('20210101', yyyyMMdd, yyyy-MM-dd)` </br> `=formatDate('202101011200', yyyyMMddHHmm, yyyy-MM-dd'T'HH:mm:ssXXX, Europe/Paris)`<br/> `=formatDate('202101011200', yyyyMMddHHmm, yyyy-MM-dd'T'HH:mm:ss'Z', Europe/Paris, UTC)` |
 
 ##### Utility Functions
 
