@@ -83,18 +83,19 @@ public abstract class Modifier implements SpecDriven, ContextualTransform {
         STOCK_FUNCTIONS.put("isNull", Function.isNull);
         STOCK_FUNCTIONS.put("uuid", Function.uuid);
 
-
         STOCK_FUNCTIONS.put("firstElement", new Lists.firstElement());
         STOCK_FUNCTIONS.put("lastElement", new Lists.lastElement());
         STOCK_FUNCTIONS.put("elementAt", new Lists.elementAt());
         STOCK_FUNCTIONS.put("toList", new Lists.toList());
         STOCK_FUNCTIONS.put("sort", new Lists.sort());
+
         STOCK_FUNCTIONS.put("fromEpochMilli", new Dates.fromEpochMilli());
         STOCK_FUNCTIONS.put("toEpochMilli", new Dates.toEpochMilli());
         STOCK_FUNCTIONS.put("now", new Dates.now());
         STOCK_FUNCTIONS.put("nowEpochMillis", Dates.now);
         STOCK_FUNCTIONS.put("dateAdd", new Dates.dateAdd());
         STOCK_FUNCTIONS.put("dateSubstract", new Dates.dateSubstract());
+        STOCK_FUNCTIONS.put("formatDate", new Dates.formatDate());
 
     }
 

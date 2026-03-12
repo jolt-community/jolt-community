@@ -74,14 +74,18 @@ public class Dates {
         }
     }
 
-    public static final class format extends Function.ListFunction {
+    public static final class formatDate extends Function.ListFunction {
 
         @Override
         protected Optional<Object> applyList(List<Object> input) {
-            if (input.size() != 4) {
+            if (input.size() == 3) {
+                return formatDate(input.get(0), input.get(1), input.get(2));
+            } else if (input.size() == 4){
+                return formatDate(input.get(0), input.get(1), input.get(2), input.get(3));
+            } else if (input.size() == 5){
+                return formatDate(input.get(0), input.get(1), input.get(2), input.get(3), input.get(4));
+            } else  {
                 return Optional.empty();
-            } else {
-                return format(input.get(0), input.get(1), input.get(2), input.get(3));
             }
         }
     }
@@ -178,21 +182,32 @@ public class Dates {
         }
     }
 
+
+    private static Optional<Object> formatDate(Object date, Object fromPattern, Object toPattern) {
+        String defaultZoneId = ZoneOffset.UTC.getId();
+        return formatDate(date, fromPattern, toPattern, defaultZoneId, defaultZoneId);
+    }
+
+    private static Optional<Object> formatDate(Object date, Object fromPattern, Object toPattern, Object zoneId) {
+        return formatDate(date, fromPattern, toPattern, zoneId, zoneId);
+    }
+
     /**
      * Transforms a date from one pattern to another.
      */
-    private static Optional<Object> format(Object date, Object fromPattern, Object toPattern, Object zoneId) {
+    private static Optional<Object> formatDate(Object date, Object fromPattern, Object toPattern, Object fromZoneId, Object toZoneId) {
         if (!((date instanceof String dateStr)
                 && (fromPattern instanceof String fromPatternStr)
                 && (toPattern instanceof String toPatternStr)
-                && (zoneId instanceof String zoneIdStr)))
+                && (fromZoneId instanceof String fromZoneIdStr)
+                && (toZoneId instanceof String toZoneIdStr)))
             return Optional.empty();
 
         try {
             DateTimeFormatter fromFormatter = DateTimeFormatter.ofPattern(fromPatternStr);
-            DateTimeFormatter toFormatter = DateTimeFormatter.ofPattern(toPatternStr).withZone(ZoneId.of(zoneIdStr));
+            DateTimeFormatter toFormatter = DateTimeFormatter.ofPattern(toPatternStr).withZone(ZoneId.of(toZoneIdStr));
             TemporalAccessor temporal = fromFormatter.parse(dateStr);
-            Instant instant = parseToInstant(temporal, zoneIdStr);
+            Instant instant = parseToInstant(temporal, fromZoneIdStr);
             return Optional.of(toFormatter.format(instant));
         } catch (Exception e) {
             return Optional.empty();
