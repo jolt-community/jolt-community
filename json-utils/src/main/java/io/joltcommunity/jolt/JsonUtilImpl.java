@@ -18,12 +18,17 @@ package io.joltcommunity.jolt;
 
 import io.joltcommunity.jolt.exception.JsonMarshalException;
 import io.joltcommunity.jolt.exception.JsonUnmarshalException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.Version;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+
 
 import java.io.*;
 import java.util.LinkedHashMap;
@@ -57,28 +62,34 @@ public class JsonUtilImpl implements JsonUtil {
      */
     public JsonUtilImpl(ObjectMapper objectMapper) {
 
-        this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
-
-        configureStockJoltObjectMapper(this.objectMapper);
+        this.objectMapper = objectMapper == null ? buildStockJoltObjectMapper() : objectMapper;
         prettyPrintWriter = this.objectMapper.writerWithDefaultPrettyPrinter();
     }
 
     public JsonUtilImpl() {
-        this(new ObjectMapper());
+        this.objectMapper = buildStockJoltObjectMapper();
+        prettyPrintWriter = this.objectMapper.writerWithDefaultPrettyPrinter();
     }
 
-    public static void configureStockJoltObjectMapper(ObjectMapper objectMapper) {
+    
+    public static ObjectMapper buildStockJoltObjectMapper() {
 
         // All Json maps should be deserialized into LinkedHashMaps.
         SimpleModule stockModule = new SimpleModule("stockJoltMapping", new Version(1, 0, 0, null, null, null))
-                .addAbstractTypeMapping(Map.class, LinkedHashMap.class);
+                .addAbstractTypeMapping( Map.class, LinkedHashMap.class );
 
-        objectMapper.registerModule(stockModule);
+        JsonFactory jsonFactory = JsonFactory.builder()
+                .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+                .build();
 
-        // allow the mapper to parse JSON with comments in it
-        objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        return JsonMapper.builder(jsonFactory)
+                .addModule(stockModule)
+                .configure(JsonReadFeature.ALLOW_JAVA_COMMENTS, true)
+                .build();
+        
     }
 
+    
     // DE-SERIALIZATION
     @Override
     public Object jsonToObject(String json) {
@@ -98,7 +109,7 @@ public class JsonUtilImpl implements JsonUtil {
     public Object jsonToObject(InputStream in) {
         try {
             return objectMapper.readValue(in, Object.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to an Object.", e);
         }
     }
@@ -121,7 +132,7 @@ public class JsonUtilImpl implements JsonUtil {
     public Map<String, Object> jsonToMap(InputStream in) {
         try {
             return objectMapper.readValue(in, mapTypeReference);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to a Map.", e);
         }
     }
@@ -144,7 +155,7 @@ public class JsonUtilImpl implements JsonUtil {
     public List<Object> jsonToList(InputStream in) {
         try {
             return objectMapper.readValue(in, listTypeReference);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to a List.", e);
         }
     }
@@ -258,7 +269,7 @@ public class JsonUtilImpl implements JsonUtil {
     public <T> T streamToType(InputStream in, TypeReference<T> typeRef) {
         try {
             return objectMapper.readValue(in, typeRef);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to type: " + typeRef, e);
         }
     }
@@ -267,7 +278,7 @@ public class JsonUtilImpl implements JsonUtil {
     public <T> T streamToType(InputStream in, Class<T> aClass) {
         try {
             return objectMapper.readValue(in, aClass);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonUnmarshalException("Unable to unmarshal JSON to class: " + aClass, e);
         }
     }
@@ -278,7 +289,7 @@ public class JsonUtilImpl implements JsonUtil {
     public String toJsonString(Object obj) {
         try {
             return objectMapper.writeValueAsString(obj);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonMarshalException("Unable to serialize object : " + obj, e);
         }
     }
@@ -287,7 +298,7 @@ public class JsonUtilImpl implements JsonUtil {
     public String toPrettyJsonString(Object obj) {
         try {
             return prettyPrintWriter.writeValueAsString(obj);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JsonMarshalException("Unable to serialize object : " + obj, e);
         }
     }
