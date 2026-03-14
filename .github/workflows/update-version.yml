@@ -35,6 +35,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-version-to-${{ env.VERSION }}
+          commit-message: "chore: update version to ${{ env.VERSION }}"
           title: "Update version to ${{ env.VERSION }}"
           body: "This PR updates the version in pom.xml to match the release version."
           delete-branch: true
