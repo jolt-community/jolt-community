@@ -25,8 +25,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static java.util.UUID.*;
-
 
 import static java.util.UUID.*;
 
@@ -167,7 +165,7 @@ public interface Function {
         }
         return Optional.of(args[0]);
     };
-    
+
     Function uuid = args -> Optional.of(randomUUID().toString());
 
     Optional<Object> apply(Object... args);
