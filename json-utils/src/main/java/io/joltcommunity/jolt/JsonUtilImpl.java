@@ -76,7 +76,7 @@ public class JsonUtilImpl implements JsonUtil {
 
         // All Json maps should be deserialized into LinkedHashMaps.
         SimpleModule stockModule = new SimpleModule("stockJoltMapping", new Version(1, 0, 0, null, null, null))
-                .addAbstractTypeMapping( Map.class, LinkedHashMap.class );
+                .addAbstractTypeMapping(Map.class, LinkedHashMap.class);
 
         JsonFactory jsonFactory = JsonFactory.builder()
                 .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)

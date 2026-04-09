@@ -20,9 +20,7 @@ import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-
 import tools.jackson.core.type.TypeReference;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;

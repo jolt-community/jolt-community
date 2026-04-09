@@ -59,19 +59,19 @@ public class MappingTest5 {
             ObjectNode root = jp.readValueAsTree();
 
             // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
-            JsonParser subJsonParser = root.traverse( jp.objectReadContext() );
+            JsonParser subJsonParser = root.traverse(jp.objectReadContext());
 
             // Check if it is a "RealFilter"
             JsonNode valuesParam = root.get("values");
 
-            if ( valuesParam == null ) {
-                 return subJsonParser.readValueAs( LogicalFilter5.class );
+            if (valuesParam == null) {
+                 return subJsonParser.readValueAs(LogicalFilter5.class);
             }
-            if ( ! valuesParam.isArray() ) {
-               throw new RuntimeException( "Expected an Array");
+            if (! valuesParam.isArray()) {
+               throw new RuntimeException("Expected an Array");
             }
 
-            return subJsonParser.readValueAs( RealFilter5.class );
+            return subJsonParser.readValueAs(RealFilter5.class);
         }
     }
 
@@ -80,60 +80,60 @@ public class MappingTest5 {
     {
 
         SimpleModule testModule = new SimpleModule("testModule", new Version(1, 0, 0, null, null, null))
-                .addDeserializer( QueryFilter5.class, new QueryFilter5Deserializer() );
+                .addDeserializer(QueryFilter5.class, new QueryFilter5Deserializer());
 
         ObjectMapper mapper = JsonMapper.builder()
         		.addModules(testModule)
         		.build();
 
         // Verifying that we can pass in a custom Mapper and create a new JsonUtil
-        JsonUtil jsonUtil = JsonUtils.customJsonUtil( mapper );
+        JsonUtil jsonUtil = JsonUtils.customJsonUtil(mapper);
 
         String testFixture = "/jsonUtils/testdomain/five/queryFilter-realAndLogical5.json";
 
         // TEST JsonUtil and our deserialization logic
-        QueryFilter5 queryFilter = jsonUtil.classpathToType( testFixture, new TypeReference<QueryFilter5>() {} );
+        QueryFilter5 queryFilter = jsonUtil.classpathToType(testFixture, new TypeReference<QueryFilter5>() {});
 
         // Make sure the hydrated QFilter looks right
-        Assert.assertTrue( queryFilter instanceof LogicalFilter5);
+        Assert.assertTrue(queryFilter instanceof LogicalFilter5);
         LogicalFilter5 andFilter = (LogicalFilter5) queryFilter;
-        Assert.assertEquals( Operator.AND, andFilter.getOperator() );
+        Assert.assertEquals(Operator.AND, andFilter.getOperator());
         Assert.assertNotNull(andFilter.getValues());
         Assert.assertEquals(3, andFilter.getValues().size());
 
         // Make sure one of the top level RealFilters looks right
         QueryFilter5 productIdFilter = andFilter.getValues().get(1);
-        Assert.assertTrue( productIdFilter instanceof StringRealFilter5);
+        Assert.assertTrue(productIdFilter instanceof StringRealFilter5);
         StringRealFilter5 stringRealProductIdFilter = (StringRealFilter5) productIdFilter;
-        Assert.assertEquals( Field.PRODUCTID, stringRealProductIdFilter.getField() );
-        Assert.assertEquals( Operator.EQ, stringRealProductIdFilter.getOperator() );
-        Assert.assertEquals( "Acme-1234", stringRealProductIdFilter.getValues().get(0) );
+        Assert.assertEquals(Field.PRODUCTID, stringRealProductIdFilter.getField());
+        Assert.assertEquals(Operator.EQ, stringRealProductIdFilter.getOperator());
+        Assert.assertEquals("Acme-1234", stringRealProductIdFilter.getValues().get(0));
 
         // Make sure the nested OR looks right
         QueryFilter5 orFilter = andFilter.getValues().get(2);
-        Assert.assertTrue( orFilter instanceof LogicalFilter5 );
+        Assert.assertTrue(orFilter instanceof LogicalFilter5);
         LogicalFilter5 realOrFilter = (LogicalFilter5) orFilter;
-        Assert.assertEquals( Operator.OR, realOrFilter.getOperator() );
-        Assert.assertEquals( 2, realOrFilter.getValues().size() );
+        Assert.assertEquals(Operator.OR, realOrFilter.getOperator());
+        Assert.assertEquals(2, realOrFilter.getValues().size());
 
         // Make sure nested AND looks right
         QueryFilter5 nestedAndFilter = realOrFilter.getValues().get(1);
-        Assert.assertTrue( nestedAndFilter instanceof LogicalFilter5 );
-        Assert.assertEquals( Operator.AND, nestedAndFilter.getOperator() );
-        Assert.assertEquals( 3, nestedAndFilter.getValues().size() );
+        Assert.assertTrue(nestedAndFilter instanceof LogicalFilter5);
+        Assert.assertEquals(Operator.AND, nestedAndFilter.getOperator());
+        Assert.assertEquals(3, nestedAndFilter.getValues().size());
 
 
         // SERIALIZE TO STRING to test serialization logic
-        String unitTestString = jsonUtil.toJsonString( queryFilter );
+        String unitTestString = jsonUtil.toJsonString(queryFilter);
 
         // LOAD and Diffy the plain vanilla JSON versions of the documents
-        Map<String, Object> actual   = JsonUtils.jsonToMap( unitTestString );
-        Map<String, Object> expected = JsonUtils.classpathToMap( testFixture );
+        Map<String, Object> actual = JsonUtils.jsonToMap(unitTestString);
+        Map<String, Object> expected = JsonUtils.classpathToMap(testFixture);
 
         // Diffy the vanilla versions
-        Diffy.Result result = diffy.diff( expected, actual );
+        Diffy.Result result = diffy.diff(expected, actual);
         if (!result.isEmpty()) {
-            Assert.fail( "Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString( result.expected ) + "\n  actual: " + JsonUtils.toJsonString( result.actual ) );
+            Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 }
