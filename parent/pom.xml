@@ -27,7 +27,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -60,7 +60,7 @@
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
         <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
-        <maven-rat-plugin.version>0.17</maven-rat-plugin.version>
+        <maven-rat-plugin.version>0.18</maven-rat-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
@@ -72,7 +72,11 @@
         <jakarta-inject.version>2.0.1.MR</jakarta-inject.version>
 
         <!-- module dependencies -->
+<<<<<<< jackson_3
         <jackson.version>3.1.1</jackson.version>
+=======
+        <jackson.version>2.21.2</jackson.version>
+>>>>>>> develop
         <guice.version>7.0.0</guice.version>
         <argparse4j.version>0.9.0</argparse4j.version>
 

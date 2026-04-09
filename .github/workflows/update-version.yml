@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
         with:
           egress-policy: audit
 
@@ -35,6 +35,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-version-to-${{ env.VERSION }}
+          commit-message: "chore: update version to ${{ env.VERSION }}"
           title: "Update version to ${{ env.VERSION }}"
           body: "This PR updates the version in pom.xml to match the release version."
           delete-branch: true

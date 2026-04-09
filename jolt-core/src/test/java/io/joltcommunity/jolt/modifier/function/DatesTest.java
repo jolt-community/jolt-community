@@ -149,6 +149,6 @@ public class DatesTest extends AbstractTester {
         Optional<Object> opt = (new Dates.now()).apply("yyyy-MM-dd'T'HH:mm:ssZ", "Europe/Paris");
         assert (opt.isPresent() && (opt.get() instanceof String));
         String date = (String) opt.get();
-        assert (date.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+0100"));
+        assert (date.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+0[12]00"));
     }
 }
