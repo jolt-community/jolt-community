@@ -170,8 +170,6 @@ public interface Function {
     
     Function uuid = args -> Optional.of(randomUUID().toString());
 
-    Function uuid = args -> Optional.of(randomUUID().toString());
-
     Optional<Object> apply(Object... args);
 
     /**
