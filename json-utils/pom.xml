@@ -5,29 +5,25 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-<<<<<<< jackson_3
-	<parent>
-		<groupId>io.github.jolt-community.jolt</groupId>
-		<artifactId>jolt-community-parent</artifactId>
-		<version>1.2.0</version>
-		<relativePath>../parent/pom.xml</relativePath>
-	</parent>
-=======
     <parent>
         <groupId>io.github.jolt-community.jolt</groupId>
         <artifactId>jolt-community-parent</artifactId>
         <version>1.2.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
->>>>>>> develop
 
 	<artifactId>json-community-utils</artifactId>
 	<name>Jolt Json Utils</name>
 	<packaging>jar</packaging>
 
-<<<<<<< jackson_3
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
 	<dependencies>
-		<!-- JSON -->
 		<dependency>
 			<groupId>tools.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -38,15 +34,6 @@
 			<artifactId>jackson-core</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-=======
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
->>>>>>> develop
-
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>

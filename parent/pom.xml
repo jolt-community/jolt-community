@@ -72,11 +72,7 @@
         <jakarta-inject.version>2.0.1.MR</jakarta-inject.version>
 
         <!-- module dependencies -->
-<<<<<<< jackson_3
         <jackson.version>3.1.1</jackson.version>
-=======
-        <jackson.version>2.21.2</jackson.version>
->>>>>>> develop
         <guice.version>7.0.0</guice.version>
         <argparse4j.version>0.9.0</argparse4j.version>
 
@@ -102,12 +98,12 @@
                 <version>${jackson.version}</version>
             </dependency>
 
+            <!-- JSON -->
             <dependency>
-                 <groupId>tools.jackson.core</groupId>
+                <groupId>tools.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
 
             <!-- Guice integration module -->
             <dependency>
@@ -222,9 +218,6 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <configuration>
-    				<skip>true</skip>
-  				</configuration>
                 <executions>
                     <execution>
                         <goals>
