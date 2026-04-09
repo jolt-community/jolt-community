@@ -394,7 +394,7 @@ public interface Function {
             }
         }
 
-        protected abstract Optional<T> applySingle(final Object arg);        
+        protected abstract Optional<T> applySingle(final Object arg);
     }
 
 }
