@@ -16,8 +16,8 @@
  */
 package io.joltcommunity.jolt;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -224,7 +224,7 @@ public class JsonUtils {
 
 
     /**
-     * Makes a deep copy of a Map<String, Object> object by converting it to a String and then
+     * Makes a deep copy of a Object object by converting it to a String and then
      * back onto stock JSON objects.
      *
      * @param obj object tree to copy

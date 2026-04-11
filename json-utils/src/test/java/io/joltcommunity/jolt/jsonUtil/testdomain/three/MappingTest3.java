@@ -22,33 +22,62 @@ import io.joltcommunity.jolt.JsonUtils;
 import io.joltcommunity.jolt.jsonUtil.testdomain.QueryFilter;
 import io.joltcommunity.jolt.jsonUtil.testdomain.QueryParam;
 import io.joltcommunity.jolt.jsonUtil.testdomain.RealFilter;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.Version;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.node.ObjectNode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class MappingTest3 {
 
     private Diffy diffy = new Diffy();
 
+    public static class QueryFilterDeserializer extends ValueDeserializer<QueryFilter> {
+
+        /**
+         * Demonstrates how to do recursive polymorphic JSON deserialization in Jackson 2.2.
+         *
+         * Aka specify a Deserializer and "catch" some input, determine what type of Class it
+         *  should be parsed too, and then reuse the Jackson infrastructure to recursively do so.
+         */
+        @Override
+        public QueryFilter deserialize(JsonParser jp, DeserializationContext ctxt) {
+
+            ObjectNode root = jp.readValueAsTree();
+
+            // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
+            JsonParser subJsonParser = root.traverse(jp.objectReadContext());
+
+            // Check if it is a "RealFilter"
+            JsonNode queryParam = root.get("queryParam");
+            if (queryParam != null && queryParam.isValueNode()) {
+                return subJsonParser.readValueAs(RealFilter.class);
+            }
+            else {
+                return subJsonParser.readValueAs(LogicalFilter3.class);
+            }
+        }
+    }
+
     @Test
-    public void testPolymorphicJacksonSerializationAndDeserialization() {
-        ObjectMapper mapper = new ObjectMapper();
+    public void testPolymorphicJacksonSerializationAndDeserialization()
+    {
 
         SimpleModule testModule = new SimpleModule("testModule", new Version(1, 0, 0, null, null, null))
                 .addDeserializer(QueryFilter.class, new QueryFilterDeserializer());
 
-        mapper.registerModule(testModule);
+        ObjectMapper mapper = JsonMapper.builder()
+        		.addModules(testModule)
+        		.build();
 
         // Verifying that we can pass in a custom Mapper and create a new JsonUtil
         JsonUtil jsonUtil = JsonUtils.customJsonUtil(mapper);
@@ -56,8 +85,7 @@ public class MappingTest3 {
         String testFixture = "/jsonUtils/testdomain/two/queryFilter-realAndLogical2.json";
 
         // TEST JsonUtil and our deserialization logic
-        QueryFilter queryFilter = jsonUtil.classpathToType(testFixture, new TypeReference<>() {
-        });
+        QueryFilter queryFilter = jsonUtil.classpathToType(testFixture, new TypeReference<QueryFilter>() {});
 
         // Make sure the hydrated QFilter looks right
         Assert.assertTrue(queryFilter instanceof LogicalFilter3);
@@ -96,33 +124,6 @@ public class MappingTest3 {
         Diffy.Result result = diffy.diff(expected, actual);
         if (!result.isEmpty()) {
             Assert.fail("Failed.\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
-        }
-    }
-
-    public static class QueryFilterDeserializer extends JsonDeserializer<QueryFilter> {
-
-        /**
-         * Demonstrates how to do recursive polymorphic JSON deserialization in Jackson 2.2.
-         * <p>
-         * Aka specify a Deserializer and "catch" some input, determine what type of Class it
-         * should be parsed too, and then reuse the Jackson infrastructure to recursively do so.
-         */
-        @Override
-        public QueryFilter deserialize(JsonParser jp, DeserializationContext ctxt)
-                throws IOException {
-
-            ObjectNode root = jp.readValueAsTree();
-
-            // pass in our objectCodec so that the subJsonParser knows about our configured Modules and Annotations
-            JsonParser subJsonParser = root.traverse(jp.getCodec());
-
-            // Check if it is a "RealFilter"
-            JsonNode queryParam = root.get("queryParam");
-            if (queryParam != null && queryParam.isValueNode()) {
-                return subJsonParser.readValueAs(RealFilter.class);
-            } else {
-                return subJsonParser.readValueAs(LogicalFilter3.class);
-            }
         }
     }
 }
