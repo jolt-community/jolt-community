@@ -1,0 +1,104 @@
+/*
+ * Copyright 2013 Bazaarvoice, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.joltcommunity.jolt;
+
+import io.joltcommunity.jolt.chainr.spec.ChainrEntry;
+import io.joltcommunity.jolt.enrich.EnrichrTestHelper;
+import io.joltcommunity.jolt.exception.SpecException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+public class EnrichrTest {
+
+    @Test
+    public void enrich_itOverwritesTheSourceField() {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "name", "alice" );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( enrichmentRule( "name", null, "uppercase" ) ) );
+
+        Object output = chainr.transform( input, null );
+
+        Assert.assertSame( output, input );
+        Assert.assertEquals( input.get( "name" ), "ALICE" );
+    }
+
+    @Test
+    public void enrich_itCanWriteToAnotherFieldAndUseContext() {
+        Map<String, Object> customer = new LinkedHashMap<>();
+        customer.put( "id", "cust-123" );
+
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", customer );
+
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put( "tenant", "acme" );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( enrichmentRule( "customer.id", "customer.profile", "describe" ) ) );
+
+        Object output = chainr.transform( input, context );
+
+        Assert.assertSame( output, input );
+
+        @SuppressWarnings( "unchecked" )
+        Map<String, Object> profile = (Map<String, Object>) customer.get( "profile" );
+        Assert.assertEquals( profile.get( "original" ), "cust-123" );
+        Assert.assertEquals( profile.get( "inputType" ), "LinkedHashMap" );
+        Assert.assertEquals( profile.get( "tenant" ), "acme" );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsMissingEnrichments() {
+        List<Map<String, Object>> spec = new ArrayList<>();
+        Map<String, Object> op = new LinkedHashMap<>();
+        op.put( ChainrEntry.OPERATION_KEY, "enrich" );
+        op.put( ChainrEntry.SPEC_KEY, new LinkedHashMap<String, Object>() );
+        spec.add( op );
+
+        Chainr.fromSpec( spec );
+    }
+
+    private List<Map<String, Object>> newChainrSpec( Map<String, Object> rule ) {
+        List<Map<String, Object>> spec = new ArrayList<>();
+        Map<String, Object> enrichOperation = new LinkedHashMap<>();
+        enrichOperation.put( ChainrEntry.OPERATION_KEY, "enrich" );
+
+        Map<String, Object> enrichSpec = new LinkedHashMap<>();
+        List<Map<String, Object>> enrichments = new ArrayList<>();
+        enrichments.add( rule );
+        enrichSpec.put( "enrichments", enrichments );
+
+        enrichOperation.put( ChainrEntry.SPEC_KEY, enrichSpec );
+        spec.add( enrichOperation );
+        return spec;
+    }
+
+    private Map<String, Object> enrichmentRule( String path, String outputPath, String methodName ) {
+        Map<String, Object> rule = new LinkedHashMap<>();
+        rule.put( "path", path );
+        if ( outputPath != null ) {
+            rule.put( "outputPath", outputPath );
+        }
+        rule.put( "className", EnrichrTestHelper.class.getName() );
+        rule.put( "method", methodName );
+        return rule;
+    }
+}

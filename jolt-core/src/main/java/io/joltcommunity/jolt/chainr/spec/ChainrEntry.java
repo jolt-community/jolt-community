@@ -54,7 +54,8 @@ public class ChainrEntry {
                 entry("modify-define", Modifier.Definr.class.getName()),
                 entry("remove", Removr.class.getName()),
                 entry("sort", Sortr.class.getName()),
-                entry("cardinality", CardinalityTransform.class.getName())
+                entry("cardinality", CardinalityTransform.class.getName()),
+                entry("enrich", Enrichr.class.getName())
         );
     }
 
