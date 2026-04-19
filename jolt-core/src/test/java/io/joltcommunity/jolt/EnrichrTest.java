@@ -33,7 +33,7 @@ public class EnrichrTest {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put( "name", "alice" );
 
-        Chainr chainr = Chainr.fromSpec( newChainrSpec( enrichmentRule( "name", null, "uppercase" ) ) );
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( null, enrichmentRule( "name", null, "uppercase" ) ) );
 
         Object output = chainr.transform( input, null );
 
@@ -52,7 +52,7 @@ public class EnrichrTest {
         Map<String, Object> context = new LinkedHashMap<>();
         context.put( "tenant", "acme" );
 
-        Chainr chainr = Chainr.fromSpec( newChainrSpec( enrichmentRule( "customer.id", "customer.profile", "describe" ) ) );
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( null, enrichmentRule( "customer.id", "customer.profile", "describe" ) ) );
 
         Object output = chainr.transform( input, context );
 
@@ -76,12 +76,80 @@ public class EnrichrTest {
         Chainr.fromSpec( spec );
     }
 
-    private List<Map<String, Object>> newChainrSpec( Map<String, Object> rule ) {
+    @Test
+    public void enrich_itCanUseATargetResolvedFromContext() {
+        Map<String, Object> customer = new LinkedHashMap<>();
+        customer.put( "id", "cust-123" );
+
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", customer );
+
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put( "tenant", "acme" );
+        context.put( "lookupBean", new EnrichrTestHelper() );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( null, contextEnrichmentRule( "customer.id", "customer.profile", "lookupBean", "describeViaBean" ) ) );
+
+        Object output = chainr.transform( input, context );
+
+        Assert.assertSame( output, input );
+
+        @SuppressWarnings( "unchecked" )
+        Map<String, Object> profile = (Map<String, Object>) customer.get( "profile" );
+        Assert.assertEquals( profile.get( "original" ), "cust-123" );
+        Assert.assertEquals( profile.get( "tenant" ), "acme" );
+    }
+
+    @Test
+    public void enrich_itResolvesCompletionStageResults() {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "name", "alice" );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( "sync", enrichmentRule( "name", null, "asyncUppercase" ) ) );
+
+        Object output = chainr.transform( input, null );
+
+        Assert.assertSame( output, input );
+        Assert.assertEquals( input.get( "name" ), "ALICE" );
+    }
+
+    @Test
+    public void enrich_itResolvesPublisherResultsInAsyncMode() {
+        Map<String, Object> customer = new LinkedHashMap<>();
+        customer.put( "id", "cust-123" );
+
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", customer );
+
+        Map<String, Object> context = new LinkedHashMap<>();
+        context.put( "tenant", "acme" );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( "async", enrichmentRule( "customer.id", "customer.profile", "publisherDescribe" ) ) );
+
+        Object output = chainr.transform( input, context );
+
+        Assert.assertSame( output, input );
+
+        @SuppressWarnings( "unchecked" )
+        Map<String, Object> profile = (Map<String, Object>) customer.get( "profile" );
+        Assert.assertEquals( profile.get( "original" ), "cust-123" );
+        Assert.assertEquals( profile.get( "tenant" ), "acme" );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsUnsupportedExecutionMode() {
+        Chainr.fromSpec( newChainrSpec( "parallel", enrichmentRule( "name", null, "uppercase" ) ) );
+    }
+
+    private List<Map<String, Object>> newChainrSpec( String executionMode, Map<String, Object> rule ) {
         List<Map<String, Object>> spec = new ArrayList<>();
         Map<String, Object> enrichOperation = new LinkedHashMap<>();
         enrichOperation.put( ChainrEntry.OPERATION_KEY, "enrich" );
 
         Map<String, Object> enrichSpec = new LinkedHashMap<>();
+        if ( executionMode != null ) {
+            enrichSpec.put( "executionMode", executionMode );
+        }
         List<Map<String, Object>> enrichments = new ArrayList<>();
         enrichments.add( rule );
         enrichSpec.put( "enrichments", enrichments );
@@ -98,6 +166,17 @@ public class EnrichrTest {
             rule.put( "outputPath", outputPath );
         }
         rule.put( "className", EnrichrTestHelper.class.getName() );
+        rule.put( "method", methodName );
+        return rule;
+    }
+
+    private Map<String, Object> contextEnrichmentRule( String path, String outputPath, String contextKey, String methodName ) {
+        Map<String, Object> rule = new LinkedHashMap<>();
+        rule.put( "path", path );
+        if ( outputPath != null ) {
+            rule.put( "outputPath", outputPath );
+        }
+        rule.put( "contextKey", contextKey );
         rule.put( "method", methodName );
         return rule;
     }
