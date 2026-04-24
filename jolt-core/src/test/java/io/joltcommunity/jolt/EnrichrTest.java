@@ -28,6 +28,35 @@ import java.util.Map;
 
 public class EnrichrTest {
 
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsNullSpec() {
+        new Enrichr( null );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsNonMapSpec() {
+        new Enrichr( "not-a-map" );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsNonListEnrichments() {
+        Map<String, Object> spec = new LinkedHashMap<>();
+        spec.put( "enrichments", "not-a-list" );
+        new Enrichr( spec );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsBlankExecutionMode() {
+        new Enrichr( newEnrichSpec( "   ", enrichmentRule( "name", null, "uppercase" ) ) );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsNonStringExecutionMode() {
+        Map<String, Object> spec = newEnrichSpec( null, enrichmentRule( "name", null, "uppercase" ) );
+        spec.put( "executionMode", Boolean.TRUE );
+        new Enrichr( spec );
+    }
+
     @Test
     public void enrich_itOverwritesTheSourceField() {
         Map<String, Object> input = new LinkedHashMap<>();
@@ -67,13 +96,7 @@ public class EnrichrTest {
 
     @Test( expectedExceptions = SpecException.class )
     public void enrich_itRejectsMissingEnrichments() {
-        List<Map<String, Object>> spec = new ArrayList<>();
-        Map<String, Object> op = new LinkedHashMap<>();
-        op.put( ChainrEntry.OPERATION_KEY, "enrich" );
-        op.put( ChainrEntry.SPEC_KEY, new LinkedHashMap<String, Object>() );
-        spec.add( op );
-
-        Chainr.fromSpec( spec );
+        new Enrichr( newEnrichSpec( null ) );
     }
 
     @Test
@@ -136,9 +159,52 @@ public class EnrichrTest {
         Assert.assertEquals( profile.get( "tenant" ), "acme" );
     }
 
+    @Test
+    public void enrich_itIgnoresMissingPathsInSyncMode() {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "name", "alice" );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( "sync", enrichmentRule( "customer.id", "customer.profile", "describe" ) ) );
+
+        Object output = chainr.transform( input, null );
+
+        Assert.assertSame( output, input );
+        Assert.assertEquals( input.size(), 1 );
+        Assert.assertFalse( input.containsKey( "customer" ) );
+    }
+
+    @Test
+    public void enrich_itIgnoresMissingPathsInAsyncMode() {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "name", "alice" );
+
+        Chainr chainr = Chainr.fromSpec( newChainrSpec( "async", enrichmentRule( "customer.id", "customer.profile", "publisherDescribe" ) ) );
+
+        Object output = chainr.transform( input, null );
+
+        Assert.assertSame( output, input );
+        Assert.assertEquals( input.size(), 1 );
+        Assert.assertFalse( input.containsKey( "customer" ) );
+    }
+
     @Test( expectedExceptions = SpecException.class )
     public void enrich_itRejectsUnsupportedExecutionMode() {
         Chainr.fromSpec( newChainrSpec( "parallel", enrichmentRule( "name", null, "uppercase" ) ) );
+    }
+
+    @SafeVarargs
+    private final Map<String, Object> newEnrichSpec( String executionMode, Map<String, Object>... rules ) {
+        Map<String, Object> enrichSpec = new LinkedHashMap<>();
+        if ( executionMode != null ) {
+            enrichSpec.put( "executionMode", executionMode );
+        }
+
+        List<Map<String, Object>> enrichments = new ArrayList<>();
+        for ( Map<String, Object> rule : rules ) {
+            enrichments.add( rule );
+        }
+        enrichSpec.put( "enrichments", enrichments );
+        return enrichSpec;
     }
 
     private List<Map<String, Object>> newChainrSpec( String executionMode, Map<String, Object> rule ) {
@@ -146,15 +212,7 @@ public class EnrichrTest {
         Map<String, Object> enrichOperation = new LinkedHashMap<>();
         enrichOperation.put( ChainrEntry.OPERATION_KEY, "enrich" );
 
-        Map<String, Object> enrichSpec = new LinkedHashMap<>();
-        if ( executionMode != null ) {
-            enrichSpec.put( "executionMode", executionMode );
-        }
-        List<Map<String, Object>> enrichments = new ArrayList<>();
-        enrichments.add( rule );
-        enrichSpec.put( "enrichments", enrichments );
-
-        enrichOperation.put( ChainrEntry.SPEC_KEY, enrichSpec );
+        enrichOperation.put( ChainrEntry.SPEC_KEY, newEnrichSpec( executionMode, rule ) );
         spec.add( enrichOperation );
         return spec;
     }
