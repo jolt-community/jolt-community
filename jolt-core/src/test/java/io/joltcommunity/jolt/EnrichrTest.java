@@ -15,18 +15,86 @@
  */
 package io.joltcommunity.jolt;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import io.joltcommunity.jolt.chainr.spec.ChainrEntry;
+import io.joltcommunity.jolt.enrich.EnrichrExternalApiTestHelper;
 import io.joltcommunity.jolt.enrich.EnrichrTestHelper;
 import io.joltcommunity.jolt.exception.SpecException;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EnrichrTest {
+
+    @DataProvider
+    public Object[][] getFixtureTestCases() {
+        return new Object[][]{
+                {"/json/enrich/classNameSync.json"},
+                {"/json/enrich/asyncPublisher.json"},
+                {"/json/enrich/contextKeySync.json"}
+        };
+    }
+
+    @Test(dataProvider = "getFixtureTestCases")
+    @SuppressWarnings( "unchecked" )
+    public void enrich_fixtureTests( String testFile ) throws IOException {
+        Map<String, Object> testUnit = JsonUtils.classpathToMap( testFile );
+        Object spec = testUnit.get( "spec" );
+        Object input = testUnit.get( "input" );
+        Map<String, Object> context = fixtureContext(
+                (Map<String, Object>) testUnit.get( "context" ),
+                (List<String>) testUnit.get( "helperContextKeys" )
+        );
+        Object expected = testUnit.get( "expected" );
+
+        Chainr chainr = Chainr.fromSpec( spec );
+
+        Assert.assertTrue( chainr.hasContextualTransforms() );
+        Assert.assertEquals( chainr.getContextualTransforms().size(), 1 );
+
+        Object actual = chainr.transform( input, context );
+
+        JoltTestUtil.runDiffy( "failed case " + testFile, expected, actual );
+    }
+
+    @Test
+    @SuppressWarnings( "unchecked" )
+    public void enrich_fixtureExternalApiTest() throws Exception {
+        String testFile = "/json/enrich/externalApiAsync.json";
+        Map<String, Object> testUnit = JsonUtils.classpathToMap( testFile );
+
+        HttpServer server = HttpServer.create( new InetSocketAddress( "127.0.0.1", 0 ), 0 );
+        server.createContext( "/profiles", this::handleProfileLookup );
+        server.start();
+
+        try {
+            Map<String, Object> context = new LinkedHashMap<>( (Map<String, Object>) testUnit.get( "context" ) );
+            context.put( "customerLookupClient", new EnrichrExternalApiTestHelper( "http://127.0.0.1:" + server.getAddress().getPort() ) );
+
+            Chainr chainr = Chainr.fromSpec( testUnit.get( "spec" ) );
+
+            Assert.assertTrue( chainr.hasContextualTransforms() );
+            Assert.assertEquals( chainr.getContextualTransforms().size(), 1 );
+
+            Object actual = chainr.transform( testUnit.get( "input" ), context );
+
+            JoltTestUtil.runDiffy( "failed case " + testFile, testUnit.get( "expected" ), actual );
+        }
+        finally {
+            server.stop( 0 );
+        }
+    }
 
     @Test( expectedExceptions = SpecException.class )
     public void enrich_itRejectsNullSpec() {
@@ -237,5 +305,60 @@ public class EnrichrTest {
         rule.put( "contextKey", contextKey );
         rule.put( "method", methodName );
         return rule;
+    }
+
+    private Map<String, Object> fixtureContext( Map<String, Object> rawContext, List<String> helperContextKeys ) {
+        Map<String, Object> context = rawContext == null ? new LinkedHashMap<String, Object>() : new LinkedHashMap<>( rawContext );
+
+        if ( helperContextKeys != null ) {
+            for ( String helperContextKey : helperContextKeys ) {
+                context.put( helperContextKey, new EnrichrTestHelper() );
+            }
+        }
+
+        return context.isEmpty() ? null : context;
+    }
+
+    private void handleProfileLookup( HttpExchange exchange ) throws IOException {
+        String requestPath = exchange.getRequestURI().getPath();
+        String prefix = "/profiles/";
+
+        if ( ! "GET".equals( exchange.getRequestMethod() ) || ! requestPath.startsWith( prefix ) ) {
+            exchange.sendResponseHeaders( 404, -1 );
+            exchange.close();
+            return;
+        }
+
+        String customerId = requestPath.substring( prefix.length() );
+        String tenant = extractQueryParam( exchange.getRequestURI().getRawQuery(), "tenant" );
+
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put( "customerId", customerId );
+        responseBody.put( "tenant", tenant );
+        responseBody.put( "segment", "gold" );
+        responseBody.put( "source", "external-api" );
+
+        byte[] responseBytes = JsonUtils.toJsonString( responseBody ).getBytes( StandardCharsets.UTF_8 );
+        exchange.getResponseHeaders().add( "Content-Type", "application/json" );
+        exchange.sendResponseHeaders( 200, responseBytes.length );
+
+        try ( OutputStream outputStream = exchange.getResponseBody() ) {
+            outputStream.write( responseBytes );
+        }
+    }
+
+    private String extractQueryParam( String rawQuery, String key ) {
+        if ( rawQuery == null || rawQuery.isEmpty() ) {
+            return null;
+        }
+
+        for ( String entry : rawQuery.split( "&" ) ) {
+            String[] keyValue = entry.split( "=", 2 );
+            if ( key.equals( keyValue[0] ) ) {
+                return keyValue.length == 2 ? URLDecoder.decode( keyValue[1], StandardCharsets.UTF_8 ) : "";
+            }
+        }
+
+        return null;
     }
 }
