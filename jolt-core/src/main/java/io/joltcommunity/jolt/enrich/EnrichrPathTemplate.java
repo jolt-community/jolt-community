@@ -23,24 +23,55 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Parses and resolves enrich input and output paths.
+ * <p>
+ * Supported path forms are:
+ * <ul>
+ *     <li>Map keys such as {@code customer.id}</li>
+ *     <li>Explicit array indices such as {@code customers.[0].id}</li>
+ *     <li>Array wildcards such as {@code customers.[*].id}</li>
+ *     <li>Output-only append segments such as {@code profiles.[]}</li>
+ * </ul>
+ * The template can both match input values and resolve output keys by substituting wildcard bindings
+ * captured from an input match.
+ */
 final class EnrichrPathTemplate {
 
-    private final String humanPath;
+    private final String configuredPath;
     private final List<Segment> segments;
     private final int wildcardCount;
     private final boolean hasAppendSegment;
     private final SimpleTraversr<Object> traversr;
 
-    private EnrichrPathTemplate( String humanPath, List<Segment> segments, int wildcardCount, boolean hasAppendSegment ) {
-        this.humanPath = humanPath;
+    /**
+     * Create an immutable parsed path template.
+     *
+     * @param configuredPath original path string taken from the enrich spec
+     * @param segments parsed path segments
+     * @param wildcardCount number of {@code [*]} segments in the template
+     * @param hasAppendSegment whether the template contains output append semantics via {@code []}
+     */
+    private EnrichrPathTemplate( String configuredPath, List<Segment> segments, int wildcardCount, boolean hasAppendSegment ) {
+        this.configuredPath = configuredPath;
         this.segments = Collections.unmodifiableList( new ArrayList<>( segments ) );
         this.wildcardCount = wildcardCount;
         this.hasAppendSegment = hasAppendSegment;
-        this.traversr = new SimpleTraversr<>( humanPath );
+        this.traversr = new SimpleTraversr<>( configuredPath );
     }
 
-    static EnrichrPathTemplate parseInput( String humanPath, int index ) {
-        EnrichrPathTemplate template = parse( humanPath, index, "path" );
+    /**
+     * Parse a source path used to read values from the input document.
+     * <p>
+     * Input paths support fixed keys, explicit indices, and {@code [*]} wildcards. They intentionally do not
+     * support {@code []} append semantics because append only makes sense on the write side.
+     *
+     * @param configuredPath source path declared in the enrich spec
+     * @param index enrich rule index used in validation messages
+     * @return parsed input path template
+     */
+    static EnrichrPathTemplate parseInput( String configuredPath, int index ) {
+        EnrichrPathTemplate template = parse( configuredPath, index, "path" );
         if ( template.hasAppendSegment ) {
             throw new SpecException(
                     "Enrichr enrichment at index:" + index +
@@ -50,12 +81,27 @@ final class EnrichrPathTemplate {
         return template;
     }
 
-    static EnrichrPathTemplate parseOutput( String humanPath, int index ) {
-        return parse( humanPath, index, "outputPath" );
+    /**
+     * Parse a destination path used when writing the enriched value back to the document.
+     *
+     * @param configuredPath output path declared in the enrich spec
+     * @param index enrich rule index used in validation messages
+     * @return parsed output path template
+     */
+    static EnrichrPathTemplate parseOutput( String configuredPath, int index ) {
+        return parse( configuredPath, index, "outputPath" );
     }
 
-    private static EnrichrPathTemplate parse( String humanPath, int index, String fieldName ) {
-        List<String> tokens = tokenize( humanPath );
+    /**
+     * Parse a human-readable dot path into typed path segments.
+     *
+     * @param configuredPath path string declared in the enrich spec
+     * @param index enrich rule index used in validation messages
+     * @param fieldName spec field currently being parsed, either {@code path} or {@code outputPath}
+     * @return parsed path template
+     */
+    private static EnrichrPathTemplate parse( String configuredPath, int index, String fieldName ) {
+        List<String> tokens = tokenize( configuredPath );
         List<Segment> segments = new ArrayList<>( tokens.size() );
         int wildcardCount = 0;
         boolean hasAppendSegment = false;
@@ -100,11 +146,17 @@ final class EnrichrPathTemplate {
             segments.add( Segment.mapKey( token ) );
         }
 
-        return new EnrichrPathTemplate( humanPath, segments, wildcardCount, hasAppendSegment );
+        return new EnrichrPathTemplate( configuredPath, segments, wildcardCount, hasAppendSegment );
     }
 
-    private static List<String> tokenize( String humanPath ) {
-        String intermediatePath = humanPath.replace( "[", ".[" ).replace( "..", "." );
+    /**
+     * Split a dot path into raw tokens while preserving bracketed array segments as standalone elements.
+     *
+     * @param configuredPath path string declared in the enrich spec
+     * @return tokenized path segments
+     */
+    private static List<String> tokenize( String configuredPath ) {
+        String intermediatePath = configuredPath.replace( "[", ".[" ).replace( "..", "." );
         if ( intermediatePath.charAt( 0 ) == '.' ) {
             intermediatePath = intermediatePath.substring( 1 );
         }
@@ -115,12 +167,27 @@ final class EnrichrPathTemplate {
         return keys;
     }
 
+    /**
+     * Resolve all input values that satisfy this template.
+     *
+     * @param input document to search
+     * @return zero or more concrete path matches
+     */
     List<EnrichrPathMatch> match( Object input ) {
         List<EnrichrPathMatch> matches = new ArrayList<>();
         collectMatches( input, 0, new ArrayList<String>(), new ArrayList<String>(), matches );
         return matches;
     }
 
+    /**
+     * Recursively walk the input document and collect every concrete path that matches this template.
+     *
+     * @param currentValue current node being inspected
+     * @param segmentIndex current segment position within the template
+     * @param resolvedKeys concrete path keys collected so far
+     * @param wildcardBindings wildcard array indices collected so far
+     * @param matches destination list for resolved matches
+     */
     private void collectMatches(
             Object currentValue,
             int segmentIndex,
@@ -138,84 +205,108 @@ final class EnrichrPathTemplate {
         }
 
         Segment segment = segments.get( segmentIndex );
-        switch ( segment.type ) {
-            case MAP_KEY:
-                if ( currentValue instanceof Map ) {
-                    @SuppressWarnings( "unchecked" )
-                    Map<String, Object> map = (Map<String, Object>) currentValue;
-                    if ( map.containsKey( segment.value ) ) {
-                        resolvedKeys.add( segment.value );
-                        collectMatches( map.get( segment.value ), segmentIndex + 1, resolvedKeys, wildcardBindings, matches );
-                        resolvedKeys.remove( resolvedKeys.size() - 1 );
-                    }
+        if ( segment.type == SegmentType.MAP_KEY ) {
+            if ( currentValue instanceof Map ) {
+                @SuppressWarnings( "unchecked" )
+                Map<String, Object> map = (Map<String, Object>) currentValue;
+                if ( map.containsKey( segment.value ) ) {
+                    resolvedKeys.add( segment.value );
+                    collectMatches( map.get( segment.value ), segmentIndex + 1, resolvedKeys, wildcardBindings, matches );
+                    resolvedKeys.remove( resolvedKeys.size() - 1 );
                 }
-                return;
-
-            case ARRAY_INDEX:
-                if ( currentValue instanceof List ) {
-                    List<?> list = (List<?>) currentValue;
-                    int arrayIndex = Integer.parseInt( segment.value );
-                    if ( arrayIndex < list.size() ) {
-                        resolvedKeys.add( segment.value );
-                        collectMatches( list.get( arrayIndex ), segmentIndex + 1, resolvedKeys, wildcardBindings, matches );
-                        resolvedKeys.remove( resolvedKeys.size() - 1 );
-                    }
-                }
-                return;
-
-            case ARRAY_WILDCARD:
-                if ( currentValue instanceof List ) {
-                    List<?> list = (List<?>) currentValue;
-                    for ( int index = 0; index < list.size(); index++ ) {
-                        String resolvedIndex = String.valueOf( index );
-                        resolvedKeys.add( resolvedIndex );
-                        wildcardBindings.add( resolvedIndex );
-                        collectMatches( list.get( index ), segmentIndex + 1, resolvedKeys, wildcardBindings, matches );
-                        wildcardBindings.remove( wildcardBindings.size() - 1 );
-                        resolvedKeys.remove( resolvedKeys.size() - 1 );
-                    }
-                }
-                return;
-
-            case ARRAY_APPEND:
-                return;
+            }
+            return;
         }
+
+        if ( segment.type == SegmentType.ARRAY_INDEX ) {
+            if ( currentValue instanceof List ) {
+                List<?> list = (List<?>) currentValue;
+                int arrayIndex = Integer.parseInt( segment.value );
+                if ( arrayIndex < list.size() ) {
+                    resolvedKeys.add( segment.value );
+                    collectMatches( list.get( arrayIndex ), segmentIndex + 1, resolvedKeys, wildcardBindings, matches );
+                    resolvedKeys.remove( resolvedKeys.size() - 1 );
+                }
+            }
+            return;
+        }
+
+        if ( segment.type == SegmentType.ARRAY_WILDCARD ) {
+            if ( currentValue instanceof List ) {
+                List<?> list = (List<?>) currentValue;
+                for ( int index = 0; index < list.size(); index++ ) {
+                    String resolvedIndex = String.valueOf( index );
+                    resolvedKeys.add( resolvedIndex );
+                    wildcardBindings.add( resolvedIndex );
+                    collectMatches( list.get( index ), segmentIndex + 1, resolvedKeys, wildcardBindings, matches );
+                    wildcardBindings.remove( wildcardBindings.size() - 1 );
+                    resolvedKeys.remove( resolvedKeys.size() - 1 );
+                }
+            }
+            return;
+        }
+
+        return;
     }
 
+    /**
+     * Return a traversr instance for writing values to this template after wildcard substitution.
+     *
+     * @return traversr configured for this path template
+     */
     SimpleTraversr<Object> getTraversr() {
         return traversr;
     }
 
+    /**
+     * Return the number of {@code [*]} segments declared in this template.
+     *
+     * @return wildcard segment count
+     */
     int getWildcardCount() {
         return wildcardCount;
     }
 
+    /**
+     * Indicate whether the template contains output append semantics via {@code []}.
+     *
+     * @return {@code true} when the template includes an append segment
+     */
     boolean hasAppendSegment() {
         return hasAppendSegment;
     }
 
+    /**
+     * Resolve traversr keys for a concrete output path.
+     *
+     * @param wildcardBindings wildcard indices captured from the input path
+     * @return keys suitable for {@link SimpleTraversr#set(Object, List, Object)}
+     */
     List<String> resolveKeys( List<String> wildcardBindings ) {
         validateBindings( wildcardBindings );
 
         List<String> resolvedKeys = new ArrayList<>( segments.size() );
         int wildcardIndex = 0;
         for ( Segment segment : segments ) {
-            switch ( segment.type ) {
-                case MAP_KEY:
-                case ARRAY_INDEX:
-                    resolvedKeys.add( segment.value );
-                    break;
-                case ARRAY_WILDCARD:
-                    resolvedKeys.add( wildcardBindings.get( wildcardIndex++ ) );
-                    break;
-                case ARRAY_APPEND:
-                    resolvedKeys.add( "[]" );
-                    break;
+            if ( segment.type == SegmentType.MAP_KEY || segment.type == SegmentType.ARRAY_INDEX ) {
+                resolvedKeys.add( segment.value );
+            }
+            else if ( segment.type == SegmentType.ARRAY_WILDCARD ) {
+                resolvedKeys.add( wildcardBindings.get( wildcardIndex++ ) );
+            }
+            else {
+                resolvedKeys.add( "[]" );
             }
         }
         return resolvedKeys;
     }
 
+    /**
+     * Render a concrete human-readable path by substituting wildcard bindings into this template.
+     *
+     * @param wildcardBindings wildcard indices captured from the input path
+     * @return resolved path string
+     */
     String resolvePath( List<String> wildcardBindings ) {
         validateBindings( wildcardBindings );
 
@@ -227,32 +318,38 @@ final class EnrichrPathTemplate {
             }
 
             Segment segment = segments.get( index );
-            switch ( segment.type ) {
-                case MAP_KEY:
-                    pathBuilder.append( segment.value );
-                    break;
-                case ARRAY_INDEX:
-                    pathBuilder.append( '[' ).append( segment.value ).append( ']' );
-                    break;
-                case ARRAY_WILDCARD:
-                    pathBuilder.append( '[' ).append( wildcardBindings.get( wildcardIndex++ ) ).append( ']' );
-                    break;
-                case ARRAY_APPEND:
-                    pathBuilder.append( "[]" );
-                    break;
+            if ( segment.type == SegmentType.MAP_KEY ) {
+                pathBuilder.append( segment.value );
+            }
+            else if ( segment.type == SegmentType.ARRAY_INDEX ) {
+                pathBuilder.append( '[' ).append( segment.value ).append( ']' );
+            }
+            else if ( segment.type == SegmentType.ARRAY_WILDCARD ) {
+                pathBuilder.append( '[' ).append( wildcardBindings.get( wildcardIndex++ ) ).append( ']' );
+            }
+            else {
+                pathBuilder.append( "[]" );
             }
         }
         return pathBuilder.toString();
     }
 
+    /**
+     * Ensure enough wildcard values were captured from the input path to resolve this template.
+     *
+     * @param wildcardBindings wildcard indices captured from the input path
+     */
     private void validateBindings( List<String> wildcardBindings ) {
         if ( wildcardBindings.size() < wildcardCount ) {
             throw new IllegalArgumentException(
-                    "Expected at least " + wildcardCount + " wildcard bindings for path '" + humanPath + "', got " + wildcardBindings.size() + "."
+                    "Expected at least " + wildcardCount + " wildcard bindings for path '" + configuredPath + "', got " + wildcardBindings.size() + "."
             );
         }
     }
 
+    /**
+     * Internal representation of one parsed path segment.
+     */
     private enum SegmentType {
         MAP_KEY,
         ARRAY_INDEX,

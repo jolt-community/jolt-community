@@ -17,12 +17,24 @@ package io.joltcommunity.jolt.enrich;
 
 import io.joltcommunity.jolt.exception.SpecException;
 
+/**
+ * Execution strategy for {@link io.joltcommunity.jolt.Enrichr}.
+ * <p>
+ * {@code SYNC} applies each enrichment immediately after invocation.
+ * {@code ASYNC} allows all invocations to start first and then blocks only when writing results back.
+ */
 public enum EnrichrExecutionMode {
     SYNC,
     ASYNC;
 
     private static final String EXECUTION_MODE_KEY = "executionMode";
 
+    /**
+     * Parse the optional {@code executionMode} spec field.
+     *
+     * @param rawValue raw value from the enrich spec
+     * @return resolved execution mode, defaulting to {@code SYNC} when omitted
+     */
     public static EnrichrExecutionMode fromSpec( Object rawValue ) {
         if ( rawValue == null ) {
             return SYNC;

@@ -22,6 +22,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Parses one enrich spec entry and coordinates the work required to execute it.
+ * <p>
+ * A manager owns the input path matcher, output path resolver, and Java method invoker for a single
+ * enrichment rule such as:
+ * <pre>
+ * {
+ *   "path" : "customers.[*].id",
+ *   "outputPath" : "customers.[*].profile",
+ *   "contextKey" : "customerLookup",
+ *   "method" : "enrich"
+ * }
+ * </pre>
+ */
 public class EnrichrManager {
 
     private final EnrichrMethodInvoker invoker;
@@ -29,6 +43,12 @@ public class EnrichrManager {
     private final EnrichrPathTemplate outputPathTemplate;
     private final SimpleTraversr<Object> outputTraversr;
 
+    /**
+     * Parse one enrichment rule from the {@code enrichments} array.
+     *
+     * @param spec raw rule object
+     * @param index position of the rule inside the spec, used for error messages
+     */
     @SuppressWarnings( "unchecked" )
     public EnrichrManager( Object spec, int index ) {
         if ( ! ( spec instanceof Map ) ) {
@@ -50,10 +70,30 @@ public class EnrichrManager {
         invoker = new EnrichrMethodInvoker( methodName, contextKey, className, index );
     }
 
+    /**
+     * Find every input value matched by this rule.
+     * <p>
+     * Fixed paths return at most one match, while wildcard array paths such as {@code customers.[*].id}
+     * return one match per resolved array element.
+     *
+     * @param input document currently being transformed
+     * @return resolved path matches for this rule
+     */
     public List<EnrichrPathMatch> match( Object input ) {
         return inputPathTemplate.match( input );
     }
 
+    /**
+     * Create a pending enrichment for one already-resolved input match.
+     * <p>
+     * The method invocation is started immediately. The returned object is responsible for waiting on the
+     * result and writing it back to the resolved output path later.
+     *
+     * @param inputMatch one resolved source value plus any wildcard bindings captured from the input path
+     * @param input full input document
+     * @param context optional transform context
+     * @return pending enrichment ready to be applied
+     */
     public EnrichrPendingEnrichment prepare( EnrichrPathMatch inputMatch, Object input, Map<String, Object> context ) {
         CompletionStage<Object> enrichedValueStage = invoker.invokeAsync( inputMatch.getValue(), input, context );
         List<String> outputKeys = outputPathTemplate.resolveKeys( inputMatch.getWildcardBindings() );
@@ -61,6 +101,9 @@ public class EnrichrManager {
         return new EnrichrPendingEnrichment( input, outputTraversr, outputKeys, enrichedValueStage, resolvedOutputPath );
     }
 
+    /**
+     * Read a required non-blank string property from one enrichment rule.
+     */
     static String requiredString( Map<String, Object> spec, String key, int index ) {
         Object value = spec.get( key );
         if ( ! ( value instanceof String ) || ( (String) value ).trim().isEmpty() ) {
@@ -69,6 +112,9 @@ public class EnrichrManager {
         return ( (String) value ).trim();
     }
 
+    /**
+     * Read an optional non-blank string property from one enrichment rule.
+     */
     static String optionalString( Map<String, Object> spec, String key, String defaultValue ) {
         Object value = spec.get( key );
         if ( value == null ) {
@@ -80,6 +126,12 @@ public class EnrichrManager {
         return ( (String) value ).trim();
     }
 
+    /**
+     * Ensure the output path can be resolved for every wildcard captured from the input path.
+     * <p>
+     * Wildcard input paths must either bind the same number of {@code [*]} segments in the output path or
+     * write to an append location using {@code []}.
+     */
     private void validateOutputPath( int index ) {
         int inputWildcardCount = inputPathTemplate.getWildcardCount();
         int outputWildcardCount = outputPathTemplate.getWildcardCount();

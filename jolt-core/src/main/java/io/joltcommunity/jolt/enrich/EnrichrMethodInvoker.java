@@ -28,6 +28,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Resolves and invokes the Java method configured for one enrich rule.
+ * <p>
+ * Targets can come either from a declared {@code className} or from a runtime {@code contextKey}. Return
+ * values are normalized to {@link CompletionStage} so the rest of the enrich flow can treat sync,
+ * {@link CompletionStage}, and reactive {@link Publisher} methods uniformly.
+ */
 final class EnrichrMethodInvoker {
 
     private final Method method;
@@ -37,6 +44,14 @@ final class EnrichrMethodInvoker {
     private final int index;
     private final Map<Class<?>, Method> contextMethodCache;
 
+    /**
+     * Create an invoker for one enrich rule.
+     *
+     * @param methodName public method to invoke
+     * @param contextKey optional context map key that supplies the target instance
+     * @param className optional fully qualified class name used to resolve the target up front
+     * @param index enrich rule index used in validation messages
+     */
     EnrichrMethodInvoker( String methodName, String contextKey, String className, int index ) {
         this.methodName = methodName;
         this.index = index;
@@ -75,6 +90,14 @@ final class EnrichrMethodInvoker {
         }
     }
 
+    /**
+     * Invoke the configured method and normalize the result to a completion stage.
+     *
+     * @param value matched input value
+     * @param input full input document
+     * @param context optional transform context
+     * @return a completion stage representing the final enriched value
+     */
     CompletionStage<Object> invokeAsync( Object value, Object input, Map<String, Object> context ) {
         try {
             InvocationTarget invocationTarget = resolveInvocationTarget( context );
@@ -99,6 +122,12 @@ final class EnrichrMethodInvoker {
         }
     }
 
+    /**
+     * Resolve the concrete method target for this invocation.
+     * <p>
+     * Class-based rules are resolved once in the constructor. Context-based rules are resolved at runtime so
+     * the context map can supply request-scoped collaborators such as Spring beans.
+     */
     private InvocationTarget resolveInvocationTarget( Map<String, Object> context ) {
         if ( method != null ) {
             return new InvocationTarget( method, target );
@@ -122,6 +151,9 @@ final class EnrichrMethodInvoker {
         return new InvocationTarget( contextMethod, contextTarget );
     }
 
+    /**
+     * Convert supported return types into a completion stage.
+     */
     @SuppressWarnings( "unchecked" )
     private static CompletionStage<Object> toCompletionStage( Object invocationResult ) {
         if ( invocationResult == null ) {
@@ -136,6 +168,9 @@ final class EnrichrMethodInvoker {
         return CompletableFuture.completedFuture( invocationResult );
     }
 
+    /**
+     * Bridge a single-value reactive publisher into a completion stage.
+     */
     private static CompletionStage<Object> publisherToCompletionStage( Publisher<?> publisher ) {
         CompletableFuture<Object> future = new CompletableFuture<>();
         publisher.subscribe( new Subscriber<Object>() {
@@ -174,6 +209,9 @@ final class EnrichrMethodInvoker {
         return future;
     }
 
+    /**
+     * Find the first compatible public enrich method on the supplied class.
+     */
     private static Method findMethod( Class<?> clazz, String methodName, int index ) {
         for ( Method candidate : clazz.getMethods() ) {
             if ( ! candidate.getName().equals( methodName ) ) {
@@ -200,6 +238,9 @@ final class EnrichrMethodInvoker {
         );
     }
 
+    /**
+     * Concrete method plus object instance used for one invocation.
+     */
     private static final class InvocationTarget {
         private final Method method;
         private final Object target;

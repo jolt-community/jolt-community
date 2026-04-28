@@ -25,6 +25,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,6 +94,133 @@ public class EnrichrInternalsTest {
 
         Assert.assertEquals( matches.size(), 1 );
         Assert.assertNotNull( manager.prepare( matches.get( 0 ), input, null ) );
+    }
+
+    @Test
+    public void pathMatch_exposesResolvedMetadataAndDefensivelyCopiesLists() {
+        List<String> resolvedKeys = new ArrayList<>( Arrays.asList( "customers", "0", "id" ) );
+        List<String> wildcardBindings = new ArrayList<>( Collections.singletonList( "0" ) );
+
+        EnrichrPathMatch match = new EnrichrPathMatch( "alice", resolvedKeys, wildcardBindings, "customers.[0].id" );
+
+        resolvedKeys.add( "mutated" );
+        wildcardBindings.add( "mutated" );
+
+        Assert.assertEquals( match.getValue(), "alice" );
+        Assert.assertEquals( match.getResolvedInputKeys(), Arrays.asList( "customers", "0", "id" ) );
+        Assert.assertEquals( match.getWildcardBindings(), Collections.singletonList( "0" ) );
+        Assert.assertEquals( match.getResolvedInputPath(), "customers.[0].id" );
+    }
+
+    @Test( expectedExceptions = UnsupportedOperationException.class )
+    public void pathMatch_returnsImmutableResolvedKeys() {
+        EnrichrPathMatch match = new EnrichrPathMatch(
+                "alice",
+                new ArrayList<>( Collections.singletonList( "name" ) ),
+                new ArrayList<String>(),
+                "name"
+        );
+
+        match.getResolvedInputKeys().add( "mutated" );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void pathTemplate_rejectsWhitespaceOnlyArraySegments() {
+        EnrichrPathTemplate.parseOutput( "customers.[ ].id", 0 );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void pathTemplate_rejectsNegativeArrayIndices() {
+        EnrichrPathTemplate.parseOutput( "customers.[-1].id", 0 );
+    }
+
+    @Test
+    public void pathTemplate_treatsPartialBracketTokensAsMapKeys() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseInput( "[0", 0 );
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "[0", "alice" );
+
+        List<EnrichrPathMatch> matches = template.match( input );
+
+        Assert.assertEquals( matches.size(), 1 );
+        Assert.assertEquals( matches.get( 0 ).getValue(), "alice" );
+    }
+
+    @Test
+    public void pathTemplate_match_returnsEmptyWhenIntermediateValueIsNull() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseInput( "customer.id", 0 );
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", null );
+
+        Assert.assertTrue( template.match( input ).isEmpty() );
+    }
+
+    @Test
+    public void pathTemplate_match_ignoresMapSegmentsOnNonMaps() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseInput( "customer.id", 0 );
+
+        Assert.assertTrue( template.match( Collections.singletonList( "not-a-map" ) ).isEmpty() );
+    }
+
+    @Test
+    public void pathTemplate_match_ignoresArrayIndexSegmentsOnNonLists() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseInput( "customer.[0]", 0 );
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", "not-a-list" );
+
+        Assert.assertTrue( template.match( input ).isEmpty() );
+    }
+
+    @Test
+    public void pathTemplate_match_ignoresOutOfBoundsArrayIndices() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseInput( "customer.[1]", 0 );
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", Collections.singletonList( "only-one" ) );
+
+        Assert.assertTrue( template.match( input ).isEmpty() );
+    }
+
+    @Test
+    public void pathTemplate_match_ignoresWildcardSegmentsOnNonLists() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseInput( "customer.[*]", 0 );
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "customer", "not-a-list" );
+
+        Assert.assertTrue( template.match( input ).isEmpty() );
+    }
+
+    @Test
+    public void pathTemplate_match_treatsAppendSegmentsAsOutputOnly() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseOutput( "profiles.[]", 0 );
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put( "profiles", new ArrayList<Object>() );
+
+        Assert.assertTrue( template.match( input ).isEmpty() );
+        Assert.assertTrue( template.hasAppendSegment() );
+    }
+
+    @Test
+    public void pathTemplate_resolvesExplicitArrayIndexOutputPaths() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseOutput( "customers.[0].profile", 0 );
+
+        Assert.assertEquals( template.resolveKeys( Collections.<String>emptyList() ), Arrays.asList( "customers", "0", "profile" ) );
+        Assert.assertEquals( template.resolvePath( Collections.<String>emptyList() ), "customers.[0].profile" );
+        Assert.assertNotNull( template.getTraversr() );
+        Assert.assertEquals( template.getWildcardCount(), 0 );
+    }
+
+    @Test
+    public void pathTemplate_rejectsMissingWildcardBindings() {
+        EnrichrPathTemplate template = EnrichrPathTemplate.parseOutput( "customers.[*].profile", 0 );
+
+        try {
+            template.resolveKeys( Collections.<String>emptyList() );
+            Assert.fail( "Expected an IllegalArgumentException" );
+        }
+        catch ( IllegalArgumentException e ) {
+            Assert.assertTrue( e.getMessage().contains( "Expected at least 1 wildcard bindings" ) );
+            Assert.assertTrue( e.getMessage().contains( "customers.[*].profile" ) );
+        }
     }
 
     @Test( expectedExceptions = SpecException.class )

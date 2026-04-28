@@ -63,6 +63,11 @@ public class Enrichr implements SpecDriven, ContextualTransform {
     private final List<EnrichrManager> enrichments;
     private final EnrichrExecutionMode executionMode;
 
+    /**
+     * Build an enrich transform from the supplied spec.
+     *
+     * @param spec enrich spec containing {@code executionMode} and {@code enrichments}
+     */
     @SuppressWarnings( "unchecked" )
     public Enrichr( Object spec ) {
         if ( spec == null ) {
@@ -92,6 +97,18 @@ public class Enrichr implements SpecDriven, ContextualTransform {
         enrichments = Collections.unmodifiableList( parsed );
     }
 
+    /**
+     * Apply all configured enrichment rules to the supplied input document.
+     * <p>
+     * In {@code sync} mode each matched enrichment is resolved and applied before the next one starts.
+     * In {@code async} mode all matching enrichments are started first and their results are written back
+     * after every invocation has been scheduled.
+     *
+     * @param input document being transformed
+     * @param context optional runtime context used to resolve {@code contextKey} targets and provide
+     *                method arguments
+     * @return the same mutated input document instance
+     */
     @Override
     public Object transform( Object input, Map<String, Object> context ) {
         if ( executionMode == EnrichrExecutionMode.ASYNC ) {

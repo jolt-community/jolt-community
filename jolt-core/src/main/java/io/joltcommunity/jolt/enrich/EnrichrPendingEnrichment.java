@@ -22,6 +22,13 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Represents an enrichment invocation that has already been started but not yet written back to the
+ * document.
+ * <p>
+ * This is used by both sync and async execution paths so invocation and document mutation remain cleanly
+ * separated.
+ */
 public class EnrichrPendingEnrichment {
 
     private final Object input;
@@ -30,6 +37,9 @@ public class EnrichrPendingEnrichment {
     private final CompletionStage<Object> enrichedValueStage;
     private final String outputPath;
 
+    /**
+     * Create a pending write-back operation for one resolved enrichment match.
+     */
     EnrichrPendingEnrichment(
             Object input,
             SimpleTraversr<Object> outputTraversr,
@@ -44,11 +54,17 @@ public class EnrichrPendingEnrichment {
         this.outputPath = outputPath;
     }
 
+    /**
+     * Wait for the enrichment result and write it to the resolved output path.
+     */
     public void apply() {
         Object enrichedValue = resolveValue( enrichedValueStage, outputPath );
         outputTraversr.set( input, outputKeys, enrichedValue );
     }
 
+    /**
+     * Resolve the asynchronous result into a concrete value while preserving interruption semantics.
+     */
     private static Object resolveValue( CompletionStage<Object> enrichedValueStage, String outputPath ) {
         try {
             return enrichedValueStage.toCompletableFuture().get();
