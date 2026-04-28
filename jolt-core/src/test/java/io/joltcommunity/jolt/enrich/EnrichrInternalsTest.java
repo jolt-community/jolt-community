@@ -79,7 +79,7 @@ public class EnrichrInternalsTest {
     public void manager_returnsNullWhenTheSourcePathIsMissing() {
         EnrichrManager manager = new EnrichrManager( rule( "customer.id", null, EnrichrTestHelper.class.getName(), null, "uppercase" ), 0 );
 
-        Assert.assertNull( manager.prepare( new LinkedHashMap<>(), null ) );
+        Assert.assertTrue( manager.match( new LinkedHashMap<>() ).isEmpty() );
     }
 
     @Test
@@ -88,7 +88,10 @@ public class EnrichrInternalsTest {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put( "name", "alice" );
 
-        Assert.assertNotNull( manager.prepare( input, null ) );
+        List<EnrichrPathMatch> matches = manager.match( input );
+
+        Assert.assertEquals( matches.size(), 1 );
+        Assert.assertNotNull( manager.prepare( matches.get( 0 ), input, null ) );
     }
 
     @Test( expectedExceptions = SpecException.class )

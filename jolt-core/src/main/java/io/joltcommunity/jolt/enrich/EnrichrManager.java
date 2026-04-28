@@ -15,24 +15,19 @@
  */
 package io.joltcommunity.jolt.enrich;
 
-import io.joltcommunity.jolt.common.Optional;
 import io.joltcommunity.jolt.exception.SpecException;
 import io.joltcommunity.jolt.traversr.SimpleTraversr;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 public class EnrichrManager {
 
-    private final String outputPath;
     private final EnrichrMethodInvoker invoker;
-    private final SimpleTraversr<Object> inputTraversr;
+    private final EnrichrPathTemplate inputPathTemplate;
+    private final EnrichrPathTemplate outputPathTemplate;
     private final SimpleTraversr<Object> outputTraversr;
-    private final List<String> inputKeys;
-    private final List<String> outputKeys;
 
     @SuppressWarnings( "unchecked" )
     public EnrichrManager( Object spec, int index ) {
@@ -42,28 +37,28 @@ public class EnrichrManager {
 
         Map<String, Object> rule = (Map<String, Object>) spec;
         String path = requiredString( rule, "path", index );
-        outputPath = optionalString( rule, "outputPath", path );
+        String outputPath = optionalString( rule, "outputPath", path );
 
         String methodName = requiredString( rule, "method", index );
         String contextKey = optionalString( rule, "contextKey", null );
         String className = optionalString( rule, "className", null );
 
-        inputTraversr = new SimpleTraversr<>( path );
-        outputTraversr = new SimpleTraversr<>( outputPath );
-        inputKeys = toTraversrKeys( path );
-        outputKeys = toTraversrKeys( outputPath );
+        inputPathTemplate = EnrichrPathTemplate.parseInput( path, index );
+        outputPathTemplate = EnrichrPathTemplate.parseOutput( outputPath, index );
+        validateOutputPath( index );
+        outputTraversr = outputPathTemplate.getTraversr();
         invoker = new EnrichrMethodInvoker( methodName, contextKey, className, index );
     }
 
-    public EnrichrPendingEnrichment prepare( Object input, Map<String, Object> context ) {
-        Optional<Object> inputValue = inputTraversr.get( input, inputKeys );
+    public List<EnrichrPathMatch> match( Object input ) {
+        return inputPathTemplate.match( input );
+    }
 
-        if ( ! inputValue.isPresent() ) {
-            return null;
-        }
-
-        CompletionStage<Object> enrichedValueStage = invoker.invokeAsync( inputValue.get(), input, context );
-        return new EnrichrPendingEnrichment( input, outputTraversr, outputKeys, enrichedValueStage, outputPath );
+    public EnrichrPendingEnrichment prepare( EnrichrPathMatch inputMatch, Object input, Map<String, Object> context ) {
+        CompletionStage<Object> enrichedValueStage = invoker.invokeAsync( inputMatch.getValue(), input, context );
+        List<String> outputKeys = outputPathTemplate.resolveKeys( inputMatch.getWildcardBindings() );
+        String resolvedOutputPath = outputPathTemplate.resolvePath( inputMatch.getWildcardBindings() );
+        return new EnrichrPendingEnrichment( input, outputTraversr, outputKeys, enrichedValueStage, resolvedOutputPath );
     }
 
     static String requiredString( Map<String, Object> spec, String key, int index ) {
@@ -85,15 +80,22 @@ public class EnrichrManager {
         return ( (String) value ).trim();
     }
 
-    private static List<String> toTraversrKeys( String humanPath ) {
-        String intermediatePath = humanPath.replace( "[", ".[" ).replace( "..", "." );
-        if ( intermediatePath.charAt( 0 ) == '.' ) {
-            intermediatePath = intermediatePath.substring( 1 );
+    private void validateOutputPath( int index ) {
+        int inputWildcardCount = inputPathTemplate.getWildcardCount();
+        int outputWildcardCount = outputPathTemplate.getWildcardCount();
+
+        if ( outputWildcardCount > 0 && outputWildcardCount != inputWildcardCount ) {
+            throw new SpecException(
+                    "Enrichr enrichment at index:" + index +
+                            " requires 'outputPath' to use the same number of '[*]' segments as 'path'."
+            );
         }
 
-        String[] rawKeys = intermediatePath.split( "\\." );
-        List<String> keys = new ArrayList<>( rawKeys.length );
-        Collections.addAll( keys, rawKeys );
-        return keys;
+        if ( inputWildcardCount > 0 && outputWildcardCount == 0 && ! outputPathTemplate.hasAppendSegment() ) {
+            throw new SpecException(
+                    "Enrichr enrichment at index:" + index +
+                            " with wildcard 'path' requires 'outputPath' to either include matching '[*]' segments or use '[]' append semantics."
+            );
+        }
     }
 }

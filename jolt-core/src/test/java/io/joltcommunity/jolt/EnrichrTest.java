@@ -42,7 +42,19 @@ public class EnrichrTest {
         return new Object[][]{
                 {"/json/enrich/classNameSync.json"},
                 {"/json/enrich/asyncPublisher.json"},
-                {"/json/enrich/contextKeySync.json"}
+                {"/json/enrich/contextKeySync.json"},
+                {"/json/enrich/arrayIndexSync.json"},
+                {"/json/enrich/arrayWildcardSync.json"},
+                {"/json/enrich/arrayWildcardAppendSync.json"},
+                {"/json/enrich/nestedArrayWildcardAsync.json"}
+        };
+    }
+
+    @DataProvider
+    public Object[][] getExternalApiFixtureTestCases() {
+        return new Object[][]{
+                {"/json/enrich/externalApiAsync.json"},
+                {"/json/enrich/externalApiArrayAsync.json"}
         };
     }
 
@@ -68,10 +80,9 @@ public class EnrichrTest {
         JoltTestUtil.runDiffy( "failed case " + testFile, expected, actual );
     }
 
-    @Test
+    @Test(dataProvider = "getExternalApiFixtureTestCases")
     @SuppressWarnings( "unchecked" )
-    public void enrich_fixtureExternalApiTest() throws Exception {
-        String testFile = "/json/enrich/externalApiAsync.json";
+    public void enrich_fixtureExternalApiTest( String testFile ) throws Exception {
         Map<String, Object> testUnit = JsonUtils.classpathToMap( testFile );
 
         HttpServer server = HttpServer.create( new InetSocketAddress( "127.0.0.1", 0 ), 0 );
@@ -123,6 +134,21 @@ public class EnrichrTest {
         Map<String, Object> spec = newEnrichSpec( null, enrichmentRule( "name", null, "uppercase" ) );
         spec.put( "executionMode", Boolean.TRUE );
         new Enrichr( spec );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsAppendSyntaxInInputPath() {
+        new Enrichr( newEnrichSpec( null, enrichmentRule( "customers.[].id", null, "uppercase" ) ) );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsWildcardPathWithFixedOutputPath() {
+        new Enrichr( newEnrichSpec( null, enrichmentRule( "customers.[*].id", "profiles.lookup", "uppercase" ) ) );
+    }
+
+    @Test( expectedExceptions = SpecException.class )
+    public void enrich_itRejectsWildcardBindingCountMismatch() {
+        new Enrichr( newEnrichSpec( null, enrichmentRule( "orders.[*].items.[*].sku", "orders.[*].inventory", "uppercase" ) ) );
     }
 
     @Test

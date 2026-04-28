@@ -1580,12 +1580,20 @@ Each enrichment rule reads a value from `path`, invokes the target method, and w
 - `executionMode`: optional. `sync` (default) applies enrichments one by one. `async` starts all enrichments first,
   then waits for all results before returning the transformed document.
 - `enrichments`: required array of enrichment rules.
-- `path`: required source path to read from the input document.
-- `outputPath`: optional destination path. Defaults to `path`.
+- `path`: required source path to read from the input document. Supports fixed object keys, explicit array indices such
+  as `[0]`, and array wildcards such as `[*]`.
+- `outputPath`: optional destination path. Defaults to `path`. Supports fixed paths, explicit array indices, matching
+  `[*]` placeholders, and `[]` append semantics.
 - `method`: required public method name to invoke.
 - `className`: optional fully qualified class name to load with reflection.
 - `contextKey`: optional key used to resolve the target object from the Chainr transform context.
 - Exactly one of `className` or `contextKey` must be supplied.
+
+When `path` uses `[*]`, `outputPath` must either:
+- use the same number of `[*]` segments so each match writes back to its corresponding array location, or
+- use `[]` append semantics to collect results into a list.
+
+`[]` is not valid in `path`; it is output-only.
 
 #### Supported Method Signatures
 
@@ -1604,6 +1612,58 @@ and the optional third argument is the Chainr transform context map.
 
 When a `Publisher` is returned, it must emit at most one value. `async` parallelizes enrichment execution, but the
 overall transform still waits for all enrichments to complete before returning a final document.
+
+#### Array Paths
+
+`enrich` can fan out over array elements by using `[*]` in `path`. Each match invokes the configured method once.
+
+```json
+{
+  "operation": "enrich",
+  "spec": {
+    "enrichments": [
+      {
+        "path": "customers.[*].id",
+        "outputPath": "customers.[*].profile",
+        "className": "com.example.CustomerLookup",
+        "method": "lookup"
+      }
+    ]
+  }
+}
+```
+
+For an input like:
+
+```json
+{
+  "customers": [
+    { "id": "cust-101" },
+    { "id": "cust-202" }
+  ]
+}
+```
+
+the transform invokes `lookup(...)` twice and writes each result back to the matching array element:
+
+```json
+{
+  "customers": [
+    {
+      "id": "cust-101",
+      "profile": {
+        "customerId": "cust-101"
+      }
+    },
+    {
+      "id": "cust-202",
+      "profile": {
+        "customerId": "cust-202"
+      }
+    }
+  ]
+}
+```
 
 #### `enrich` vs `modify-*`
 

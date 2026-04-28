@@ -97,9 +97,8 @@ public class Enrichr implements SpecDriven, ContextualTransform {
         if ( executionMode == EnrichrExecutionMode.ASYNC ) {
             List<EnrichrPendingEnrichment> pendingEnrichments = new ArrayList<>();
             for ( EnrichrManager enrichment : enrichments ) {
-                EnrichrPendingEnrichment pendingEnrichment = enrichment.prepare( input, context );
-                if ( pendingEnrichment != null ) {
-                    pendingEnrichments.add( pendingEnrichment );
+                for ( io.joltcommunity.jolt.enrich.EnrichrPathMatch inputMatch : enrichment.match( input ) ) {
+                    pendingEnrichments.add( enrichment.prepare( inputMatch, input, context ) );
                 }
             }
 
@@ -110,9 +109,8 @@ public class Enrichr implements SpecDriven, ContextualTransform {
         }
 
         for ( EnrichrManager enrichment : enrichments ) {
-            EnrichrPendingEnrichment pendingEnrichment = enrichment.prepare( input, context );
-            if ( pendingEnrichment != null ) {
-                pendingEnrichment.apply();
+            for ( io.joltcommunity.jolt.enrich.EnrichrPathMatch inputMatch : enrichment.match( input ) ) {
+                enrichment.prepare( inputMatch, input, context ).apply();
             }
         }
         return input;
