@@ -29,6 +29,7 @@
   - [The `modify` Operations](#the-modify-operations)
     - [Modifier Variants](#modifier-variants)
     - [Functions Reference](#functions-reference)
+  - [The `enrich` Operation](#the-enrich-operation)
   - [The `cardinality` Operation](#the-cardinality-operation)
   - [The `sort` Operation](#the-sort-operation)
 
@@ -109,8 +110,9 @@ operations:
 2. [default](#the-default-operation): provide attributes if they do not already exist
 3. [remove](#the-remove-operation): remove attributes from an object, or elements from an array
 4. [modify-overwrite](#the-modify-overwrite-operation): modify values using built-in functions
-5. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
-6. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
+5. [enrich](#the-enrich-operation): invoke Java methods or context-supplied beans to enrich values
+6. [cardinality](#the-cardinality-operation): ensure that values are either arrays or not arrays
+7. [sort](#the-sort-operation): order the keys of a JSON object deterministically.
 
 Operations are extensible, and other types of transforms may be provided in certain platforms, such as `chain`, which
 allows for executing other operations in sequence.
@@ -1540,6 +1542,212 @@ Use `@` alone to explicitly pass through the current value:
   }
 }
 ```
+
+[↑ Back to top](#jolt-community-edition)
+
+---
+
+### The `enrich` Operation
+
+> **Summary:** Enriches a value by invoking a user-supplied Java method or a bean supplied in transform context.
+
+`enrich` is intended for cases where the built-in `modify-*` function DSL is not enough. Instead of using JOLT's
+stock modifier functions, `enrich` resolves a Java method and writes its result back into the document. This is useful
+for service lookups, application beans, and async/reactive integrations such as a Spring WebFlux `WebClient`.
+
+Each enrichment rule reads a value from `path`, invokes the target method, and writes the returned value to
+`outputPath`. If `outputPath` is omitted, the original field at `path` is overwritten.
+
+```json
+{
+  "operation": "enrich",
+  "spec": {
+    "executionMode": "async",
+    "enrichments": [
+      {
+        "path": "customer.id",
+        "outputPath": "customer.profile",
+        "contextKey": "customerLookup",
+        "method": "lookup"
+      }
+    ]
+  }
+}
+```
+
+#### Spec Fields
+
+- `executionMode`: optional. `sync` (default) applies enrichments one by one. `async` starts all enrichments first,
+  then waits for all results before returning the transformed document.
+- `enrichments`: required array of enrichment rules.
+- `path`: required source path to read from the input document. Supports fixed object keys, explicit array indices such
+  as `[0]`, and array wildcards such as `[*]`.
+- `outputPath`: optional destination path. Defaults to `path`. Supports fixed paths, explicit array indices, matching
+  `[*]` placeholders, and `[]` append semantics.
+- `method`: required public method name to invoke.
+- `className`: optional fully qualified class name to load with reflection.
+- `contextKey`: optional key used to resolve the target object from the Chainr transform context.
+- Exactly one of `className` or `contextKey` must be supplied.
+
+When `path` uses `[*]`, `outputPath` must either:
+- use the same number of `[*]` segments so each match writes back to its corresponding array location, or
+- use `[]` append semantics to collect results into a list.
+
+`[]` is not valid in `path`; it is output-only.
+
+#### Supported Method Signatures
+
+- `Object method(Object value)`
+- `Object method(Object value, Object input)`
+- `Object method(Object value, Object input, Map<String, Object> context)`
+
+The first argument is always the value found at `path`. The optional second argument is the full in-flight document,
+and the optional third argument is the Chainr transform context map.
+
+#### Supported Return Types
+
+- `Object`
+- `CompletionStage<Object>`
+- `Publisher<Object>` such as a Reactor `Mono`
+
+When a `Publisher` is returned, it must emit at most one value. `async` parallelizes enrichment execution, but the
+overall transform still waits for all enrichments to complete before returning a final document.
+
+#### Array Paths
+
+`enrich` can fan out over array elements by using `[*]` in `path`. Each match invokes the configured method once.
+
+```json
+{
+  "operation": "enrich",
+  "spec": {
+    "enrichments": [
+      {
+        "path": "customers.[*].id",
+        "outputPath": "customers.[*].profile",
+        "className": "com.example.CustomerLookup",
+        "method": "lookup"
+      }
+    ]
+  }
+}
+```
+
+For an input like:
+
+```json
+{
+  "customers": [
+    { "id": "cust-101" },
+    { "id": "cust-202" }
+  ]
+}
+```
+
+the transform invokes `lookup(...)` twice and writes each result back to the matching array element:
+
+```json
+{
+  "customers": [
+    {
+      "id": "cust-101",
+      "profile": {
+        "customerId": "cust-101"
+      }
+    },
+    {
+      "id": "cust-202",
+      "profile": {
+        "customerId": "cust-202"
+      }
+    }
+  ]
+}
+```
+
+#### `enrich` vs `modify-*`
+
+Use `modify-*` when the transformation can be expressed with built-in functions such as `concat`, `toLower`, or
+`@(levels,key)` lookups. Use `enrich` when the value must come from arbitrary Java code, a bean supplied in the
+transform context, or an async/reactive API call.
+
+#### Example
+
+```json
+{
+  "operation": "enrich",
+  "spec": {
+    "enrichments": [
+      {
+        "path": "customer.id",
+        "outputPath": "customer.profile",
+        "className": "com.example.CustomerLookup",
+        "method": "lookup"
+      }
+    ]
+  },
+  "input": {
+    "customer": {
+      "id": "cust-123"
+    }
+  },
+  "output": {
+    "customer": {
+      "id": "cust-123",
+      "profile": {
+        "customerId": "cust-123",
+        "segment": "gold"
+      }
+    }
+  }
+}
+```
+
+#### External API Example
+
+The following example shows `enrich` calling an external API through a context-supplied Spring bean. The JOLT spec
+uses `contextKey` so the application can supply the already-configured client object at runtime.
+
+```json
+{
+  "operation": "enrich",
+  "spec": {
+    "executionMode": "async",
+    "enrichments": [
+      {
+        "path": "customer.id",
+        "outputPath": "customer.profile",
+        "contextKey": "customerLookupClient",
+        "method": "lookupProfile"
+      }
+    ]
+  }
+}
+```
+
+Example Spring WebFlux bean:
+
+```java
+@Component
+public class CustomerLookupClient {
+
+    private final WebClient webClient;
+
+    public CustomerLookupClient(WebClient webClient) {
+        this.webClient = webClient;
+    }
+
+    public Mono<Object> lookupProfile(Object value, Object input, Map<String, Object> context) {
+        return webClient.get()
+                .uri("/customers/{id}", value)
+                .retrieve()
+                .bodyToMono(Object.class);
+    }
+}
+```
+
+At runtime, place the bean in the Chainr context map under `customerLookupClient`. JOLT will resolve it through
+`contextKey`, invoke `lookupProfile`, wait for the returned `Mono`, and store the response at `customer.profile`.
 
 [↑ Back to top](#jolt-community-edition)
 
