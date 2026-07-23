@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: daily
     target-branch: develop
+    groups:
+      codeql:
+        patterns:
+          - "github/codeql-action/*"
 
   - package-ecosystem: maven
     directory: /
