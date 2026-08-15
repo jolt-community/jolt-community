@@ -1340,7 +1340,7 @@ Only writes the computed value if the key does not exist. If the key exists (eve
 {
   "operation": "modify-define",
   "spec": {
-    "status": "=defaultValue('active')"
+    "status": "active"
   }
 }
 ```
@@ -1353,7 +1353,7 @@ Only writes the computed value if the key does not exist OR if its value is `nul
 {
   "operation": "modify-default",
   "spec": {
-    "timestamp": "=now()"
+    "timestamp": "=now(yyyy-MM-dd'T'HH:mm:ssX, 'UTC')"
   }
 }
 ```
@@ -1412,19 +1412,19 @@ Use `@` alone to explicitly pass through the current value:
 
 ##### String Functions
 
-| Function     | Description                         | Example                          | Result            |
-|--------------|-------------------------------------|----------------------------------|-------------------|
-| `toLower`    | Converts string to lowercase        | `=toLower('HELLO')`              | `"hello"`         |
-| `toUpper`    | Converts string to uppercase        | `=toUpper('hello')`              | `"HELLO"`         |
-| `concat`     | Concatenates multiple values        | `=concat('Hello', ' ', 'World')` | `"Hello World"`   |
-| `join`       | Joins values with a delimiter       | `=join('-', 'a', 'b', 'c')`      | `"a-b-c"`         |
-| `split`      | Splits string by delimiter          | `=split('-', 'a-b-c')`           | `["a", "b", "c"]` |
-| `substring`  | Extracts substring                  | `=substring('Hello', 0, 3)`      | `"Hel"`           |
-| `trim`       | Removes leading/trailing whitespace | `=trim('  hello  ')`             | `"hello"`         |
-| `leftPad`    | Pads string on the left             | `=leftPad('5', 3, '0')`          | `"005"`           |
-| `rightPad`   | Pads string on the right            | `=rightPad('5', 3, '0')`         | `"500"`           |
-| `replace`    | Replaces first occurrence           | `=replace('hello', 'l', 'L')`    | `"heLlo"`         |
-| `replaceAll` | Replaces all occurrences (regex)    | `=replaceAll('hello', 'l', 'L')` | `"heLLo"`         |
+| Function     | Description                         | Example                                      | Result            |
+|--------------|-------------------------------------|----------------------------------------------|-------------------|
+| `toLower`    | Converts string to lowercase        | `=toLower('HELLO')`                          | `"hello"`         |
+| `toUpper`    | Converts string to uppercase        | `=toUpper('hello')`                          | `"HELLO"`         |
+| `concat`     | Concatenates multiple values        | `=concat('Hello', ' ', 'World')`             | `"Hello World"`   |
+| `join`       | Joins values with a delimiter       | `=join('-', 'a', 'b', 'c')`                  | `"a-b-c"`         |
+| `split`      | Splits string by delimiter          | `=split('-', 'a-b-c')`                       | `["a", "b", "c"]` |
+| `substring`  | Extracts substring                  | `=substring('Hello', 0, 3)`                  | `"Hel"`           |
+| `trim`       | Removes leading/trailing whitespace | `=trim('  hello  ')`                         | `"hello"`         |
+| `leftPad`    | Pads string on the left             | `=leftPad('5', 3, '0')`                      | `"005"`           |
+| `rightPad`   | Pads string on the right            | `=rightPad('5', 3, '0')`                     | `"500"`           |
+| `replace`    | Replaces all occurrences (literal)  | `=replace('hello', 'l', 'L')`                | `"heLLo"`         |
+| `replaceAll` | Replaces all occurrences (regex)    | `=replaceAll('Java123is456fun', '\d+', ' ')` | `"Java is fun"`   |
 
 ##### Mathematical Functions
 
@@ -1441,9 +1441,14 @@ Use `@` alone to explicitly pass through the current value:
 | `doubleSubtract`   | Subtract as double           | `=doubleSubtract(10.5, 3.2)`   | `7.3`  |
 | `longSubtract`     | Subtract as long             | `=longSubtract(1000, 300)`     | `700`  |
 | `divide`           | Division                     | `=divide(10, 2)`               | `5.0`  |
-| `divideAndRound`   | Division with rounding       | `=divideAndRound(10, 3, 0)`    | `3`    |
-| `multiply`         | Multiplication               | `=multiply(5, 3)`              | `15.0` |
-| `multiplyAndRound` | Multiplication with rounding | `=multiplyAndRound(5.7, 3, 0)` | `17`   |
+| `divideAndRound`   | Division with rounding       | `=divideAndRound(0, 10, 3)`    | `3`    |
+| `multiply`         | Multiplication               | `=multiply(5, 3)`              | `15`   |
+| `multiplyAndRound` | Multiplication with rounding | `=multiplyAndRound(0, 5.7, 3)` | `17`   |
+
+`divideAndRound` and `multiplyAndRound` take the number of digits after the decimal point as their *first*
+argument, followed by an optional rounding mode string (one of `java.math.RoundingMode`'s constants, default
+`HALF_UP`), followed by the numbers to operate on: `=divideAndRound(digits, [roundingMode,] numerator, denominator)`
+and `=multiplyAndRound(digits, [roundingMode,] num1, num2)`.
 
 ##### Type Conversion Functions
 
@@ -1462,7 +1467,7 @@ Use `@` alone to explicitly pass through the current value:
 |----------------|-----------------------------|--------------------------|-----------|
 | `firstElement` | Gets first element of array | `=firstElement([1,2,3])` | `1`       |
 | `lastElement`  | Gets last element of array  | `=lastElement([1,2,3])`  | `3`       |
-| `elementAt`    | Gets element at index       | `=elementAt([1,2,3], 1)` | `2`       |
+| `elementAt`    | Gets element at index       | `=elementAt(1, [1,2,3])` | `2`       |
 | `toList`       | Converts value to list      | `=toList(5)`             | `[5]`     |
 | `sort`         | Sorts list                  | `=sort([3,1,2])`         | `[1,2,3]` |
 
@@ -1476,25 +1481,43 @@ Use `@` alone to explicitly pass through the current value:
 
 ##### Date Functions
 
-| Function         | Description                            | Example                                                                                                                                                                                                                                 |
-|------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `now`            | Returns current date/time string       | `=now()`                                                                                                                                                                                                                                |
-| `nowEpochMillis` | Returns current epoch milliseconds     | `=nowEpochMillis()`                                                                                                                                                                                                                     |
-| `fromEpochMilli` | Converts epoch millis to date          | `=fromEpochMilli(1609459200000)`                                                                                                                                                                                                        |
-| `toEpochMilli`   | Converts date to epoch millis          | `=toEpochMilli('2021-01-01')`                                                                                                                                                                                                           |
-| `dateAdd`        | Adds duration to date                  | `=dateAdd(date, amount, unit)`                                                                                                                                                                                                          |
-| `dateSubstract`  | Subtracts duration from date           | `=dateSubstract(date, amount, unit)`                                                                                                                                                                                                    |
-| `formatDate`     | Change date from one format to another | `=formatDate('20210101', yyyyMMdd, yyyy-MM-dd)` </br> `=formatDate('202101011200', yyyyMMddHHmm, yyyy-MM-dd'T'HH:mm:ssXXX, Europe/Paris)`<br/> `=formatDate('202101011200', yyyyMMddHHmm, yyyy-MM-dd'T'HH:mm:ss'Z', Europe/Paris, UTC)` |
+| Function         | Description                                                                    | Example                                                                                                                                                                                                                                 |
+|------------------|--------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `now`            | Returns current date/time as a formatted string, given a pattern and time zone | `=now('yyyy-MM-dd', 'UTC')`                                                                                                                                                                                                             |
+| `nowEpochMillis` | Returns current epoch milliseconds                                             | `=nowEpochMillis()`                                                                                                                                                                                                                     |
+| `fromEpochMilli` | Converts epoch millis to date                                                  | `=fromEpochMilli(1609459200000)`                                                                                                                                                                                                        |
+| `toEpochMilli`   | Converts date to epoch millis                                                  | `=toEpochMilli('2021-01-01', 'yyyy-MM-dd', 'UTC')`                                                                                                                                                                                      |
+| `dateAdd`        | Adds duration to date                                                          | `=dateAdd('2021-01-01', 'yyyy-MM-dd', 'P1D', 'UTC')`                                                                                                                                                                                    |
+| `dateSubstract`  | Subtracts duration from date                                                   | `=dateSubstract('2021-01-01', 'yyyy-MM-dd', 'P1D', 'UTC')`                                                                                                                                                                              |
+| `formatDate`     | Change date from one format to another                                         | `=formatDate('20210101', yyyyMMdd, yyyy-MM-dd)` </br> `=formatDate('202101011200', yyyyMMddHHmm, yyyy-MM-dd'T'HH:mm:ssXXX, Europe/Paris)`<br/> `=formatDate('202101011200', yyyyMMddHHmm, yyyy-MM-dd'T'HH:mm:ss'Z', Europe/Paris, UTC)` |
+
+`now` requires both a pattern and a time zone; called with no arguments it is a no-op. `fromEpochMilli` may be
+called with just the epoch millis, defaulting to ISO8601 format (`yyyy-MM-dd'T'HH:mm:ssX`) at UTC — but
+`toEpochMilli` always requires all three arguments (`date`, `format`, `zoneId`). `dateAdd` and `dateSubstract`
+take `(date, pattern, duration, zoneId)`, where `duration` is an ISO-8601 period/duration string, e.g. `P1D` for
+one day, or `PT2H30M` for two hours thirty minutes.
 
 ##### Utility Functions
 
-| Function    | Description                 | Example                | Result               |
-|-------------|-----------------------------|------------------------|----------------------|
-| `noop`      | Returns input unchanged     | `=noop(value)`         | `value`              |
-| `isPresent` | Checks if value exists      | `=isPresent(@(1,key))` | `true/false`         |
-| `notNull`   | Checks if value is not null | `=notNull(@(1,key))`   | `true/false`         |
-| `isNull`    | Checks if value is null     | `=isNull(@(1,key))`    | `true/false`         |
-| `uuid`      | Generates a UUID            | `=uuid()`              | `"550e8400-e29b..."` |
+| Function    | Description                                                                                                      | Example                      |
+|-------------|------------------------------------------------------------------------------------------------------------------|------------------------------|
+| `noop`      | Returns input unchanged                                                                                          | `=noop(value)`               |
+| `isPresent` | Keeps the current value if the key is present, `null` or not; falls back to the next value in the list otherwise | `["=isPresent", "fallback"]` |
+| `notNull`   | Keeps the current value if it is not `null`; falls back to the next value in the list otherwise                  | `["=notNull", "fallback"]`   |
+| `isNull`    | Keeps the current value if it is `null`; falls back to the next value in the list otherwise                      | `["=isNull", "fallback"]`    |
+| `uuid`      | Generates a UUID                                                                                                 | `=uuid()`                    |
+
+`isPresent`, `notNull`, and `isNull` are **not** boolean checks — despite their names, they never return
+`true`/`false`. Each one is applied to the *current* value (no explicit argument needed) and either keeps it
+or produces nothing, which only matters when the spec provides a fallback as the next element of an array, e.g.
+`"status": ["=notNull", "unknown"]`. The table below shows what each combination resolves to, given the spec
+`"key": ["=<function>", "fallback"]`:
+
+| Function    | `"key"` missing from input | `"key": null` | `"key": "value"` |
+|-------------|----------------------------|---------------|------------------|
+| `isPresent` | `"fallback"`               | `null`        | `"value"`        |
+| `notNull`   | `"fallback"`               | `"fallback"`  | `"value"`        |
+| `isNull`    | `"fallback"`               | `null`        | `"fallback"`     |
 
 #### Example
 
@@ -1506,8 +1529,8 @@ Use `@` alone to explicitly pass through the current value:
       "fullName": "=concat(@(1,firstName),' ',@(1,lastName))",
       "age": "=toInteger(@(1,ageString))",
       "email": "=toLower(@(1,email))",
-      "status": "=defaultValue('active')",
-      "createdAt": "=now()",
+      "status": "active",
+      "createdAt": "=now(yyyy-MM-dd'T'HH:mm:ssX, 'UTC')",
       "id": "=uuid()"
     }
   }
