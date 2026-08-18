@@ -78,7 +78,7 @@
         <reactive-streams.version>1.0.4</reactive-streams.version>
 
         <!-- TEST -->
-        <guava.version>33.6.0-jre</guava.version>
+        <guava.version>33.7.1-jre</guava.version>
         <testng.version>7.12.0</testng.version>
     </properties>
 
